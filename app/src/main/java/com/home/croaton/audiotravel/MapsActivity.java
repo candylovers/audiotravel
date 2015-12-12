@@ -2,10 +2,13 @@ package com.home.croaton.audiotravel;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.media.MediaPlayer;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -23,7 +26,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private ArrayList<LatLng> mainRoute = new ArrayList<>();
     private GoogleMap mMap;
-    AudioService audioService;
+    private AudioService audioService;
+    private GoogleApiClient _googleApiClient;
+    private LocationTracker _tracker;
+    private boolean _onlyOnce = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +42,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         FillMainRoute();
 
-        startService(new Intent(this, AudioService.class));
+        startLocationTracking();
+    }
+
+    public void locationChanged(LatLng point)
+    {
+        float[] results = new float[10];
+        Location.distanceBetween(
+                59.32284,
+                18.06667,
+                point.latitude,
+                point.longitude,
+                results);
+        if (!_onlyOnce && results[0] < 50)
+        {
+            _onlyOnce = true;
+            startService(new Intent(this, AudioService.class));
+        }
+
+    }
+
+    private synchronized void startLocationTracking()
+    {
+        _tracker = new LocationTracker(this);
+
+        _googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(_tracker)
+                .addOnConnectionFailedListener(_tracker)
+                .addApi(LocationServices.API)
+                .build();
+
+        _googleApiClient.connect();
+
+        _tracker.setGogleApiClient(_googleApiClient);
     }
 
     private void FillMainRoute() {
@@ -80,6 +118,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
                 mainRoute.get(0), 16)));
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        if (_googleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, _tracker);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        _tracker.resume();
     }
 
     @Override
