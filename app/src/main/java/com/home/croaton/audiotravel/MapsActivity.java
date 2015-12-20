@@ -1,9 +1,7 @@
 package com.home.croaton.audiotravel;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -13,18 +11,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.ArrayList;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    private ArrayList<LatLng> mainRoute = new ArrayList<>();
+    private Route _mainRoute;
     private GoogleMap mMap;
     private AudioService audioService;
     private GoogleApiClient _googleApiClient;
@@ -40,13 +36,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        FillMainRoute();
-
+        _mainRoute = RouteController.GetDemoRoute();
         startLocationTracking();
     }
 
     public void locationChanged(LatLng point)
     {
+        // Check whether anything is playing. If no:
+        // Find closest point.
+        // If we are close enough - find appropriate audio file
+        // play that audio file
         float[] results = new float[10];
         Location.distanceBetween(
                 59.32284,
@@ -59,7 +58,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             _onlyOnce = true;
             startService(new Intent(this, AudioService.class));
         }
-
     }
 
     private synchronized void startLocationTracking()
@@ -77,17 +75,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _tracker.setGogleApiClient(_googleApiClient);
     }
 
-    private void FillMainRoute() {
-        mainRoute.add(new LatLng(59.32311, 18.06753));
-        mainRoute.add(new LatLng(59.32284, 18.06667));
-        mainRoute.add(new LatLng(59.32449, 18.06564));
-        mainRoute.add(new LatLng(59.32505, 18.0651));
-        mainRoute.add(new LatLng(59.32491, 18.06382));
-        mainRoute.add(new LatLng(59.32465, 18.06215));
-        mainRoute.add(new LatLng(59.32536, 18.06185));
-        mainRoute.add(new LatLng(59.32587, 18.06138));
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -96,10 +83,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .color(0x7F0000FF)
                 .geodesic(true);
 
-        for(LatLng point : mainRoute)
+        for(Point point : _mainRoute)
         {
-            route.add(point);
-            CircleOptions circleOptions = new CircleOptions()
+            route.add(point.Position);
+            /*CircleOptions circleOptions = new CircleOptions()
                     .center(point)
                     .radius(5)
                     .fillColor(0x7F0000FF)
@@ -107,17 +94,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .zIndex(1);
 
             Circle circle = mMap.addCircle(circleOptions);
-
-            /*mMap.addMarker(new MarkerOptions()
-                .position(point)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                .alpha(0.8f));*/
+            */
+            mMap.addMarker(new MarkerOptions()
+                .position(point.Position)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.playback))
+                /*.alpha(0.8f)*/);
         }
 
         Polyline polyline = mMap.addPolyline(route);
 
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
-                mainRoute.get(0), 16)));
+                _mainRoute.get(0).Position, 16)));
     }
 
     @Override

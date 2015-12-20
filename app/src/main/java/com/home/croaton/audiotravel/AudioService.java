@@ -14,16 +14,20 @@ import java.io.IOException;
 public class AudioService extends android.app.Service implements Releasable,
         MediaPlayer.OnPreparedListener
 {
-    private static final String ACTION_PLAY = "com.example.action.PLAY";
-    MediaPlayer mMediaPlayer = new MediaPlayer();
+    //private static final String ACTION_PLAY = "com.example.action.PLAY";
+    private static String _url;
+    private MediaPlayer mMediaPlayer;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        mMediaPlayer.release();
+        if (mMediaPlayer != null)
+            mMediaPlayer.release();
+
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        //prepareMediaPlayer();
         int id = getResources().getIdentifier("a1", "raw", getPackageName());
         AssetFileDescriptor afd = getResources().openRawResourceFd(id);
         if (afd == null)
@@ -45,7 +49,14 @@ public class AudioService extends android.app.Service implements Releasable,
         return START_STICKY;
     }
 
-    /** Called when MediaPlayer is ready */
+    private void prepareMediaPlayer() {
+
+    }
+
+    public static void setTrack(String url) {
+        _url = url;
+    }
+
     public void onPrepared(MediaPlayer player) {
         player.start();
     }
