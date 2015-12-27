@@ -2,6 +2,8 @@ package com.home.croaton.audiotravel;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+
 public class Point
 {
     public Integer Number;
@@ -11,5 +13,11 @@ public class Point
     {
         Number = number;
         Position = position;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Position.hashCode();
     }
 }

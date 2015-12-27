@@ -2,30 +2,42 @@ package com.home.croaton.audiotravel;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-public class Route implements Iterable<Point>
+public class Route
 {
-    private ArrayList<Point> _points;
+    private ArrayList<AudioPoint> _audioPoints;
+    private ArrayList<Point> _geoPoints;
 
     public Route()
     {
-        _points = new ArrayList<>();
+        _geoPoints = new ArrayList<>();
+        _audioPoints = new ArrayList<>();
     }
 
-    public void addPoint(LatLng position)
+    public void addGeoPoint(LatLng position)
     {
-        _points.add(new Point(_points.size() + 1, position));
+        _geoPoints.add(new Point(_geoPoints.size() + 1, position));
     }
 
-    public Point get(int index)
+    public void addAudioPoint(AudioPoint audioPoint)
     {
-        return _points.get(index);
+        _audioPoints.add(audioPoint);
     }
 
-    @Override
-    public Iterator<Point> iterator() {
-        return _points.iterator();
+    public Point getGeoPoint(int index)
+    {
+        return _geoPoints.get(index);
+    }
+
+    public ArrayList<Point> geoPoints()
+    {
+        return (ArrayList<Point>)_geoPoints.clone();
+    }
+
+    public ArrayList<AudioPoint> audioPoints()
+    {
+        return (ArrayList<AudioPoint>)_audioPoints.clone();
     }
 }

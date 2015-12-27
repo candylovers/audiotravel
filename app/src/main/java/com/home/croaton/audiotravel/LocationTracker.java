@@ -67,4 +67,18 @@ public class LocationTracker implements GoogleApiClient.ConnectionCallbacks,
                     this);
         }
     }
+
+    public static float GetDistance(LatLng point1, LatLng point2)
+    {
+        float[] results = new float[10];
+        Location.distanceBetween(
+                point1.latitude,
+                point1.longitude,
+                point2.latitude,
+                point2.longitude,
+                results);
+
+        // ToDo: check, is that always resulrs[0]?
+        return results[0];
+    }
 }
