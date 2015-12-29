@@ -13,32 +13,60 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.Releasable;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioService extends android.app.Service implements Releasable,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener
 {
     public static final String ACTION_STOP="xxx.yyy.zzz.ACTION_STOP";
 
-    private static Uri _url;
+    private static Queue<Uri> _uriQueue;
     private static String ServiceName = "Audio Service";
     private static Context _context;
     private static MediaPlayer _mediaPlayer;
 
+    private boolean _prepared;
     private Notification.Builder _notificationBuilder;
     private Notification _notification;
+    private static Thread _playQueueThread;
+    private ReentrantLock lock = new ReentrantLock();
+    private ReentrantLock _playerLock = new ReentrantLock();
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        if (_mediaPlayer != null)
-            _mediaPlayer.release();
+        final AudioService me = this;
+        _playQueueThread = new Thread()
+        {
+            public void run()
+            {
+                while (_uriQueue != null && !_uriQueue.isEmpty()) {
+                    _playerLock.lock();
+                    if (_mediaPlayer != null)
+                        _mediaPlayer.release();
 
-        _mediaPlayer = new MediaPlayer();
-        _mediaPlayer.setOnPreparedListener(this);
-        _mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        _mediaPlayer.setOnErrorListener(this);
-        prepareMediaPlayer();
+                    _mediaPlayer = new MediaPlayer();
+                    _mediaPlayer.setOnPreparedListener(me);
+                    _mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    _mediaPlayer.setOnErrorListener(me);
+                    _prepared = false;
+                    prepareMediaPlayer();
+                    _playerLock.unlock();
+
+                    while (!_prepared || (_mediaPlayer != null && _mediaPlayer.isPlaying())) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
+        _playQueueThread.start();
 
         return START_STICKY;
     }
@@ -70,30 +98,37 @@ public class AudioService extends android.app.Service implements Releasable,
     {
         try
         {
-            _mediaPlayer.setDataSource(_context, _url);
-        } catch (IOException e)
+            lock.lock();
+            _playerLock.lock();
+            setUpAsForeground("Audio + " + _uriQueue.peek().getLastPathSegment());
+            _mediaPlayer.setDataSource(_context, _uriQueue.poll());
+            _playerLock.unlock();
+            lock.unlock();
+        } catch (Exception e)
         {
             Log.e(ServiceName, e.getMessage());
         }
 
         try
         {
+            _playerLock.lock();
             _mediaPlayer.prepareAsync();
+            _playerLock.unlock();
         } catch (IllegalStateException e)
         {
-            Log.e(ServiceName, e.getMessage());
+            //Log.e(ServiceName, e.getMessage());
         }
     }
 
-    public static void setTrack(Context context, Uri url)
+    public static void setTrackQueue(Context context, ArrayList<Uri> trackUris)
     {
         _context = context;
-        _url = url;
+        _uriQueue = new ArrayBlockingQueue<Uri>(trackUris.size(), false, trackUris);
     }
 
     public void onPrepared(MediaPlayer player)
     {
-        setUpAsForeground("Audio + "+ _url.getLastPathSegment());
+        _prepared = true;
         player.start();
     }
 

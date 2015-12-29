@@ -8,13 +8,11 @@ public class Route
 {
     private ArrayList<AudioPoint> _audioPoints;
     private ArrayList<Point> _geoPoints;
-    private int _currentAudioPointIndex;
 
     public Route()
     {
         _geoPoints = new ArrayList<>();
         _audioPoints = new ArrayList<>();
-        _currentAudioPointIndex = 0;
     }
 
     public void addGeoPoint(LatLng position)
@@ -43,9 +41,8 @@ public class Route
         return (ArrayList<AudioPoint>)_audioPoints.clone();
     }
 
-    public void markCurrentAudioPointDone()
+    public void markAudioPointDone(int pointNumber)
     {
-        _audioPoints.get(_currentAudioPointIndex).Done = true;
-        _currentAudioPointIndex++;
+        _audioPoints.get(pointNumber).Done = true;
     }
 }

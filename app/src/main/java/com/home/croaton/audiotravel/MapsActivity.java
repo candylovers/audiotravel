@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
+import android.util.Pair;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -39,12 +40,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
         _wakeLock.acquire();
 
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         for(AudioPoint p : _routeController.audioPoints())
         {
             if (settings.getBoolean("AudioPoint" + p.Number, false))
                 _routeController.
-        }
+        }*/
 
         _routeController = new RouteController();
 
@@ -62,15 +63,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (AudioService.isPlaying())
             stopService(new Intent(this, AudioService.class));
 
-        Uri uri = _routeController.getResourceToPlay(point);
+        Pair<Integer, ArrayList<Uri>> audioAtPoint = _routeController.getResourceToPlay(point);
 
-        if (uri == Uri.EMPTY)
+        if (audioAtPoint == null)
             return;
 
-        AudioService.setTrack(this, uri);
+        AudioService.setTrackQueue(this, audioAtPoint.second);
         startService(new Intent(this, AudioService.class));
 
-        _routeController.doneCurrentAudioPoint();
+        _routeController.doneAudioPoint(audioAtPoint.first);
     }
 
     private synchronized void startLocationTracking()
