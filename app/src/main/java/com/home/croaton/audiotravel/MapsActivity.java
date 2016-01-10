@@ -60,16 +60,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void locationChanged(LatLng point)
     {
-        if (AudioService.isPlaying())
-            stopService(new Intent(this, AudioService.class));
-
         Pair<Integer, ArrayList<Uri>> audioAtPoint = _routeController.getResourceToPlay(point);
 
         if (audioAtPoint == null)
             return;
 
-        AudioService.setTrackQueue(this, audioAtPoint.second);
-        startService(new Intent(this, AudioService.class));
+        Intent startingIntent = new Intent(this, AudioService.class);
+        startingIntent.putExtra(AudioService.NewUriCommand, audioAtPoint.second);
+        startService(startingIntent);
+
+        //AudioService.setTrackQueue(this, audioAtPoint.second);
+        //startService(new Intent(this, AudioService.class));
 
         _routeController.doneAudioPoint(audioAtPoint.first);
     }
