@@ -20,7 +20,9 @@
             android:background="?attr/colorPrimary"
             android:title="Choose route"
             android:theme="@style/ToolBarStyle"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+
+            android:textSize="20sp"/>
 
 
     </android.support.design.widget.AppBarLayout>
