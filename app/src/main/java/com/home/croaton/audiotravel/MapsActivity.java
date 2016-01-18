@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.home.croaton.audiotravel.settings.GeneralPreferenceFragment;
 
 import java.util.ArrayList;
 
@@ -46,6 +48,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if (settings.getBoolean("AudioPoint" + p.Number, false))
                 _routeController.
         }*/
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String fakeLocation = sharedPref.getString("fake_location", "");
 
         _routeController = new RouteController();
 

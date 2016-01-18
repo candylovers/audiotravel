@@ -1,4 +1,4 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.settings;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
