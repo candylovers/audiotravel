@@ -24,7 +24,6 @@
 
             android:textSize="20sp"/>
 
-
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_choose_route" />
