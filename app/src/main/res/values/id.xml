@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <item name="settings_button_id" type="id">settings</item>
+
+    <item name="routs_collection" type="id">routs</item>
+    <item name="route1_image" type="id">route1_image</item>
+
+    <item name="route2_id" type="id">route2</item>
+    <item name="route2_image" type="id">route2_image</item>
+
+    <item name="route3_id" type="id">route3</item>
+    <item name="route3_image" type="id">route3_image</item>
+
 </resources>

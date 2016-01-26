@@ -56,6 +56,9 @@ public class TestTracker
                         {
                             e.printStackTrace();
                         }
+
+                        if (Thread.interrupted())
+                            return;
                     }
 
                     prev = point;
@@ -64,5 +67,13 @@ public class TestTracker
         };
 
         _trackerThread.start();
+    }
+
+    public static void stop()
+    {
+        if (_trackerThread != null) {
+            _trackerThread.interrupt();
+            _trackerThread = null;
+        }
     }
 }

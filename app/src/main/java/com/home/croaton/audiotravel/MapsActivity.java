@@ -31,6 +31,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private RouteController _routeController;
     private PowerManager.WakeLock _wakeLock;
     private static final String PREFS_NAME = "PreferencesFile";
+    private boolean _fakeLocation;
 
     @Override
     // ToDo: save _route and load after activity destroyed
@@ -49,7 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 _routeController.
         }*/
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String fakeLocation = sharedPref.getString("fake_location", "");
+        _fakeLocation = sharedPref.getBoolean("fake_location", false);
 
         _routeController = new RouteController();
 
@@ -59,7 +60,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //startLocationTracking();
+        if (!_fakeLocation)
+            startLocationTracking();
     }
 
     public void locationChanged(LatLng point)
@@ -100,7 +102,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         _map = googleMap;
 
-        if (!_once)
+        if (_fakeLocation && !_once)
         {
             TestTracker.startFakeLocationTracking(this, _routeController.geoPoints(), _map);
             _once = true;
@@ -172,5 +174,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         super.onStop();
         stopService(new Intent(this, AudioService.class));
+        TestTracker.stop();
     }
 }
