@@ -4,6 +4,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.home.croaton.audiotravel.activities.MapsActivity;
+import com.home.croaton.audiotravel.domain.Point;
 
 import java.util.ArrayList;
 

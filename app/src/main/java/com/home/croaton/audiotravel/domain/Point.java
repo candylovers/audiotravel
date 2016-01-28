@@ -1,8 +1,6 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.domain;
 
 import com.google.android.gms.maps.model.LatLng;
-
-import java.io.Serializable;
 
 public class Point
 {

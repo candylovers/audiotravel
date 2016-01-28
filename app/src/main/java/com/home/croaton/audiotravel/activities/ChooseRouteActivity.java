@@ -1,17 +1,16 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.activities;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.method.CharacterPickerDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 
+import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.settings.SettingsActivity;
 
 public class ChooseRouteActivity extends AppCompatActivity {

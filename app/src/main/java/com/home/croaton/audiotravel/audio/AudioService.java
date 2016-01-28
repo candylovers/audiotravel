@@ -1,4 +1,4 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.audio;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -11,6 +11,8 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.common.api.Releasable;
+import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.activities.MapsActivity;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.home.croaton.audiotravel.activities.MapsActivity;
 
 public class LocationTracker implements GoogleApiClient.ConnectionCallbacks,
         LocationListener, GoogleApiClient.OnConnectionFailedListener

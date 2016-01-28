@@ -1,8 +1,6 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.domain;
 
 import com.google.android.gms.maps.model.LatLng;
-
-import java.io.Serializable;
 
 public class AudioPoint extends Point
 {
@@ -21,6 +19,14 @@ public class AudioPoint extends Point
     public AudioPoint(LatLng position, int radius)
     {
         super(0, position);
+        Done = false;
+        Radius = radius;
+    }
+
+    public AudioPoint(int number, LatLng position, int radius)
+    {
+        super(0, position);
+        Number = number;
         Done = false;
         Radius = radius;
     }

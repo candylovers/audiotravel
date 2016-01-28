@@ -1,4 +1,4 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.audio;
 
 public enum AudioServiceAction
 {

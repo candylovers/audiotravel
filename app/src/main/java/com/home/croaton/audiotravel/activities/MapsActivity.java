@@ -1,4 +1,4 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,8 +19,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.home.croaton.audiotravel.settings.GeneralPreferenceFragment;
+import com.home.croaton.audiotravel.audio.AudioPlaybackController;
+import com.home.croaton.audiotravel.domain.AudioPoint;
+import com.home.croaton.audiotravel.audio.AudioService;
+import com.home.croaton.audiotravel.LocationTracker;
+import com.home.croaton.audiotravel.MapHelper;
+import com.home.croaton.audiotravel.domain.Point;
+import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.TestTracker;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -28,7 +36,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap _map;
     private GoogleApiClient _googleApiClient;
     private LocationTracker _tracker;
-    private RouteController _routeController;
+    private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
     private static final String PREFS_NAME = "PreferencesFile";
     private boolean _fakeLocation;
@@ -44,15 +52,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _wakeLock.acquire();
 
         /*SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        for(AudioPoint p : _routeController.audioPoints())
+        for(AudioPoint p : _audioPlaybackController.audioPoints())
         {
             if (settings.getBoolean("AudioPoint" + p.Number, false))
-                _routeController.
+                _audioPlaybackController.
         }*/
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _fakeLocation = sharedPref.getBoolean("fake_location", false);
 
-        _routeController = new RouteController();
+        _audioPlaybackController = new AudioPlaybackController(getResources());
 
         setContentView(R.layout.activity_maps);
 
@@ -66,7 +74,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void locationChanged(LatLng point)
     {
-        Pair<Integer, ArrayList<Uri>> audioAtPoint = _routeController.getResourceToPlay(point);
+        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
 
         if (audioAtPoint == null)
             return;
@@ -78,7 +86,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //AudioService.setTrackQueue(this, audioAtPoint.second);
         //startService(new Intent(this, AudioService.class));
 
-        _routeController.doneAudioPoint(audioAtPoint.first);
+        _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
     }
 
     private synchronized void startLocationTracking()
@@ -104,7 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (_fakeLocation && !_once)
         {
-            TestTracker.startFakeLocationTracking(this, _routeController.geoPoints(), _map);
+            TestTracker.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
             _once = true;
         }
 
@@ -113,7 +121,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .color(0x7F0000FF)
                 .geodesic(true);
 
-        ArrayList<Point> points = _routeController.geoPoints();
+        ArrayList<Point> points = _audioPlaybackController.geoPoints();
         for(Point point : points)
         {
             route.add(point.Position);
@@ -122,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MapHelper.putMarker(_map, points.get(0).Position, R.drawable.start);
         MapHelper.putMarker(_map, points.get(points.size() - 1).Position, R.drawable.finish);
 
-        for(Point point : _routeController.audioPoints())
+        for(Point point : _audioPlaybackController.audioPoints())
         {
             MapHelper.putMarker(_map, point.Position, R.drawable.play);
         }
@@ -162,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         SharedPreferences.Editor editor = settings.edit();
-        for(AudioPoint p : _routeController.audioPoints())
+        for(AudioPoint p : _audioPlaybackController.audioPoints())
             editor.putBoolean("AudioPoint" + p.Number, p.Done);
     }
 
