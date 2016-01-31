@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<route>
+	<geoPoints>
+		<geoPoint number="1" position="59.33136,17.95303"/>
+		<geoPoint number="2" position="59.33115,17.95282"/>
+		<geoPoint number="3" position="59.33104,17.9523"/>
+		<geoPoint number="4" position="59.33107,17.95162"/>
+		<geoPoint number="5" position="59.33123,17.95118"/>
+		<geoPoint number="6" position="59.33123,17.9508"/>
+		<geoPoint number="7" position="59.33254,17.94924"/>
+		<geoPoint number="8" position="59.33226,17.9486"/>
+		<geoPoint number="9" position="59.33508,17.95127"/>
+		<geoPoint number="10" position="59.33624,17.95212"/>
+		<geoPoint number="11" position="59.33667,17.94959"/>
+		<geoPoint number="12" position="59.33611,17.9491"/>
+		<geoPoint number="13" position="59.33623,17.94827"/>
+		<geoPoint number="14" position="59.3366,17.94734"/>
+		<geoPoint number="15" position="59.33687,17.94657"/>
+		<geoPoint number="16" position="59.33701,17.94594"/>
+		<geoPoint number="17" position="59.3367,17.94433"/>
+		<geoPoint number="18" position="59.33762,17.94024"/>
+		<geoPoint number="19" position="59.33749,17.93964"/>
+		<geoPoint number="20" position="59.33698,17.93902"/>
+		<geoPoint number="21" position="59.33703,17.93881"/>
+		<geoPoint number="22" position="59.33629,17.93882"/>
+		<geoPoint number="23" position="59.33619,17.93851"/>
+		<geoPoint number="24" position="59.33595,17.9388"/>
+		<geoPoint number="25" position="59.3354,17.93865"/>
+		<geoPoint number="26" position="59.335,17.93804"/>
+		<geoPoint number="27" position="59.3347,17.93832"/>
+		<geoPoint number="28" position="59.33452,17.9382"/>
+		<geoPoint number="29" position="59.33437,17.93862"/>
+		<geoPoint number="30" position="59.33437,17.93906"/>
+		<geoPoint number="31" position="59.33435,17.94024"/>
+		<geoPoint number="32" position="59.33336,17.9406"/>
+		<geoPoint number="33" position="59.33293,17.94045"/>
+		<geoPoint number="34" position="59.33249,17.94082"/>
+		<geoPoint number="35" position="59.3322,17.94119"/>
+		<geoPoint number="36" position="59.33189,17.9416"/>
+		<geoPoint number="37" position="59.33182,17.94273"/>
+		<geoPoint number="38" position="59.33086,17.94349"/>
+		<geoPoint number="39" position="59.32992,17.94465"/>
+		<geoPoint number="40" position="59.32955,17.94616"/>
+		<geoPoint number="41" position="59.32961,17.94675"/>
+		<geoPoint number="42" position="59.32933,17.94807"/>
+		<geoPoint number="43" position="59.32966,17.94862"/>
+		<geoPoint number="44" position="59.32989,17.94932"/>
+		<geoPoint number="45" position="59.32963,17.95022"/>
+		<geoPoint number="46" position="59.32974,17.95095"/>
+		<geoPoint number="47" position="59.33074,17.94964"/>
+		<geoPoint number="48" position="59.33095,17.95052"/>
+		<geoPoint number="49" position="59.33123,17.95118"/>
+		<geoPoint number="50" position="59.33107,17.95162"/>
+		<geoPoint number="51" position="59.33104,17.9523"/>
+		<geoPoint number="52" position="59.33115,17.95282"/>
+		<geoPoint number="53" position="59.33138,17.95288"/>
+	</geoPoints>
+	<audioPoints>
+		<audioPoint done="false" number="0" position="59.33115,17.95282" radius="15">
+			<audio id="2131165184"/>
+			<audio id="2131165201"/>
+		</audioPoint>
+		<audioPoint done="false" number="1" position="59.33107,17.95162" radius="15">
+			<audio id="2131165204"/>
+		</audioPoint>
+		<audioPoint done="false" number="2" position="59.33123,17.9508" radius="15">
+			<audio id="2131165205"/>
+		</audioPoint>
+		<audioPoint done="false" number="3" position="59.33254,17.94924" radius="15">
+			<audio id="2131165206"/>
+		</audioPoint>
+		<audioPoint done="false" number="4" position="59.33508,17.95127" radius="15">
+			<audio id="2131165207"/>
+		</audioPoint>
+		<audioPoint done="false" number="5" position="59.33667,17.94959" radius="15">
+			<audio id="2131165208"/>
+		</audioPoint>
+		<audioPoint done="false" number="6" position="59.3366,17.94734" radius="15">
+			<audio id="2131165209"/>
+		</audioPoint>
+		<audioPoint done="false" number="7" position="59.3367,17.94433" radius="15">
+			<audio id="2131165210"/>
+		</audioPoint>
+		<audioPoint done="false" number="8" position="59.33749,17.93964" radius="15">
+			<audio id="2131165211"/>
+		</audioPoint>
+		<audioPoint done="false" number="9" position="59.3347,17.93832" radius="15">
+			<audio id="2131165202"/>
+		</audioPoint>
+		<audioPoint done="false" number="10" position="59.33086,17.94349" radius="15">
+			<audio id="2131165203"/>
+		</audioPoint>
+	</audioPoints>
+</route>

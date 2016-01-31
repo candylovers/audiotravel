@@ -30,7 +30,6 @@ public class Route
 
     public void addAudioPoint(AudioPoint audioPoint)
     {
-        //audioPoint.Number = _audioPoints.size();
         _audioPoints.add(audioPoint);
     }
 
@@ -59,7 +58,8 @@ public class Route
         return _pointTrackMapper.get(closestPoint);
     }
 
-    public void addAudioTrack(AudioPoint point, int fileId) {
+    public void addAudioTrack(AudioPoint point, int fileId)
+    {
         if (_pointTrackMapper.containsKey(point))
         {
             _pointTrackMapper.get(point).add(fileId);

@@ -28,17 +28,16 @@ import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.TestTracker;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    public static final String WAKE_LOCK_NAME = "MyWakeLock";
     private GoogleMap _map;
     private GoogleApiClient _googleApiClient;
     private LocationTracker _tracker;
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
-    private static final String PREFS_NAME = "PreferencesFile";
     private boolean _fakeLocation;
 
     @Override
@@ -48,20 +47,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onCreate(savedInstanceState);
 
         PowerManager mgr = (PowerManager)getSystemService(Context.POWER_SERVICE);
-        _wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+        _wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_NAME);
         _wakeLock.acquire();
 
-        /*SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        for(AudioPoint p : _audioPlaybackController.audioPoints())
-        {
-            if (settings.getBoolean("AudioPoint" + p.Number, false))
-                _audioPlaybackController.
-        }*/
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        _fakeLocation = sharedPref.getBoolean("fake_location", false);
-
-        _audioPlaybackController = new AudioPlaybackController(getResources());
-
+        loadState(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -70,6 +59,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (!_fakeLocation)
             startLocationTracking();
+    }
+
+    private void loadState(Bundle savedInstanceState)
+    {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
+
+        _audioPlaybackController = new AudioPlaybackController(getResources());
+
+        if (savedInstanceState != null)
+        {
+            boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
+            if (done != null)
+            {
+                int i=0;
+                for(AudioPoint p : _audioPlaybackController.audioPoints())
+                    p.Done = done[i++];
+            }
+            _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
+        }
     }
 
     public void locationChanged(LatLng point)
@@ -81,12 +90,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent startingIntent = new Intent(this, AudioService.class);
         startingIntent.putExtra(AudioService.NewUriCommand, audioAtPoint.second);
-        startService(startingIntent);
-
-        //AudioService.setTrackQueue(this, audioAtPoint.second);
-        //startService(new Intent(this, AudioService.class));
 
         _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
+        startService(startingIntent);
     }
 
     private synchronized void startLocationTracking()
@@ -104,16 +110,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _tracker.setGogleApiClient(_googleApiClient);
     }
 
-    private boolean _once = false;
+    private boolean _fakeLocationStarted = false;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         _map = googleMap;
-
-        if (_fakeLocation && !_once)
+        _map.setMyLocationEnabled(true);
+        if (_fakeLocation && !_fakeLocationStarted)
         {
             TestTracker.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
-            _once = true;
+            _fakeLocationStarted = true;
         }
 
         PolylineOptions route = new PolylineOptions()
@@ -130,9 +136,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         MapHelper.putMarker(_map, points.get(0).Position, R.drawable.start);
         MapHelper.putMarker(_map, points.get(points.size() - 1).Position, R.drawable.finish);
 
-        for(Point point : _audioPlaybackController.audioPoints())
+        for(AudioPoint point : _audioPlaybackController.audioPoints())
         {
             MapHelper.putMarker(_map, point.Position, R.drawable.play);
+            MapHelper.addCircle(_map, point.Position, point.Radius);
         }
 
         _map.addPolyline(route);
@@ -148,10 +155,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (_googleApiClient == null)
             return;
 
-        if (_googleApiClient.isConnected())
-            LocationServices.FusedLocationApi.removeLocationUpdates(_googleApiClient, _tracker);
-
         stopService(new Intent(this, AudioService.class));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        savedInstanceState.putBooleanArray(getString(R.string.audio_point_state),
+                _audioPlaybackController.GetDoneArray());
+        savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -166,22 +180,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
-    {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        for(AudioPoint p : _audioPlaybackController.audioPoints())
-            editor.putBoolean("AudioPoint" + p.Number, p.Done);
-    }
-
-    @Override
     protected void onStop()
     {
         if (_wakeLock.isHeld())
             _wakeLock.release();
 
         super.onStop();
-        stopService(new Intent(this, AudioService.class));
         TestTracker.stop();
     }
 }

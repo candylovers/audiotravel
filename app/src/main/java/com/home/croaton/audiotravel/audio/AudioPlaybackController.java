@@ -12,17 +12,16 @@ import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.domain.Route;
 import com.home.croaton.audiotravel.domain.RouteSerializer;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 public class AudioPlaybackController
 {
+    private static final String RESOURCE_FOLDER = "android.resource://com.home.croaton.audiotravel/";
     private Route _route;
+
     public AudioPlaybackController(Resources resources)
     {
         _route = RouteSerializer.deserialize(resources, R.raw.demo);
-        //RouteSerializer.serialize(_route);
     }
 
     // ToDo: according to user choose files
@@ -51,7 +50,7 @@ public class AudioPlaybackController
         Pair<Integer, ArrayList<Uri>> result = new Pair<>(closestPoint.Number, uris);
         for(int resourceId : _route.getAudiosForPoint(closestPoint))
         {
-            uris.add(Uri.parse("android.resource://com.home.croaton.audiotravel/" + resourceId));
+            uris.add(Uri.parse(RESOURCE_FOLDER + resourceId));
         }
 
         return result;
@@ -62,11 +61,24 @@ public class AudioPlaybackController
         _route.markAudioPointDone(pointNumber);
     }
 
-    public ArrayList<Point> geoPoints() {
+    public ArrayList<Point> geoPoints()
+    {
         return _route.geoPoints();
     }
 
-    public ArrayList<AudioPoint> audioPoints() {
+    public ArrayList<AudioPoint> audioPoints()
+    {
         return _route.audioPoints();
+    }
+
+    public boolean[] GetDoneArray()
+    {
+        ArrayList<AudioPoint> audioPoints = _route.audioPoints();
+        boolean[] doneIndicators = new boolean[audioPoints.size()];
+
+        for(int i = 0; i < audioPoints.size(); i++)
+            doneIndicators[i] = audioPoints.get(i).Done;
+
+        return doneIndicators;
     }
 }

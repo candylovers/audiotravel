@@ -53,14 +53,11 @@ public class TestTracker
                         try
                         {
                             Thread.sleep(3000);
-                        }
+                          }
                         catch (InterruptedException e)
                         {
-                            e.printStackTrace();
-                        }
-
-                        if (Thread.interrupted())
                             return;
+                        }
                     }
 
                     prev = point;
@@ -75,7 +72,6 @@ public class TestTracker
     {
         if (_trackerThread != null) {
             _trackerThread.interrupt();
-            _trackerThread = null;
         }
     }
 }

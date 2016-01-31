@@ -3,6 +3,7 @@
 
     <item name="settings_button_id" type="id">settings</item>
 
+
     <item name="routs_collection" type="id">routs</item>
     <item name="route1_image" type="id">route1_image</item>
 
