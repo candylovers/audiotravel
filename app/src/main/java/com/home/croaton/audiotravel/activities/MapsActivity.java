@@ -39,6 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
     private boolean _fakeLocation;
+    private int _currentRouteId = -1;
 
     @Override
     // ToDo: save _route and load after activity destroyed
@@ -66,10 +67,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
 
-        _audioPlaybackController = new AudioPlaybackController(getResources());
-
         if (savedInstanceState != null)
         {
+            _currentRouteId = savedInstanceState.getInt(getString(R.string.route_name));
+            _audioPlaybackController = new AudioPlaybackController(getResources(), _currentRouteId);
+
             boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
             if (done != null)
             {
@@ -78,6 +80,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     p.Done = done[i++];
             }
             _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
+        }
+        else
+        {
+            Intent  intent = getIntent();
+            _currentRouteId = intent.getIntExtra(getString(R.string.route_name), R.id.route_demo);
+            _audioPlaybackController = new AudioPlaybackController(getResources(), _currentRouteId);
         }
     }
 
@@ -164,7 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         savedInstanceState.putBooleanArray(getString(R.string.audio_point_state),
                 _audioPlaybackController.GetDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
-
+        savedInstanceState.putInt(getString(R.string.route_name), _currentRouteId);
         super.onSaveInstanceState(savedInstanceState);
     }
 

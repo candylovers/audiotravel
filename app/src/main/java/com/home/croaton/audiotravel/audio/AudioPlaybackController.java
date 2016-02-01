@@ -19,9 +19,19 @@ public class AudioPlaybackController
     private static final String RESOURCE_FOLDER = "android.resource://com.home.croaton.audiotravel/";
     private Route _route;
 
-    public AudioPlaybackController(Resources resources)
+    public AudioPlaybackController(Resources resources, int routeId)
     {
-        _route = RouteSerializer.deserialize(resources, R.raw.demo);
+        switch (routeId)
+        {
+            case R.id.route_demo:
+                _route = RouteSerializer.deserialize(resources, R.raw.demo);
+                break;
+            case R.id.route_abrahamsberg:
+                _route = RouteSerializer.deserialize(resources, R.raw.abrahamsberg);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported route id");
+        }
     }
 
     // ToDo: according to user choose files

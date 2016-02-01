@@ -29,7 +29,7 @@
 
 
         <android.support.v7.widget.CardView
-            android:id="@+id/route1_id"
+            android:id="@+id/route_demo"
             style="@style/CardViewStyle"
             android:layout_width="300dp"
             android:layout_height="260dp"
@@ -79,7 +79,7 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:id="@+id/route2_id"
+            android:id="@+id/route_abrahamsberg"
             style="@style/CardViewStyle"
             android:layout_width="300dp"
             android:layout_height="260dp"
@@ -100,7 +100,7 @@
                     app:riv_corner_radius_bottom_right="0dp"
                     app:riv_corner_radius_top_left="@dimen/card_corner_radius"
                     app:riv_corner_radius_top_right="@dimen/card_corner_radius"
-                    android:src="@drawable/gamlastan"/>
+                    android:src="@drawable/abrahamsberg"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -112,14 +112,14 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Gamlastan"
+                        android:text="Abrahamsberg"
                         android:textColor="@color/grey_700"
                         android:textSize="18sp" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Free"
+                        android:text="Test"
                         android:textColor="@color/grey_500"
                         android:textSize="14sp" />
 

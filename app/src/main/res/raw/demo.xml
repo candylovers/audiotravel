@@ -11,25 +11,25 @@
 	<geoPoint number="8" position="59.32587,18.06138"/>
 </geoPoints>
 <audioPoints>
-	<audioPoint number="0" position="59.32303,18.06742" radius="5" done="false">
+	<audioPoint number="0" position="59.32303,18.06742" radius="15" done="false">
 		<audio id="2131165184"/>
 		<audio id="2131165185"/>
 	</audioPoint>
-	<audioPoint number="1" position="59.3228,18.06668" radius="5" done="false">
+	<audioPoint number="1" position="59.3228,18.06668" radius="15" done="false">
 		<audio id="2131165186"/>
 	</audioPoint>
-	<audioPoint number="2" position="59.32302,18.06654" radius="5" done="false">
+	<audioPoint number="2" position="59.32302,18.06654" radius="15" done="false">
 		<audio id="2131165187"/>
 	</audioPoint>
-	<audioPoint number="3" position="59.32382,18.06607" radius="5" done="false">
+	<audioPoint number="3" position="59.32382,18.06607" radius="15" done="false">
 		<audio id="2131165192"/>
 		<audio id="2131165193"/>
 	</audioPoint>
-	<audioPoint number="4" position="59.3249,18.06383" radius="10" done="false">
+	<audioPoint number="4" position="59.3249,18.06383" radius="15" done="false">
 		<audio id="2131165194"/>
 		<audio id="2131165195"/>
 	</audioPoint>
-	<audioPoint number="5" position="59.32463,18.06216" radius="5" done="false">
+	<audioPoint number="5" position="59.32463,18.06216" radius="15" done="false">
 		<audio id="2131165196"/></audioPoint>
 </audioPoints>
 </route>

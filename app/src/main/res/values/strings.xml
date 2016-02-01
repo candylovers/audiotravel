@@ -4,8 +4,10 @@
     <string name="title_activity_choose_route">ChooseRouteActivity</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- Data which is transferred between activities -->
     <string name="fake_location_started">FakeLocationStarted</string>
     <string name="audio_point_state">AudioPointsDone</string>
+    <string name="route_name">RouteName</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

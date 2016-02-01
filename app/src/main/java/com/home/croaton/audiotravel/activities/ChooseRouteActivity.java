@@ -29,28 +29,33 @@ public class ChooseRouteActivity extends AppCompatActivity {
 
     private void configureRoutList()
     {
-        View route1 = findViewById(R.id.route1_id);
-        View route2 = findViewById(R.id.route2_id);
-        View route3 = findViewById(R.id.route3_id);
+        View route1 = findViewById(R.id.route_demo);
+        View route2 = findViewById(R.id.route_abrahamsberg);
 
         final Context self = this;
         View.OnClickListener onClick = new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                //switch (v.getId())
-                {
-                //    case R.id.route1_id:
-                        Intent intent = new Intent(self, MapsActivity.class);
-                        startActivity(intent);
+                Intent intent = new Intent(self, MapsActivity.class);
+
+                intent.putExtra(getString(R.string.route_name), v.getId());
+
+                //int id = v.getId();
+                //switch (id)
+                //{
+                //    case R.id.route_demo:
+                //
                 //        break;
-                }
+                //    case R.id.route_abrahamsberg:
+               // }
+
+                startActivity(intent);
             }
         };
 
         route1.setOnClickListener(onClick);
         route2.setOnClickListener(onClick);
-        route3.setOnClickListener(onClick);
     }
 
     @Override
