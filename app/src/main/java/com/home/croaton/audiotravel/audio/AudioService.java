@@ -3,7 +3,6 @@ package com.home.croaton.audiotravel.audio;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.database.Observable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -11,16 +10,17 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.home.croaton.audiotravel.AsAnIdiotIMustCreateMyOwnObservableFuckJava;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
+import com.home.croaton.audiotravel.instrumentation.CallbackHolder;
+import com.home.croaton.audiotravel.instrumentation.MyObservable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
-// There can only be one instance of a given Service.
+// Stack overflow: There can only be one instance of a given Service.
 public class AudioService extends android.app.Service implements
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener,
@@ -37,13 +37,22 @@ public class AudioService extends android.app.Service implements
     private Notification _notification;
     private ReentrantLock _playerLock = new ReentrantLock();
 
-    private static AsAnIdiotIMustCreateMyOwnObservableFuckJava<Integer> _playerState = new AsAnIdiotIMustCreateMyOwnObservableFuckJava<>();
+    private static CallbackHolder<PlayerState> _playerStateEvent = new CallbackHolder<>();
+
+    public static MyObservable<PlayerState> State = new MyObservable<>(_playerStateEvent);
 
     @Override
     // OOP cries. Me too.
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         AudioServiceCommand command = (AudioServiceCommand)intent.getSerializableExtra(Command);
+
+        if (command == AudioServiceCommand.PlayPause)
+        {
+            command = _mediaPlayer.isPlaying()
+                    ? AudioServiceCommand.Pause
+                    : AudioServiceCommand.Play;
+        }
 
         if (command == AudioServiceCommand.LoadTracks)
         {
@@ -65,14 +74,20 @@ public class AudioService extends android.app.Service implements
         {
             _playerLock.lock();
             if (_mediaPlayer != null)
+            {
                 _mediaPlayer.pause();
+                _playerStateEvent.Callback.notify(PlayerState.NotPlaying);
+            }
             _playerLock.unlock();
         }
         if (command == AudioServiceCommand.Play)
         {
             _playerLock.lock();
             if (_mediaPlayer != null)
+            {
                 _mediaPlayer.start();
+                _playerStateEvent.Callback.notify(PlayerState.Playing);
+            }
             _playerLock.unlock();
         }
 
@@ -87,6 +102,7 @@ public class AudioService extends android.app.Service implements
         {
             _mediaPlayer.stop();
             _mediaPlayer.release();
+            _playerStateEvent.Callback.notify(PlayerState.NotPlaying);
         }
         _mediaPlayer = new MediaPlayer();
 
@@ -144,7 +160,10 @@ public class AudioService extends android.app.Service implements
         _playerLock.lock();
 
         if (playerIsActual(player))
+        {
             player.start();
+            _playerStateEvent.Callback.notify(PlayerState.Playing);
+        }
 
         _playerLock.unlock();
     }
