@@ -3,6 +3,7 @@ package com.home.croaton.audiotravel.audio;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.database.Observable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -10,7 +11,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.common.api.Releasable;
+import com.home.croaton.audiotravel.AsAnIdiotIMustCreateMyOwnObservableFuckJava;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
 
@@ -19,14 +20,14 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantLock;
 
+// There can only be one instance of a given Service.
 public class AudioService extends android.app.Service implements
-        Releasable,
         MediaPlayer.OnPreparedListener,
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener
 {
-    public static final String ActionCommand = "Action";
-    public static final String NewUriCommand = "Uri";
+    public static final String NewUris = "Uris";
+    public static final String Command = "Command";
     private static final String ServiceName = "Audio Service";
 
     private MediaPlayer _mediaPlayer;
@@ -36,14 +37,19 @@ public class AudioService extends android.app.Service implements
     private Notification _notification;
     private ReentrantLock _playerLock = new ReentrantLock();
 
+    private static AsAnIdiotIMustCreateMyOwnObservableFuckJava<Integer> _playerState = new AsAnIdiotIMustCreateMyOwnObservableFuckJava<>();
+
     @Override
+    // OOP cries. Me too.
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        ArrayList<Uri> newUris = (ArrayList<Uri>)intent.getSerializableExtra(NewUriCommand);
+        AudioServiceCommand command = (AudioServiceCommand)intent.getSerializableExtra(Command);
 
-        if (newUris != null)
+        if (command == AudioServiceCommand.LoadTracks)
         {
-             RenewPlayer();
+            ArrayList<Uri> newUris = (ArrayList<Uri>)intent.getSerializableExtra(NewUris);
+
+            RenewPlayer();
 
             _uriQueue.clear();
             _uriQueue.addAll(newUris);
@@ -54,6 +60,20 @@ public class AudioService extends android.app.Service implements
             _mediaPlayer.setOnCompletionListener(this);
 
             preparePlayerWithNextTrack();
+        }
+        if (command == AudioServiceCommand.Pause)
+        {
+            _playerLock.lock();
+            if (_mediaPlayer != null)
+                _mediaPlayer.pause();
+            _playerLock.unlock();
+        }
+        if (command == AudioServiceCommand.Play)
+        {
+            _playerLock.lock();
+            if (_mediaPlayer != null)
+                _mediaPlayer.start();
+            _playerLock.unlock();
         }
 
         return START_STICKY;
@@ -131,14 +151,7 @@ public class AudioService extends android.app.Service implements
 
     private boolean playerIsActual(MediaPlayer player)
     {
-        return _mediaPlayer != null || _mediaPlayer.hashCode() == player.hashCode();
-    }
-
-    @Override
-    public void release()
-    {
-        _mediaPlayer.release();
-        _mediaPlayer = null;
+        return _mediaPlayer != null && _mediaPlayer.hashCode() == player.hashCode();
     }
 
     @Nullable

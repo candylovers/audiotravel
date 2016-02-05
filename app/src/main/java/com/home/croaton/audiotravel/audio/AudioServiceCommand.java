@@ -1,13 +1,15 @@
 package com.home.croaton.audiotravel.audio;
 
-public enum AudioServiceAction
+public enum AudioServiceCommand
 {
-    Play(1),
-    Pause(2),
-    Stop(3);
+    Play(       1<<0),
+    Pause(      1<<1),
+    Stop(       1<<2),
+    LoadTracks( 1<<3);
+
 
     private final int value;
-    private AudioServiceAction(int value) {
+    private AudioServiceCommand(int value) {
         this.value = value;
     }
 

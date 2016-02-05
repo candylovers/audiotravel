@@ -56,7 +56,7 @@
 		<geoPoint number="53" position="59.33138,17.95288"/>
 	</geoPoints>
 	<audioPoints>
-		<audioPoint done="false" number="0" position="59.33115,17.95282" radius="15">
+		<audioPoint done="false" number="0" position="59.33115,17.95282" radius="50">
 			<audio id="2131165184"/>
 			<audio id="2131165201"/>
 		</audioPoint>

@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.home.croaton.audiotravel.audio.AudioPlaybackController;
+import com.home.croaton.audiotravel.audio.AudioPlayerUI;
+import com.home.croaton.audiotravel.audio.AudioServiceCommand;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.audio.AudioService;
 import com.home.croaton.audiotravel.LocationTracker;
@@ -40,6 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private PowerManager.WakeLock _wakeLock;
     private boolean _fakeLocation;
     private int _currentRouteId = -1;
+    private AudioPlayerUI _audioPlayerUi;
 
     @Override
     // ToDo: save _route and load after activity destroyed
@@ -60,6 +63,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (!_fakeLocation)
             startLocationTracking();
+
+        _audioPlayerUi = new AudioPlayerUI(this);
     }
 
     private void loadState(Bundle savedInstanceState)
@@ -97,7 +102,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
 
         Intent startingIntent = new Intent(this, AudioService.class);
-        startingIntent.putExtra(AudioService.NewUriCommand, audioAtPoint.second);
+        startingIntent.putExtra(AudioService.Command, AudioServiceCommand.LoadTracks);
+        startingIntent.putExtra(AudioService.NewUris, audioAtPoint.second);
 
         _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
         startService(startingIntent);
@@ -162,8 +168,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (_googleApiClient == null)
             return;
-
-        stopService(new Intent(this, AudioService.class));
     }
 
     @Override
