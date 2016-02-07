@@ -7,15 +7,8 @@ public class MyObservable<T> implements IObservable<T>
     private final ArrayList<IObserver<T>> _observers;
 
     // This hack is to notify observers from the class that creates this one.
-    public MyObservable(CallbackHolder<T> callbackHolder)
+    public MyObservable()
     {
-        callbackHolder.Callback = new IObserver<T>() {
-            @Override
-            public void notify(T args)
-            {
-                notifyObservers(args);
-            }
-        };
         _observers = new ArrayList<>();
     }
 
@@ -50,7 +43,7 @@ public class MyObservable<T> implements IObservable<T>
         }
     }
 
-    private void notifyObservers(T newValue)
+    public void notifyObservers(T newValue)
     {
         for(IObserver<T> observer : _observers)
         {

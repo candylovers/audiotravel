@@ -6,7 +6,7 @@ public enum AudioServiceCommand
     Pause(      1<<1),
     Stop(       1<<2),
     LoadTracks( 1<<3),
-    PlayPause(  1<<4);
+    ReverseState(  1<<4);
 
 
     private final int value;

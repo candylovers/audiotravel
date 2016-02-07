@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
-import com.home.croaton.audiotravel.instrumentation.CallbackHolder;
+import com.home.croaton.audiotravel.instrumentation.IObservable;
 import com.home.croaton.audiotravel.instrumentation.MyObservable;
 
 import java.util.ArrayList;
@@ -32,14 +32,21 @@ public class AudioService extends android.app.Service implements
 
     private MediaPlayer _mediaPlayer;
     private Queue<Uri> _uriQueue = new LinkedList<>();
+    private final int _positionPollTime = 500;
+
 
     private Notification.Builder _notificationBuilder;
     private Notification _notification;
     private ReentrantLock _playerLock = new ReentrantLock();
+    private Thread _positionPoller;
 
-    private static CallbackHolder<PlayerState> _playerStateEvent = new CallbackHolder<>();
+    private static MyObservable<PlayerState> _innerState = new MyObservable<>();
+    public static IObservable<PlayerState> State = _innerState;
 
-    public static MyObservable<PlayerState> State = new MyObservable<>(_playerStateEvent);
+    private static MyObservable<Integer> _innerPosition = new MyObservable<>();
+    public static IObservable<Integer> Position = _innerPosition;
+
+    private int _position;
 
     @Override
     // OOP cries. Me too.
@@ -47,13 +54,12 @@ public class AudioService extends android.app.Service implements
     {
         AudioServiceCommand command = (AudioServiceCommand)intent.getSerializableExtra(Command);
 
-        if (command == AudioServiceCommand.PlayPause)
+        if (command == AudioServiceCommand.ReverseState)
         {
             command = _mediaPlayer.isPlaying()
                     ? AudioServiceCommand.Pause
                     : AudioServiceCommand.Play;
         }
-
         if (command == AudioServiceCommand.LoadTracks)
         {
             ArrayList<Uri> newUris = (ArrayList<Uri>)intent.getSerializableExtra(NewUris);
@@ -76,7 +82,7 @@ public class AudioService extends android.app.Service implements
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.pause();
-                _playerStateEvent.Callback.notify(PlayerState.NotPlaying);
+                _innerState.notifyObservers(PlayerState.NotPlaying);
             }
             _playerLock.unlock();
         }
@@ -86,7 +92,7 @@ public class AudioService extends android.app.Service implements
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.start();
-                _playerStateEvent.Callback.notify(PlayerState.Playing);
+                _innerState.notifyObservers(PlayerState.Playing);
             }
             _playerLock.unlock();
         }
@@ -102,9 +108,37 @@ public class AudioService extends android.app.Service implements
         {
             _mediaPlayer.stop();
             _mediaPlayer.release();
-            _playerStateEvent.Callback.notify(PlayerState.NotPlaying);
+            _innerState.notifyObservers(PlayerState.NotPlaying);
         }
         _mediaPlayer = new MediaPlayer();
+        if (_positionPoller == null) {
+            _positionPoller = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean onPrevStepWasPlaying = false;
+                    while (true) {
+                        boolean isPlaying = _mediaPlayer.isPlaying();
+                        if (isPlaying || onPrevStepWasPlaying)
+                        {
+                            int total = _mediaPlayer.getDuration();
+                            int newPosition = (int)((double)_mediaPlayer.getCurrentPosition() / (double)total * 100.0);
+                            if (newPosition != _position) {
+                                _position = newPosition;
+                                _innerPosition.notifyObservers(_position);
+                            }
+                            onPrevStepWasPlaying = isPlaying;
+                        }
+
+                        try {
+                            Thread.sleep(_positionPollTime);
+                        } catch (InterruptedException e) {
+                            return;
+                        }
+                    }
+                }
+            });
+            _positionPoller.start();
+        }
 
         _playerLock.unlock();
     }
@@ -162,7 +196,7 @@ public class AudioService extends android.app.Service implements
         if (playerIsActual(player))
         {
             player.start();
-            _playerStateEvent.Callback.notify(PlayerState.Playing);
+            _innerState.notifyObservers(PlayerState.Playing);
         }
 
         _playerLock.unlock();
