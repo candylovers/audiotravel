@@ -11,7 +11,10 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,8 +25,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-public class RouteSerializer
-{
+public class RouteSerializer {
 
     public static final String Route = "route";
     public static final String GeoPoints = "geoPoints";
@@ -37,7 +39,12 @@ public class RouteSerializer
     public static final String AudioFile = "audio";
     public static final String Id = "id";
 
-    public static void serialize(Route route)
+    public static void serialize(Route route, FileOutputStream fileOutputStream)
+    {
+        serialize(route, fileOutputStream, true);
+    }
+
+    public static void serialize(Route route, FileOutputStream fileOutputStream, boolean writeDone)
     {
         try
         {
@@ -68,7 +75,9 @@ public class RouteSerializer
                 pointElement.setAttribute(PointNumber, audioPoint.Number.toString());
                 pointElement.setAttribute(PointPosition, latLngToString(audioPoint));
                 pointElement.setAttribute(PointRadius, audioPoint.Radius.toString());
-                pointElement.setAttribute(DoneIndicator, String.valueOf(audioPoint.Done));
+                pointElement.setAttribute(DoneIndicator, writeDone
+                        ? String.valueOf(audioPoint.Done)
+                        : "false");
 
                 for(Integer audioFileId : route.getAudiosForPoint(audioPoint))
                 {
@@ -82,9 +91,10 @@ public class RouteSerializer
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(doc);
-            //StreamResult result = new StreamResult(file);
 
-            StreamResult result = new StreamResult(System.out);
+            StreamResult result = new StreamResult(fileOutputStream);
+
+            //StreamResult result = new StreamResult(System.out);
 
             transformer.transform(source, result);
         }
@@ -94,8 +104,20 @@ public class RouteSerializer
         }
     }
 
-    public static Route deserialize(Resources resources, int resourceId)
+    public static Route deserializeFromResource(Resources resources, int resourceId)
     {
+        InputStream stream = resources.openRawResource(resourceId);
+
+        return deserialize(stream);
+    }
+
+    public static Route deserializeFromFile(FileInputStream inputStream)
+    {
+        return deserialize(inputStream);
+    }
+
+
+    private static Route deserialize(InputStream stream) {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         Document document = null;
@@ -103,15 +125,13 @@ public class RouteSerializer
         try
         {
             builder = docFactory.newDocumentBuilder();
-            document = builder.parse(resources.openRawResource(resourceId));
+            document = builder.parse(stream);
         }
         catch (ParserConfigurationException | IOException | SAXException e)
         {
             e.printStackTrace();
         }
 
-        if (document == null)
-            return null;
 
         NodeList list = document.getElementsByTagName(GeoPoint);
         Route route = new Route();
@@ -142,7 +162,6 @@ public class RouteSerializer
                 if (fileIds != null)
                     route.addAudioTrack(ap, Integer.parseInt(fileIds.getNamedItem(Id).getNodeValue()));
             }
-
         }
 
         return route;

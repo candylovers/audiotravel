@@ -45,10 +45,11 @@ public class TestTracker
                                 innerMap.addMarker(new MarkerOptions()
                                         .position(position)
                                         .icon(BitmapDescriptorFactory.defaultMarker()));
+                                activityCopy.locationChanged(position);
                             }
                         });
 
-                        activityCopy.locationChanged(position);
+
 
                         try
                         {

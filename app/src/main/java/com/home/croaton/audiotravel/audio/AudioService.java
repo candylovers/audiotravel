@@ -52,6 +52,9 @@ public class AudioService extends android.app.Service implements
     // OOP cries. Me too.
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        if (intent == null)
+            return START_STICKY;
+
         AudioServiceCommand command = (AudioServiceCommand)intent.getSerializableExtra(Command);
 
         if (command == AudioServiceCommand.ReverseState)

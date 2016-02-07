@@ -17,7 +17,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.home.croaton.audiotravel.audio.AudioPlaybackController;
 import com.home.croaton.audiotravel.audio.AudioPlayerUI;
@@ -25,7 +27,8 @@ import com.home.croaton.audiotravel.audio.AudioServiceCommand;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.audio.AudioService;
 import com.home.croaton.audiotravel.LocationTracker;
-import com.home.croaton.audiotravel.MapHelper;
+import com.home.croaton.audiotravel.maps.MapOnClickListener;
+import com.home.croaton.audiotravel.maps.MapHelper;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.TestTracker;
@@ -43,9 +46,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean _fakeLocation;
     private int _currentRouteId = -1;
     private AudioPlayerUI _audioPlayerUi;
+    private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
+    ArrayList<Circle> _circles = new ArrayList<>();
 
     @Override
-    // ToDo: save _route and load after activity destroyed
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
@@ -75,7 +79,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (savedInstanceState != null)
         {
             _currentRouteId = savedInstanceState.getInt(getString(R.string.route_name));
-            _audioPlaybackController = new AudioPlaybackController(getResources(), _currentRouteId);
+            _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
 
             boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
             if (done != null)
@@ -90,12 +94,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         {
             Intent  intent = getIntent();
             _currentRouteId = intent.getIntExtra(getString(R.string.route_name), R.id.route_demo);
-            _audioPlaybackController = new AudioPlaybackController(getResources(), _currentRouteId);
+            _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
         }
     }
 
     public void locationChanged(LatLng point)
     {
+
         Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
 
         if (audioAtPoint == null)
@@ -106,6 +111,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         startingIntent.putExtra(AudioService.NewUris, audioAtPoint.second);
 
         _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
+        MapHelper.changeIcon(_audioPointMarkers, audioAtPoint.first, R.drawable.passed);
+
         startService(startingIntent);
     }
 
@@ -152,13 +159,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         for(AudioPoint point : _audioPlaybackController.audioPoints())
         {
-            MapHelper.putMarker(_map, point.Position, R.drawable.play);
-            MapHelper.addCircle(_map, point.Position, point.Radius);
+            int resId = point.Done ? R.drawable.passed : R.drawable.play;
+            _audioPointMarkers.add(MapHelper.putMarker(_map, point.Position, resId));
+            _circles.add(MapHelper.addCircle(_map, point.Position, point.Radius));
         }
 
         _map.addPolyline(route);
         _map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
                 route.getPoints().get(0), 16)));
+
+        _map.setOnMapClickListener(new MapOnClickListener(_circles));
+
+        // Isn't it stupid? Position doesn't update without it.
+        _map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+            }
+        });
     }
 
     @Override
@@ -177,6 +202,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 _audioPlaybackController.GetDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
         savedInstanceState.putInt(getString(R.string.route_name), _currentRouteId);
+
+        // Only for route creation
+        _audioPlaybackController.specialSaveRouteToDisc(_circles, _audioPointMarkers, this);
+
         super.onSaveInstanceState(savedInstanceState);
     }
 

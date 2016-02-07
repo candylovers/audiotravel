@@ -1,10 +1,13 @@
 package com.home.croaton.audiotravel.audio;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.net.Uri;
 import android.util.Pair;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.home.croaton.audiotravel.LocationTracker;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.domain.AudioPoint;
@@ -12,26 +15,52 @@ import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.domain.Route;
 import com.home.croaton.audiotravel.domain.RouteSerializer;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class AudioPlaybackController
 {
     private static final String RESOURCE_FOLDER = "android.resource://com.home.croaton.audiotravel/";
     private Route _route;
+    private String _routeFileName;
 
-    public AudioPlaybackController(Resources resources, int routeId)
+    public AudioPlaybackController(Context context, int routeId)
     {
         switch (routeId)
         {
             case R.id.route_demo:
-                _route = RouteSerializer.deserialize(resources, R.raw.demo);
+                _routeFileName = "Demo";
+                decerializeFromFileOrResource(context, R.raw.demo);
                 break;
             case R.id.route_abrahamsberg:
-                _route = RouteSerializer.deserialize(resources, R.raw.abrahamsberg);
+                _routeFileName = "Abrahamsberg";
+                decerializeFromFileOrResource(context, R.raw.abrahamsberg);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported route id");
         }
+    }
+
+    private void decerializeFromFileOrResource(Context context, int resId)
+    {
+        if (fileExists(context, _routeFileName))
+        {
+            try
+            {
+                _route = RouteSerializer.deserializeFromFile(context.openFileInput(_routeFileName));
+            } catch (FileNotFoundException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        else
+            _route = RouteSerializer.deserializeFromResource(context.getResources(), resId);
+    }
+
+    public boolean fileExists(Context context, String fileName){
+        return context.getFileStreamPath(fileName).exists();
     }
 
     // ToDo: according to user choose files
@@ -90,5 +119,21 @@ public class AudioPlaybackController
             doneIndicators[i] = audioPoints.get(i).Done;
 
         return doneIndicators;
+    }
+
+    public void specialSaveRouteToDisc(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers,
+        Context context)
+    {
+        _route.updateAudioPoints(circles, pointMarkers);
+
+        FileOutputStream fs = null;
+        try
+        {
+            fs = context.openFileOutput(_routeFileName, Context.MODE_PRIVATE);
+        } catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        RouteSerializer.serialize(_route, fs, false);
     }
 }

@@ -16,6 +16,6 @@ public class Point
     @Override
     public int hashCode()
     {
-        return Position.hashCode();
+        return Number/*Position.hashCode()*/;
     }
 }

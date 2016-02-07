@@ -1,6 +1,8 @@
 package com.home.croaton.audiotravel.domain;
 
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -69,5 +71,14 @@ public class Route
         ArrayList<Integer> audioFilesIds = new ArrayList<>();
         audioFilesIds.add(fileId);
         _pointTrackMapper.put(point, audioFilesIds);
+    }
+
+    public void updateAudioPoints(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers)
+    {
+        for(int i = 0; i < _audioPoints.size(); i++)
+        {
+            _audioPoints.get(i).Radius = (int)circles.get(i).getRadius();
+            _audioPoints.get(i).Position = pointMarkers.get(i).getPosition();
+        }
     }
 }
