@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">audiotravel</string>
+    <string name="app_name">Audio Travel</string>
     <string name="title_activity_maps">AudioTravel</string>
     <string name="title_activity_choose_route">ChooseRouteActivity</string>
     <string name="title_activity_settings">Settings</string>

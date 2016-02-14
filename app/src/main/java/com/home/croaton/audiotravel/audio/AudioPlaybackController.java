@@ -124,7 +124,8 @@ public class AudioPlaybackController
     public void specialSaveRouteToDisc(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers,
         Context context)
     {
-        _route.updateAudioPoints(circles, pointMarkers);
+        if (circles.size() > 0 && pointMarkers.size() > 0)
+            _route.updateAudioPoints(circles, pointMarkers);
 
         FileOutputStream fs = null;
         try

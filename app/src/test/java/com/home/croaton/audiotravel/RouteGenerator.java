@@ -18,7 +18,7 @@ public class RouteGenerator
     public void route_serializer_not_a_test()
     {
         Route route = FillAbrahamsbergRoute();
-        RouteSerializer.serialize(route);
+        //RouteSerializer.serialize(route);
     }
 
     private Route FillDemoRoute()

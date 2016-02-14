@@ -1,17 +1,18 @@
 package com.home.croaton.audiotravel.activities;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,11 +28,13 @@ import com.home.croaton.audiotravel.audio.AudioServiceCommand;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.audio.AudioService;
 import com.home.croaton.audiotravel.LocationTracker;
+import com.home.croaton.audiotravel.instrumentation.IObserver;
 import com.home.croaton.audiotravel.maps.MapOnClickListener;
 import com.home.croaton.audiotravel.maps.MapHelper;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.TestTracker;
+import com.home.croaton.audiotravel.security.PermissionChecker;
 
 import java.util.ArrayList;
 
@@ -39,7 +42,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public static final String WAKE_LOCK_NAME = "MyWakeLock";
     private GoogleMap _map;
-    private GoogleApiClient _googleApiClient;
     private LocationTracker _tracker;
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
@@ -50,11 +52,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<Circle> _circles = new ArrayList<>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PowerManager mgr = (PowerManager)getSystemService(Context.POWER_SERVICE);
+        PowerManager mgr = (PowerManager) getSystemService(Context.POWER_SERVICE);
         _wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_NAME);
         _wakeLock.acquire();
 
@@ -71,35 +72,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         _audioPlayerUi = new AudioPlayerUI(this);
     }
 
-    private void loadState(Bundle savedInstanceState)
-    {
+    private void loadState(Bundle savedInstanceState) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
 
-        if (savedInstanceState != null)
-        {
+        if (savedInstanceState != null) {
             _currentRouteId = savedInstanceState.getInt(getString(R.string.route_name));
             _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
 
             boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
-            if (done != null)
-            {
-                int i=0;
-                for(AudioPoint p : _audioPlaybackController.audioPoints())
+            if (done != null) {
+                int i = 0;
+                for (AudioPoint p : _audioPlaybackController.audioPoints())
                     p.Done = done[i++];
             }
             _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
-        }
-        else
-        {
-            Intent  intent = getIntent();
+        } else {
+            Intent intent = getIntent();
             _currentRouteId = intent.getIntExtra(getString(R.string.route_name), R.id.route_demo);
             _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
         }
     }
 
-    public void locationChanged(LatLng point)
-    {
+    public void locationChanged(LatLng point) {
 
         Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
 
@@ -119,16 +114,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private synchronized void startLocationTracking()
     {
         _tracker = new LocationTracker(this);
-
-        _googleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(_tracker)
-                .addOnConnectionFailedListener(_tracker)
-                .addApi(LocationServices.API)
-                .build();
-
-        _googleApiClient.connect();
-
-        _tracker.setGogleApiClient(_googleApiClient);
+        _tracker.LocationChanged.subscribe(new IObserver<LatLng>() {
+            @Override
+            public void notify(LatLng location) {
+                locationChanged(location);
+            }
+        });
+        boolean stupid = PermissionChecker.CheckForLocationDetectionPermission(this);
+        if (stupid)
+            _tracker.startLocationTracking();
     }
 
     private boolean _fakeLocationStarted = false;
@@ -136,7 +130,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         _map = googleMap;
-        _map.setMyLocationEnabled(true);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)
+        {
+            _map.setMyLocationEnabled(true);
+        }
+
         if (_fakeLocation && !_fakeLocationStarted)
         {
             TestTracker.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
@@ -187,12 +186,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        switch (requestCode) {
+            case PermissionChecker.LocationPermissions:
+            {
+                if (grantResults.length > 0)
+                {
+                    boolean allGranted = true;
+                    for(int i = 0; i < grantResults.length; i++)
+                        allGranted &= grantResults[i] == PackageManager.PERMISSION_GRANTED;
+
+                    if (allGranted)
+                    {
+                        _tracker.startLocationTracking();
+                        _map.setMyLocationEnabled(true);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     protected void onPause()
     {
         super.onPause();
-
-        if (_googleApiClient == null)
-            return;
     }
 
     @Override

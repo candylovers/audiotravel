@@ -31,6 +31,7 @@ public class MapHelper
 
     public static void changeIcon(ArrayList<Marker> audioPointMarkers, Integer index, int resId)
     {
-        audioPointMarkers.get(index).setIcon(BitmapDescriptorFactory.fromResource(resId));
+        if (audioPointMarkers.size() > index)
+            audioPointMarkers.get(index).setIcon(BitmapDescriptorFactory.fromResource(resId));
     }
 }
