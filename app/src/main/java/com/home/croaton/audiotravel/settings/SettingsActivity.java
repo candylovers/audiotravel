@@ -81,8 +81,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
 
             } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
                 preference.setSummary(stringValue);
             }
             return true;
@@ -122,6 +120,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setupActionBar();
     }
 

@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_name">Audio Travel</string>
     <string name="title_activity_maps">AudioTravel</string>
     <string name="title_activity_choose_route">ChooseRouteActivity</string>
@@ -25,4 +26,6 @@
     <string name="pref_title_vibrate">TestValue2</string>
 
     <string name="settings_fake_location_id">fake_location</string>
+    <string name="settings_send_my_map">send_my_map</string>
+
 </resources>

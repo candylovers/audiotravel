@@ -6,4 +6,8 @@
         android:summary="@string/pref_description_social_recommendations"
         android:title="@string/pref_title_social_recommendations" />
 
+    <Preference android:title="Send my map"
+        android:key="@string/settings_send_my_map"
+        android:summary="Click me as button"/>
+
 </PreferenceScreen>
