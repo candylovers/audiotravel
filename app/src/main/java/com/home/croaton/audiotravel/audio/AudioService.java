@@ -30,14 +30,14 @@ public class AudioService extends android.app.Service implements
     public static final String Command = "Command";
     private static final String ServiceName = "Audio Service";
 
-    private MediaPlayer _mediaPlayer;
+    private volatile MediaPlayer _mediaPlayer;
     private Queue<Uri> _uriQueue = new LinkedList<>();
     private final int _positionPollTime = 500;
 
 
     private Notification.Builder _notificationBuilder;
     private Notification _notification;
-    private ReentrantLock _playerLock = new ReentrantLock();
+    private volatile ReentrantLock _playerLock = new ReentrantLock();
     private Thread _positionPoller;
 
     private static MyObservable<PlayerState> _innerState = new MyObservable<>();
@@ -59,6 +59,9 @@ public class AudioService extends android.app.Service implements
 
         if (command == AudioServiceCommand.ReverseState)
         {
+            if (_mediaPlayer == null)
+                return START_STICKY;
+
             command = _mediaPlayer.isPlaying()
                     ? AudioServiceCommand.Pause
                     : AudioServiceCommand.Play;
@@ -85,7 +88,7 @@ public class AudioService extends android.app.Service implements
             if (_mediaPlayer != null)
             {
                 _mediaPlayer.pause();
-                _innerState.notifyObservers(PlayerState.NotPlaying);
+                _innerState.notifyObservers(PlayerState.Paused);
             }
             _playerLock.unlock();
         }
@@ -109,20 +112,26 @@ public class AudioService extends android.app.Service implements
 
         if (_mediaPlayer != null)
         {
-            _mediaPlayer.stop();
             _mediaPlayer.release();
-            _innerState.notifyObservers(PlayerState.NotPlaying);
         }
         _mediaPlayer = new MediaPlayer();
+
+        _playerLock.unlock();
+
+        _innerState.notifyObservers(PlayerState.NotPrepared);
+
         if (_positionPoller == null) {
             _positionPoller = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     boolean onPrevStepWasPlaying = false;
-                    while (true) {
+                    while (true)
+                    {
+                        _playerLock.lock();
                         boolean isPlaying = _mediaPlayer.isPlaying();
                         if (isPlaying || onPrevStepWasPlaying)
                         {
+                            // Should call get duration only in corresponding state
                             int total = _mediaPlayer.getDuration();
                             int newPosition = (int)((double)_mediaPlayer.getCurrentPosition() / (double)total * 100.0);
                             if (newPosition != _position) {
@@ -131,10 +140,14 @@ public class AudioService extends android.app.Service implements
                             }
                             onPrevStepWasPlaying = isPlaying;
                         }
+                        _playerLock.unlock();
 
-                        try {
+                        try
+                        {
                             Thread.sleep(_positionPollTime);
-                        } catch (InterruptedException e) {
+                        }
+                        catch (InterruptedException e)
+                        {
                             return;
                         }
                     }
@@ -143,7 +156,6 @@ public class AudioService extends android.app.Service implements
             _positionPoller.start();
         }
 
-        _playerLock.unlock();
     }
 
     // ToDo: show notification during audio is playing

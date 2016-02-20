@@ -96,7 +96,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void locationChanged(LatLng point) {
 
-        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
+        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController.getResourceToPlay(this, point);
 
         if (audioAtPoint == null)
             return;

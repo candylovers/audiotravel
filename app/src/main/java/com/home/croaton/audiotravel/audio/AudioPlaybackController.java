@@ -10,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.home.croaton.audiotravel.LocationTracker;
 import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.domain.Route;
@@ -64,7 +65,7 @@ public class AudioPlaybackController
     }
 
     // ToDo: according to user choose files
-    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(LatLng position)
+    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(Context context, LatLng position)
     {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
@@ -87,9 +88,12 @@ public class AudioPlaybackController
 
         ArrayList<Uri> uris = new ArrayList<>();
         Pair<Integer, ArrayList<Uri>> result = new Pair<>(closestPoint.Number, uris);
-        for(int resourceId : _route.getAudiosForPoint(closestPoint))
+        for(String resourceName : _route.getAudiosForPoint(closestPoint))
         {
-            uris.add(Uri.parse(RESOURCE_FOLDER + resourceId));
+            int id = context.getResources().getIdentifier(resourceName, "raw", context.getPackageName());
+            if (id == 0)
+                throw new IllegalArgumentException("No such file found " + resourceName);
+            uris.add(Uri.parse(RESOURCE_FOLDER + id));
         }
 
         return result;

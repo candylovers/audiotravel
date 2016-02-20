@@ -11,7 +11,7 @@ public class Route
 {
     private ArrayList<AudioPoint> _audioPoints;
     private ArrayList<Point> _geoPoints;
-    private Hashtable<Point, ArrayList<Integer>> _pointTrackMapper;
+    private Hashtable<Point, ArrayList<String>> _pointTrackMapper;
 
     public Route()
     {
@@ -55,21 +55,21 @@ public class Route
         _audioPoints.get(pointNumber).Done = true;
     }
 
-    public ArrayList<Integer> getAudiosForPoint(AudioPoint closestPoint)
+    public ArrayList<String> getAudiosForPoint(AudioPoint audioPoint)
     {
-        return _pointTrackMapper.get(closestPoint);
+        return _pointTrackMapper.get(audioPoint);
     }
 
-    public void addAudioTrack(AudioPoint point, int fileId)
+    public void addAudioTrack(AudioPoint point, String fileName)
     {
         if (_pointTrackMapper.containsKey(point))
         {
-            _pointTrackMapper.get(point).add(fileId);
+            _pointTrackMapper.get(point).add(fileName);
             return;
         }
 
-        ArrayList<Integer> audioFilesIds = new ArrayList<>();
-        audioFilesIds.add(fileId);
+        ArrayList<String> audioFilesIds = new ArrayList<>();
+        audioFilesIds.add(fileName);
         _pointTrackMapper.put(point, audioFilesIds);
     }
 

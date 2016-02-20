@@ -79,10 +79,10 @@ public class RouteSerializer {
                         ? String.valueOf(audioPoint.Done)
                         : "false");
 
-                for(Integer audioFileId : route.getAudiosForPoint(audioPoint))
+                for(String fileName : route.getAudiosForPoint(audioPoint))
                 {
                     Element audioResource = doc.createElement(AudioFile);
-                    audioResource.setAttribute(Id, audioFileId.toString());
+                    audioResource.setAttribute(Id, fileName.toString());
                     pointElement.appendChild(audioResource);
                 }
                 audioPoints.appendChild(pointElement);
@@ -158,9 +158,9 @@ public class RouteSerializer {
             NodeList audioFiles = list.item(i).getChildNodes();
             for(int j = 0; j < audioFiles.getLength(); j++)
             {
-                NamedNodeMap fileIds = audioFiles.item(j).getAttributes();
-                if (fileIds != null)
-                    route.addAudioTrack(ap, Integer.parseInt(fileIds.getNamedItem(Id).getNodeValue()));
+                NamedNodeMap fileNames = audioFiles.item(j).getAttributes();
+                if (fileNames != null)
+                    route.addAudioTrack(ap, fileNames.getNamedItem(Id).getNodeValue());
             }
         }
 

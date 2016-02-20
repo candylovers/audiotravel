@@ -32,7 +32,7 @@ public class AudioPlayerUI
         AudioService.State.subscribe(new IObserver<PlayerState>() {
             @Override
             public void notify(PlayerState state) {
-                if (state == PlayerState.NotPlaying)
+                if (state == PlayerState.Paused)
                     pause.setText("Play");
                 else
                     pause.setText("Pause");

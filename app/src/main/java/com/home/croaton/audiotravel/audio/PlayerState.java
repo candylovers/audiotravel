@@ -2,6 +2,10 @@ package com.home.croaton.audiotravel.audio;
 
 public enum PlayerState
 {
+    NotPrepared,
+    Prepared,
     Playing,
-    NotPlaying
+    Paused,
+    Stopped,
+    PlaybackCompleted
 }
