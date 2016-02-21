@@ -2,6 +2,7 @@ package com.home.croaton.audiotravel.audio;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -18,24 +19,28 @@ public class AudioPlayerUI
         final Context activity = mapsActivity;
         final SeekBar seekBar = (SeekBar) mapsActivity.findViewById(R.id.seekBar);
 
-        pause.setOnClickListener(new View.OnClickListener()
-        {
+        pause.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 Intent startingIntent = new Intent(activity, AudioService.class);
                 startingIntent.putExtra(AudioService.Command, AudioServiceCommand.ReverseState);
                 activity.startService(startingIntent);
             }
         });
-
+        final Context context = mapsActivity;
         AudioService.State.subscribe(new IObserver<PlayerState>() {
             @Override
             public void notify(PlayerState state) {
                 if (state == PlayerState.Paused)
-                    pause.setText("Play");
+                {
+                    Drawable img = context.getResources().getDrawable(R.drawable.ic_play_arrow_black_48dp);
+                    pause.setCompoundDrawables(img, null, null, null);
+                }
                 else
-                    pause.setText("Pause");
+                {
+                    Drawable img = context.getResources().getDrawable(R.drawable.ic_pause_black_48dp);
+                    pause.setCompoundDrawables(img, null, null, null);
+                }
             }
         });
 

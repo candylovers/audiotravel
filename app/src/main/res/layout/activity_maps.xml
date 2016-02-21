@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cardview_light_background"
     tools:context=".activities.MapsActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -13,77 +14,31 @@
         tools:context=".activities.MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_below="@+id/map"
-        android:layout_centerHorizontal="true"/>
-
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="55dp"
         android:layout_height="wrap_content"
-        android:text="||"
-        android:id="@+id/button_pause"
+        android:paddingLeft="10dp"
+        android:gravity="center_vertical"
+        android:background="@color/cardview_light_background"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="||"-->
-        <!--android:id="@+id/button2"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_toRightOf="@+id/button_pause"/>-->
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="\<"-->
-        <!--android:id="@+id/button3"-->
-        <!--android:layout_alignTop="@+id/button2"-->
-        <!--android:layout_toRightOf="@+id/button2"-->
-        <!--android:layout_toEndOf="@+id/button2"/>-->
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="<<"-->
-        <!--android:id="@+id/button4"-->
-        <!--android:layout_alignTop="@+id/button3"-->
-        <!--android:layout_toRightOf="@+id/button3"-->
-        <!--android:layout_toEndOf="@+id/button3" />-->
+        android:drawableStart="@drawable/ic_play_arrow_black_48dp"
+        android:id="@+id/button_pause"
+        style="?android:attr/borderlessButtonStyle"/>
 
     <SeekBar
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:id="@+id/seekBar"
         android:max="100"
-        android:layout_above="@+id/button_pause" />
-
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-        <!--android:text="Small Text"-->
-        <!--android:id="@+id/textView2"-->
-        <!--android:layout_above="@+id/seekBar"-->
-        <!--/>-->
-
-<!--<TextView-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
-    <!--android:text="Small Text"-->
-    <!--android:id="@+id/textView3"-->
-    <!--android:layout_above="@+id/seekBar"-->
-    <!--android:layout_alignRight="@+id/button4"-->
-    <!--android:layout_alignEnd="@+id/button4" />-->
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/button_pause" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/textViewSongName"
