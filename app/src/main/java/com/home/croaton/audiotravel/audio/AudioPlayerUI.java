@@ -33,13 +33,11 @@ public class AudioPlayerUI
             public void notify(PlayerState state) {
                 if (state == PlayerState.Paused)
                 {
-                    Drawable img = context.getResources().getDrawable(R.drawable.ic_play_arrow_black_48dp);
-                    pause.setCompoundDrawables(img, null, null, null);
+                    pause.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_black_48dp, 0, 0, 0);
                 }
                 else
                 {
-                    Drawable img = context.getResources().getDrawable(R.drawable.ic_pause_black_48dp);
-                    pause.setCompoundDrawables(img, null, null, null);
+                    pause.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_black_48dp, 0, 0, 0);
                 }
             }
         });
