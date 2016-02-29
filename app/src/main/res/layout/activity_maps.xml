@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cardview_light_background"
+    android:background="#BBBBBB"
     tools:context=".activities.MapsActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,9 +19,9 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:gravity="center_vertical"
-        android:background="@color/cardview_light_background"
+        android:background="#BBBBBB"
         android:layout_alignParentBottom="true"
-        android:drawableStart="@drawable/ic_play_arrow_black_48dp"
+        android:drawableStart="@drawable/play_arrow_grey"
         android:id="@+id/button_pause"
         style="?android:attr/borderlessButtonStyle"/>
 
@@ -32,8 +32,11 @@
         android:id="@+id/seekBar"
         android:max="100"
         android:progressDrawable="@drawable/seekbar_grey"
+        android:thumb="@drawable/seekbar_thumb"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/button_pause" />
+        android:layout_toEndOf="@+id/button_pause"
+        android:minHeight="6dp"
+        android:maxHeight="6dp"/>
 
     <TextView
         android:layout_width="wrap_content"
