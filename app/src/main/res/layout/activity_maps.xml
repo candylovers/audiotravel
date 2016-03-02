@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BBBBBB"
+    android:background="@color/background_player"
     tools:context=".activities.MapsActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -19,20 +19,20 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:gravity="center_vertical"
-        android:background="#BBBBBB"
+        android:background="@color/background_player"
         android:layout_alignParentBottom="true"
-        android:drawableStart="@drawable/play_arrow_grey"
+        android:drawableStart="@drawable/ic_play_arrow_black_48dp"
         android:id="@+id/button_pause"
         style="?android:attr/borderlessButtonStyle"/>
 
     <SeekBar
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="14dp"
         android:id="@+id/seekBar"
         android:max="100"
-        android:progressDrawable="@drawable/seekbar_grey"
-        android:thumb="@drawable/seekbar_thumb"
+        android:progressDrawable="@drawable/progress"
+        android:thumb="@drawable/seekbar_thumb_dark_grey"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/button_pause"
         android:minHeight="6dp"
@@ -43,8 +43,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Riddarholmen Church"
         android:id="@+id/textViewSongName"
         android:layout_above="@+id/seekBar"
         android:layout_centerHorizontal="true" />
