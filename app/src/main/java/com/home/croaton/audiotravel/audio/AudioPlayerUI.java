@@ -19,6 +19,7 @@ import com.home.croaton.audiotravel.instrumentation.IObserver;
 public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
     private final Context _context;
+    private int _miliSecondsPlayed;
 
     public AudioPlayerUI(MapsActivity mapsActivity)
     {
@@ -53,12 +54,20 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
                 seekBar.setProgress(progress);
             }
         });
+        AudioService.SecondsPlayed.subscribe(new IObserver<Integer>() {
+            @Override
+            public void notify(Integer value) {
+                _miliSecondsPlayed = value;
+            }
+        });
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         Integer value = seekBar.getProgress();
-        String valueString = value.toString();
+        Integer min = (int)((double)_miliSecondsPlayed / 1000d / 60d);
+        Integer sec = _miliSecondsPlayed / 1000 - min * 60;
+        String valueString = min + ":" + sec;
 
         seekBar.setThumb(writeOnDrawable(R.drawable.seekbar_thumb_dark_grey, valueString));
     }
