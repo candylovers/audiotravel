@@ -5,12 +5,13 @@ public enum AudioServiceCommand
     Play(       1<<0),
     Pause(      1<<1),
     Stop(       1<<2),
-    LoadTracks( 1<<3),
-    ReverseState(  1<<4);
+    Rewind(       1<<3),
+    LoadTracks( 1<<4),
+    ReverseState(  1<<5);
 
 
     private final int value;
-    private AudioServiceCommand(int value) {
+    AudioServiceCommand(int value) {
         this.value = value;
     }
 

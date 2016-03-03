@@ -96,19 +96,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void locationChanged(LatLng point) {
 
-        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController.getResourceToPlay(this, point);
+        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController
+                .getResourceToPlay(this, point, false);
 
         if (audioAtPoint == null)
             return;
 
-        Intent startingIntent = new Intent(this, AudioService.class);
-        startingIntent.putExtra(AudioService.Command, AudioServiceCommand.LoadTracks);
-        startingIntent.putExtra(AudioService.NewUris, audioAtPoint.second);
-
+        _audioPlaybackController.startPlaying(this, audioAtPoint.second);
         _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
-        MapHelper.changeIcon(_audioPointMarkers, audioAtPoint.first, R.drawable.passed);
 
-        startService(startingIntent);
+        MapHelper.changeIcon(_audioPointMarkers, audioAtPoint.first, R.drawable.passed);
     }
 
     private synchronized void startLocationTracking()
@@ -143,7 +140,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         PolylineOptions route = new PolylineOptions()
-                .width(25)
+                .width(15)
                 .color(0x7F0000FF)
                 .geodesic(true);
 
@@ -183,6 +180,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onMarkerDragEnd(Marker marker) {
             }
         });
+        _map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController
+                        .getResourceToPlay(MapsActivity.this, marker.getPosition(), true);
+
+                _audioPlaybackController.startPlaying(MapsActivity.this, audioAtPoint.second);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -194,7 +201,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (grantResults.length > 0)
                 {
                     boolean allGranted = true;
-                    for(int i = 0; i < grantResults.length; i++)
+                        for(int i = 0; i < grantResults.length; i++)
                         allGranted &= grantResults[i] == PackageManager.PERMISSION_GRANTED;
 
                     if (allGranted)

@@ -28,12 +28,13 @@ public class AudioService extends android.app.Service implements
 {
     public static final String NewUris = "Uris";
     public static final String Command = "Command";
+    public static final String Progress = "Progress";
     private static final String ServiceName = "Audio Service";
 
     private volatile MediaPlayer _mediaPlayer;
     private Queue<Uri> _uriQueue = new LinkedList<>();
     private final int _positionPollTime = 500;
-
+    private int FullProgress = 100;
 
     private Notification.Builder _notificationBuilder;
     private Notification _notification;
@@ -46,7 +47,8 @@ public class AudioService extends android.app.Service implements
     private static MyObservable<Integer> _innerPosition = new MyObservable<>();
     public static IObservable<Integer> Position = _innerPosition;
 
-    private int _position;
+    private volatile int _position;
+    private volatile boolean _playbackFinished = false;
 
     @Override
     // OOP cries. Me too.
@@ -75,10 +77,7 @@ public class AudioService extends android.app.Service implements
             _uriQueue.clear();
             _uriQueue.addAll(newUris);
 
-            _mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            _mediaPlayer.setOnErrorListener(this);
-            _mediaPlayer.setOnPreparedListener(this);
-            _mediaPlayer.setOnCompletionListener(this);
+            setPlayerListeners();
 
             preparePlayerWithNextTrack();
         }
@@ -97,13 +96,29 @@ public class AudioService extends android.app.Service implements
             _playerLock.lock();
             if (_mediaPlayer != null)
             {
+                _playbackFinished = false;
                 _mediaPlayer.start();
                 _innerState.notifyObservers(PlayerState.Playing);
             }
             _playerLock.unlock();
         }
+        if (command == AudioServiceCommand.Rewind)
+        {
+            int progress = intent.getIntExtra(Progress, 0);
+            _playerLock.lock();
+            if (_mediaPlayer != null)
+                _mediaPlayer.seekTo(_mediaPlayer.getDuration() * progress / 100);
+            _playerLock.unlock();
+        }
 
         return START_STICKY;
+    }
+
+    private void setPlayerListeners() {
+        _mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        _mediaPlayer.setOnErrorListener(this);
+        _mediaPlayer.setOnPreparedListener(this);
+        _mediaPlayer.setOnCompletionListener(this);
     }
 
     private void RenewPlayer()
@@ -129,16 +144,22 @@ public class AudioService extends android.app.Service implements
                     {
                         _playerLock.lock();
                         boolean isPlaying = _mediaPlayer.isPlaying();
-                        if (isPlaying || onPrevStepWasPlaying)
+                        if (isPlaying)
                         {
-                            // Should call get duration only in corresponding state
                             int total = _mediaPlayer.getDuration();
-                            int newPosition = (int)((double)_mediaPlayer.getCurrentPosition() / (double)total * 100.0);
+                            int currentPosition = _mediaPlayer.getCurrentPosition();
+                            int newPosition = (int)((double) currentPosition / (double)total * FullProgress);
                             if (newPosition != _position) {
                                 _position = newPosition;
                                 _innerPosition.notifyObservers(_position);
                             }
                             onPrevStepWasPlaying = isPlaying;
+                        }
+                        else if (onPrevStepWasPlaying)
+                        {
+                            onPrevStepWasPlaying = false;
+                            if (_playbackFinished)
+                                _innerPosition.notifyObservers(FullProgress);
                         }
                         _playerLock.unlock();
 
@@ -183,9 +204,6 @@ public class AudioService extends android.app.Service implements
 
     private void preparePlayerWithNextTrack()
     {
-        if (_uriQueue.isEmpty())
-            return;
-
         try
         {
             setUpAsForeground("Audio + " + _uriQueue.peek().getLastPathSegment());
@@ -200,8 +218,12 @@ public class AudioService extends android.app.Service implements
             _mediaPlayer.prepareAsync();
         } catch (IllegalStateException e)
         {
-            //Log.e(ServiceName, e.getMessage());
+            Log.e(ServiceName, e.getMessage());
         }
+    }
+
+    private boolean hasNextTrack() {
+        return !_uriQueue.isEmpty();
     }
 
     public void onPrepared(MediaPlayer player)
@@ -211,6 +233,7 @@ public class AudioService extends android.app.Service implements
         if (playerIsActual(player))
         {
             player.start();
+            _playbackFinished = false;
             _innerState.notifyObservers(PlayerState.Playing);
         }
 
@@ -245,21 +268,19 @@ public class AudioService extends android.app.Service implements
             _mediaPlayer.release();
             _mediaPlayer = null;
         }
-
     }
 
     @Override
     public void onCompletion(MediaPlayer player)
     {
         _playerLock.lock();
+        _playbackFinished = true;
+        _innerState.notifyObservers(PlayerState.PlaybackCompleted);
 
-        if (playerIsActual(player))
+        if (playerIsActual(player) && hasNextTrack())
         {
             _mediaPlayer.reset();
-            _mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            _mediaPlayer.setOnErrorListener(this);
-            _mediaPlayer.setOnPreparedListener(this);
-            _mediaPlayer.setOnCompletionListener(this);
+            setPlayerListeners();
             preparePlayerWithNextTrack();
         }
 

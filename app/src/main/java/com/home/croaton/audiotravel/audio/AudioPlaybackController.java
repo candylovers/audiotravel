@@ -1,6 +1,7 @@
 package com.home.croaton.audiotravel.audio;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Pair;
 
@@ -65,14 +66,14 @@ public class AudioPlaybackController
     }
 
     // ToDo: according to user choose files
-    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(Context context, LatLng position)
+    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(Context context, LatLng position, boolean ignoreDone)
     {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
 
         for (AudioPoint point : _route.audioPoints())
         {
-            if (point.Done)
+            if (!ignoreDone && point.Done)
                 continue;
 
             float distance = LocationTracker.GetDistance(position, point.Position);
@@ -140,5 +141,13 @@ public class AudioPlaybackController
             e.printStackTrace();
         }
         RouteSerializer.serialize(_route, fs, false);
+    }
+
+    public void startPlaying(Context context, ArrayList<Uri> audioToPlay) {
+        Intent startingIntent = new Intent(context, AudioService.class);
+        startingIntent.putExtra(AudioService.Command, AudioServiceCommand.LoadTracks);
+        startingIntent.putExtra(AudioService.NewUris, audioToPlay);
+
+        context.startService(startingIntent);
     }
 }
