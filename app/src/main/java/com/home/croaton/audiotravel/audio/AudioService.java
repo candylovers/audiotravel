@@ -46,9 +46,6 @@ public class AudioService extends android.app.Service implements
     private static MyObservable<Integer> _innerPosition = new MyObservable<>();
     public static IObservable<Integer> Position = _innerPosition;
 
-    private static MyObservable<Integer> _innerSecondsPlayed = new MyObservable<>();
-    public static IObservable<Integer> SecondsPlayed = _innerSecondsPlayed;
-
     private int _position;
 
     @Override
@@ -140,7 +137,6 @@ public class AudioService extends android.app.Service implements
                             if (newPosition != _position) {
                                 _position = newPosition;
                                 _innerPosition.notifyObservers(_position);
-                                _innerSecondsPlayed.notifyObservers((int)((double)_mediaPlayer.getDuration() * (double)newPosition / 100d));
                             }
                             onPrevStepWasPlaying = isPlaying;
                         }
