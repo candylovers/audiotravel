@@ -193,8 +193,8 @@ public class AudioService extends android.app.Service implements
                     .setContentIntent(pendInt)
                     .setOngoing(true)
                     .setTicker(text)
-                    .setContentTitle("Audio guide notification")
-                    .setSmallIcon(R.drawable.play);
+                    .setContentTitle("Arrived to new point")
+                    .setSmallIcon(R.drawable.icon_tmp_small);
         }
         _notificationBuilder.setContentText(text);
         _notification = _notificationBuilder.build();
@@ -273,6 +273,7 @@ public class AudioService extends android.app.Service implements
     @Override
     public void onCompletion(MediaPlayer player)
     {
+        stopForeground(true);
         _playerLock.lock();
         _playbackFinished = true;
         _innerState.notifyObservers(PlayerState.PlaybackCompleted);
