@@ -5,14 +5,18 @@
     android:background="@color/background_player"
     tools:context=".activities.MapsActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/textViewSongName"
         android:id="@+id/map"
         tools:context=".activities.MapsActivity"
-        android:name="com.google.android.gms.maps.SupportMapFragment" />
+        android:name="com.google.android.gms.maps.SupportMapFragment" />-->
+    <org.osmdroid.views.MapView android:id="@+id/map"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        tilesource="Mapnik"/>
 
     <Button
         android:layout_width="55dp"
