@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
+import android.view.ViewGroup;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.home.croaton.audiotravel.LocationTracker;
@@ -22,9 +23,9 @@ import com.home.croaton.audiotravel.audio.AudioPlayerUI;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
+import com.home.croaton.audiotravel.maps.CustomResourceProxy;
 import com.home.croaton.audiotravel.security.PermissionChecker;
 
-import org.osmdroid.ResourceProxy;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -49,6 +50,7 @@ public class MapsActivity extends FragmentActivity {
     private boolean _fakeLocation;
     private int _currentRouteId = -1;
     private AudioPlayerUI _audioPlayerUi;
+    CustomResourceProxy _resourceProxy;
     //private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
     //ArrayList<Circle> _circles = new ArrayList<>();
 
@@ -124,8 +126,12 @@ public class MapsActivity extends FragmentActivity {
     private boolean _fakeLocationStarted = false;
 
     public void setUpMap() {
-        _map = (MapView) findViewById(R.id.map);
-        ResourceProxy resourceProxy = _map.getResourceProxy();
+        _resourceProxy = new CustomResourceProxy(this);
+        _map = new MapView(this, _resourceProxy);
+
+        ViewGroup mapsLayout = (ViewGroup) findViewById(R.id.maps_layout);
+        mapsLayout.addView(_map);
+
         _map.setTileSource(TileSourceFactory.MAPNIK);
         _map.setMultiTouchControls(true);
 
@@ -177,7 +183,7 @@ public class MapsActivity extends FragmentActivity {
                     public boolean onItemLongPress(final int index, final OverlayItem item) {
                         return false;
                     }
-                }, resourceProxy);
+                }, _resourceProxy);
         mOverlay.setFocusItemsOnTap(true);
 
         _map.getOverlays().add(mOverlay);
