@@ -3,8 +3,7 @@ package com.home.croaton.audiotravel.domain;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.maps.model.LatLng;
-
+import org.osmdroid.util.GeoPoint;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -62,7 +61,7 @@ public class RouteSerializer {
             {
                 Element pointElement = doc.createElement(GeoPoint);
                 pointElement.setAttribute(PointNumber, geoPoint.Number.toString());
-                pointElement.setAttribute(PointPosition, latLngToString(geoPoint));
+                pointElement.setAttribute(PointPosition, geoPointToString(geoPoint));
                 geoPoints.appendChild(pointElement);
             }
 
@@ -73,7 +72,7 @@ public class RouteSerializer {
             {
                 Element pointElement = doc.createElement(AudioPoint);
                 pointElement.setAttribute(PointNumber, audioPoint.Number.toString());
-                pointElement.setAttribute(PointPosition, latLngToString(audioPoint));
+                pointElement.setAttribute(PointPosition, geoPointToString(audioPoint));
                 pointElement.setAttribute(PointRadius, audioPoint.Radius.toString());
                 pointElement.setAttribute(DoneIndicator, writeDone
                         ? String.valueOf(audioPoint.Done)
@@ -141,7 +140,7 @@ public class RouteSerializer {
             NamedNodeMap attrs = list.item(i).getAttributes();
 
             route.addGeoPoint(Integer.parseInt(attrs.getNamedItem(PointNumber).getNodeValue()),
-                    stringToLatLng(attrs.getNamedItem(PointPosition).getNodeValue()));
+                    stringToGeoPoint(attrs.getNamedItem(PointPosition).getNodeValue()));
         }
 
         list = document.getElementsByTagName(AudioPoint);
@@ -151,7 +150,7 @@ public class RouteSerializer {
             NamedNodeMap attrs = list.item(i).getAttributes();
 
             AudioPoint ap = new AudioPoint(Integer.parseInt(attrs.getNamedItem(PointNumber).getNodeValue()),
-                    stringToLatLng(attrs.getNamedItem(PointPosition).getNodeValue()),
+                    stringToGeoPoint(attrs.getNamedItem(PointPosition).getNodeValue()),
                     Integer.parseInt(attrs.getNamedItem(PointRadius).getNodeValue()));
             route.addAudioPoint(ap);
 
@@ -168,16 +167,16 @@ public class RouteSerializer {
     }
 
     @NonNull
-    private static LatLng stringToLatLng(String serializedLatLng)
+    private static GeoPoint stringToGeoPoint(String serializedLatLng)
     {
         String[] split =  serializedLatLng.split(",");
 
-        return new LatLng(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
+        return new GeoPoint(Double.parseDouble(split[0]), Double.parseDouble(split[1]));
     }
 
     @NonNull
-    private static String latLngToString(Point geoPoint)
+    private static String geoPointToString(Point geoPoint)
     {
-        return geoPoint.Position.latitude + "," + geoPoint.Position.longitude;
+        return geoPoint.Position.getLatitude() + "," + geoPoint.Position.getLongitude();
     }
 }

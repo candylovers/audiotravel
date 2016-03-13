@@ -1,8 +1,8 @@
 package com.home.croaton.audiotravel.domain;
 
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.Polygon;
+import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -20,12 +20,12 @@ public class Route
         _audioPoints = new ArrayList<>();
     }
 
-    public void addGeoPoint(LatLng position)
+    public void addGeoPoint(GeoPoint position)
     {
         _geoPoints.add(new Point(_geoPoints.size() + 1, position));
     }
 
-    public void addGeoPoint(int number, LatLng position)
+    public void addGeoPoint(int number, GeoPoint position)
     {
         _geoPoints.add(new Point(number, position));
     }
@@ -73,12 +73,12 @@ public class Route
         _pointTrackMapper.put(point, audioFilesIds);
     }
 
-    public void updateAudioPoints(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers)
+    public void updateAudioPoints(ArrayList<Polygon> circles, ArrayList<Marker> pointMarkers)
     {
         for(int i = 0; i < _audioPoints.size(); i++)
         {
-            _audioPoints.get(i).Radius = (int)circles.get(i).getRadius();
-            _audioPoints.get(i).Position = pointMarkers.get(i).getPosition();
+            //_audioPoints.get(i).Radius = (int)circles.get(i).getRadius();
+            //_audioPoints.get(i).Position = pointMarkers.get(i).getPosition();
         }
     }
 }

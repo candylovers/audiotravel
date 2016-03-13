@@ -1,6 +1,6 @@
 package com.home.croaton.audiotravel.domain;
 
-import com.google.android.gms.maps.model.LatLng;
+import org.osmdroid.util.GeoPoint;
 
 public class AudioPoint extends Point
 {
@@ -9,21 +9,21 @@ public class AudioPoint extends Point
 
     private Integer _defaultRadius = 10;
 
-    public AudioPoint(LatLng position)
+    public AudioPoint(GeoPoint position)
     {
         super(0, position);
         Done = false;
         Radius = _defaultRadius;
     }
 
-    public AudioPoint(LatLng position, int radius)
+    public AudioPoint(GeoPoint position, int radius)
     {
         super(0, position);
         Done = false;
         Radius = radius;
     }
 
-    public AudioPoint(int number, LatLng position, int radius)
+    public AudioPoint(int number, GeoPoint position, int radius)
     {
         super(0, position);
         Number = number;

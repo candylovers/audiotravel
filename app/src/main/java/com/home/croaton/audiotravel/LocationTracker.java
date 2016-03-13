@@ -12,6 +12,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.home.croaton.audiotravel.instrumentation.MyObservable;
 
+import org.osmdroid.util.GeoPoint;
+
 public class LocationTracker implements GoogleApiClient.ConnectionCallbacks,
         LocationListener, GoogleApiClient.OnConnectionFailedListener
 {
@@ -91,14 +93,14 @@ public class LocationTracker implements GoogleApiClient.ConnectionCallbacks,
         }
     }
 
-    public static float GetDistance(LatLng point1, LatLng point2)
+    public static float GetDistance(GeoPoint point1, GeoPoint point2)
     {
         float[] results = new float[10];
         Location.distanceBetween(
-                point1.latitude,
-                point1.longitude,
-                point2.latitude,
-                point2.longitude,
+                point1.getLatitude(),
+                point1.getLongitude(),
+                point2.getLatitude(),
+                point2.getLongitude(),
                 results);
 
         // ToDo: check, is that always resulrs[0]?

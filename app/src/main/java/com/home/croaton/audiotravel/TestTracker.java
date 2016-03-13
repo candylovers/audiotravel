@@ -36,8 +36,8 @@ public class TestTracker
                     for (double i = 0.1; i <= 1; i += 0.1)
                     {
                         final LatLng position = new LatLng(
-                                point.Position.latitude * i + prev.Position.latitude * (1d - i),
-                                point.Position.longitude * i + prev.Position.longitude * (1d - i));
+                                point.Position.getLatitude() * i + prev.Position.getLongitude() * (1d - i),
+                                point.Position.getLatitude() * i + prev.Position.getLongitude() * (1d - i));
 
                         activityCopy.runOnUiThread(new Runnable() {
                             @Override

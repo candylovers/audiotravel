@@ -12,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
-import android.view.ViewGroup;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.home.croaton.audiotravel.LocationTracker;
@@ -23,17 +22,19 @@ import com.home.croaton.audiotravel.audio.AudioPlayerUI;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
-import com.home.croaton.audiotravel.maps.CustomResourceProxy;
+import com.home.croaton.audiotravel.maps.MapHelper;
+import com.home.croaton.audiotravel.maps.MapOnClickListener;
+import com.home.croaton.audiotravel.maps.OnMarkerClick;
 import com.home.croaton.audiotravel.security.PermissionChecker;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
+import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.Polygon;
 import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
-import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -50,9 +51,8 @@ public class MapsActivity extends FragmentActivity {
     private boolean _fakeLocation;
     private int _currentRouteId = -1;
     private AudioPlayerUI _audioPlayerUi;
-    CustomResourceProxy _resourceProxy;
-    //private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
-    //ArrayList<Circle> _circles = new ArrayList<>();
+    private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
+    ArrayList<Polygon> _circles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +96,9 @@ public class MapsActivity extends FragmentActivity {
     }
 
     public void locationChanged(LatLng point) {
-
+        GeoPoint geoPoint = new GeoPoint(point.latitude, point.longitude);
         Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController
-                .getResourceToPlay(this, point, false);
+                .getResourceToPlay(this, geoPoint, false);
 
         if (audioAtPoint == null)
             return;
@@ -126,17 +126,11 @@ public class MapsActivity extends FragmentActivity {
     private boolean _fakeLocationStarted = false;
 
     public void setUpMap() {
-        _resourceProxy = new CustomResourceProxy(this);
-        _map = new MapView(this, _resourceProxy);
-
-        ViewGroup mapsLayout = (ViewGroup) findViewById(R.id.maps_layout);
-        mapsLayout.addView(_map);
-
+        _map = (MapView) findViewById(R.id.map);
         _map.setTileSource(TileSourceFactory.MAPNIK);
         _map.setMultiTouchControls(true);
 
         Polyline line = new Polyline(this);
-        line.setTitle("Gamlastan route");
         line.setSubDescription(Polyline.class.getCanonicalName());
         line.setWidth(15f);
         line.setColor(0x7F0000FF);
@@ -157,9 +151,8 @@ public class MapsActivity extends FragmentActivity {
         }
 
         for(Point point : _audioPlaybackController.geoPoints())
-        {
-            geoPoints.add(new GeoPoint(point.Position.latitude, point.Position.longitude));
-        }
+            geoPoints.add(point.Position);
+
         line.setPoints(geoPoints);
         line.setGeodesic(true);
         _map.getOverlayManager().add(line);
@@ -168,39 +161,20 @@ public class MapsActivity extends FragmentActivity {
         mapController.setZoom(16);
         mapController.setCenter(geoPoints.get(0));
 
-        ArrayList<OverlayItem> items = new ArrayList<>();
-        items.add(new OverlayItem("", "", geoPoints.get(0)));
+        MapHelper.putMarker(this, _map, geoPoints.get(0), R.drawable.start);
+        MapHelper.putMarker(this, _map, geoPoints.get(geoPoints.size() - 1), R.drawable.finish);
 
-        //the overlay
-        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<>(items,
-                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                    @Override
-                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        //do something
-                        return false;
-                    }
-                    @Override
-                    public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        return false;
-                    }
-                }, _resourceProxy);
-        mOverlay.setFocusItemsOnTap(true);
+        for(AudioPoint point : _audioPlaybackController.audioPoints())
+        {
+            int resId = point.Done ? R.drawable.passed : R.drawable.play;
+            Marker marker = MapHelper.putMarker(this, _map, point.Position, resId);
+            _audioPointMarkers.add(marker);
+            marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController));
+            _circles.add(MapHelper.addCircle(this, _map, point.Position, point.Radius));
+        }
 
-        _map.getOverlays().add(mOverlay);
-//
-//
-//        MapHelper.putMarker(_map, points.get(0).Position, R.drawable.start);
-//        MapHelper.putMarker(_map, points.get(points.size() - 1).Position, R.drawable.finish);
-//
-//        for(AudioPoint point : _audioPlaybackController.audioPoints())
-//        {
-//            int resId = point.Done ? R.drawable.passed : R.drawable.play;
-//            _audioPointMarkers.add(MapHelper.putMarker(_map, point.Position, resId));
-//            _circles.add(MapHelper.addCircle(_map, point.Position, point.Radius));
-//        }
-//
-//        _map.addPolyline(route);
-//        _map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
+        _map.getOverlays().add(new MapEventsOverlay(this, new MapOnClickListener(_circles)));
+ //        _map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
 //                route.getPoints().get(0), 16)));
 //
 //        _map.setOnMapClickListener(new MapOnClickListener(_circles));
@@ -269,7 +243,7 @@ public class MapsActivity extends FragmentActivity {
         savedInstanceState.putInt(getString(R.string.route_name), _currentRouteId);
 
         // Only for route creation
-        //_audioPlaybackController.specialSaveRouteToDisc(_circles, _audioPointMarkers, this);
+        _audioPlaybackController.specialSaveRouteToDisc(_circles, _audioPointMarkers, this);
 
         super.onSaveInstanceState(savedInstanceState);
     }

@@ -1,21 +1,37 @@
 package com.home.croaton.audiotravel.domain;
 
-import com.google.android.gms.maps.model.LatLng;
+import org.osmdroid.util.GeoPoint;
 
 public class Point
 {
     public Integer Number;
-    public LatLng Position;
+    public GeoPoint Position;
 
-    public Point(int number, LatLng position)
+    public Point(int number, GeoPoint position)
     {
         Number = number;
         Position = position;
     }
 
     @Override
+    public boolean equals(Object o) {
+
+        if (o == this) {
+            return true;
+        }
+
+        if (!(o instanceof Point)) {
+            return false;
+        }
+
+        Point point = (Point) o;
+
+        return point.Position == Position;
+    }
+
+    @Override
     public int hashCode()
     {
-        return Number/*Position.hashCode()*/;
+        return Position.hashCode();
     }
 }

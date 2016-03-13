@@ -1,35 +1,39 @@
 package com.home.croaton.audiotravel.maps;
 
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.LatLng;
-import com.home.croaton.audiotravel.LocationTracker;
+import org.osmdroid.bonuspack.overlays.MapEventsReceiver;
+import org.osmdroid.bonuspack.overlays.Polygon;
+import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 
-public class MapOnClickListener implements GoogleMap.OnMapClickListener
+public class MapOnClickListener implements MapEventsReceiver
 {
 
-    private final ArrayList<Circle> _circles;
+    private final ArrayList<Polygon> _circles;
 
-    public MapOnClickListener(ArrayList<Circle> circles)
+    public MapOnClickListener(ArrayList<Polygon> circles)
     {
         _circles = circles;
     }
 
     @Override
-    public void onMapClick(LatLng clickPosition)
-    {
-        for(Circle c : _circles)
-        {
-            if (LocationTracker.GetDistance(c.getCenter(), clickPosition) <= c.getRadius())
-            {
-                if (clickPosition.latitude >= c.getCenter().latitude)
-                    c.setRadius(c.getRadius() + 1);
-                else
-                    c.setRadius(c.getRadius() - 1);
-            }
-        }
+    public boolean singleTapConfirmedHelper(GeoPoint p) {
+//        for(Polygon c : _circles)
+//        {
+//            if (LocationTracker.GetDistance(c., clickPosition) <= c.getRadius())
+//            {
+//                if (clickPosition.latitude >= c.getCenter().latitude)
+//                    c.setRadius(c.getRadius() + 1);
+//                else
+//                    c.setRadius(c.getRadius() - 1);
+//            }
+//        }
+        return false;
+    }
+
+    @Override
+    public boolean longPressHelper(GeoPoint p) {
+        return false;
     }
 }

@@ -5,19 +5,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Pair;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.home.croaton.audiotravel.LocationTracker;
 import com.home.croaton.audiotravel.R;
-import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.domain.Route;
 import com.home.croaton.audiotravel.domain.RouteSerializer;
 
-import java.io.File;
+import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.bonuspack.overlays.Polygon;
+import org.osmdroid.util.GeoPoint;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -66,7 +64,7 @@ public class AudioPlaybackController
     }
 
     // ToDo: according to user choose files
-    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(Context context, LatLng position, boolean ignoreDone)
+    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(Context context, GeoPoint position, boolean ignoreDone)
     {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
@@ -126,7 +124,7 @@ public class AudioPlaybackController
         return doneIndicators;
     }
 
-    public void specialSaveRouteToDisc(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers,
+    public void specialSaveRouteToDisc(ArrayList<Polygon> circles, ArrayList<Marker> pointMarkers,
         Context context)
     {
         if (circles.size() > 0 && pointMarkers.size() > 0)
