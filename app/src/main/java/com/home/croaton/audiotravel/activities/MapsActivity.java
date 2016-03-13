@@ -22,6 +22,7 @@ import com.home.croaton.audiotravel.audio.AudioPlayerUI;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
+import com.home.croaton.audiotravel.maps.Circle;
 import com.home.croaton.audiotravel.maps.MapHelper;
 import com.home.croaton.audiotravel.maps.MapOnClickListener;
 import com.home.croaton.audiotravel.maps.OnMarkerClick;
@@ -30,7 +31,6 @@ import com.home.croaton.audiotravel.security.PermissionChecker;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.Polygon;
 import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -40,6 +40,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -52,7 +53,7 @@ public class MapsActivity extends FragmentActivity {
     private int _currentRouteId = -1;
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
-    ArrayList<Polygon> _circles = new ArrayList<>();
+    ArrayList<Circle> _circles = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +147,7 @@ public class MapsActivity extends FragmentActivity {
 
         if (_fakeLocation && !_fakeLocationStarted)
         {
-            //TestTracker.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
+            TestTracker.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
             _fakeLocationStarted = true;
         }
 
@@ -173,36 +174,17 @@ public class MapsActivity extends FragmentActivity {
             _circles.add(MapHelper.addCircle(this, _map, point.Position, point.Radius));
         }
 
-        _map.getOverlays().add(new MapEventsOverlay(this, new MapOnClickListener(_circles)));
+        _map.getOverlays().add(new MapEventsOverlay(this, new MapOnClickListener(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                _map.invalidate();
+                return null;
+            }
+        },  _circles)));
+
  //        _map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
 //                route.getPoints().get(0), 16)));
 //
-//        _map.setOnMapClickListener(new MapOnClickListener(_circles));
-//
-//        // Isn't it stupid? Position doesn't update without it.
-//        _map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-//            @Override
-//            public void onMarkerDragStart(Marker marker) {
-//            }
-//
-//            @Override
-//            public void onMarkerDrag(Marker marker) {
-//            }
-//
-//            @Override
-//            public void onMarkerDragEnd(Marker marker) {
-//            }
-//        });
-//        _map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//            @Override
-//            public boolean onMarkerClick(Marker marker) {
-//                Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController
-//                        .getResourceToPlay(MapsActivity.this, marker.getPosition(), true);
-//
-//                _audioPlaybackController.startPlaying(MapsActivity.this, audioAtPoint.second);
-//                return true;
-//            }
-//        });
     }
 
     @Override

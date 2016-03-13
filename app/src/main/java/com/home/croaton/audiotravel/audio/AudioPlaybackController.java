@@ -11,9 +11,9 @@ import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.domain.Route;
 import com.home.croaton.audiotravel.domain.RouteSerializer;
+import com.home.croaton.audiotravel.maps.Circle;
 
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.Polygon;
 import org.osmdroid.util.GeoPoint;
 
 import java.io.FileNotFoundException;
@@ -124,7 +124,7 @@ public class AudioPlaybackController
         return doneIndicators;
     }
 
-    public void specialSaveRouteToDisc(ArrayList<Polygon> circles, ArrayList<Marker> pointMarkers,
+    public void specialSaveRouteToDisc(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers,
         Context context)
     {
         if (circles.size() > 0 && pointMarkers.size() > 0)

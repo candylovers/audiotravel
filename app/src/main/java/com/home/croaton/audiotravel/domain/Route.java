@@ -1,7 +1,8 @@
 package com.home.croaton.audiotravel.domain;
 
+import com.home.croaton.audiotravel.maps.Circle;
+
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.Polygon;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
@@ -73,12 +74,12 @@ public class Route
         _pointTrackMapper.put(point, audioFilesIds);
     }
 
-    public void updateAudioPoints(ArrayList<Polygon> circles, ArrayList<Marker> pointMarkers)
+    public void updateAudioPoints(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers)
     {
         for(int i = 0; i < _audioPoints.size(); i++)
         {
-            //_audioPoints.get(i).Radius = (int)circles.get(i).getRadius();
-            //_audioPoints.get(i).Position = pointMarkers.get(i).getPosition();
+            _audioPoints.get(i).Radius = (int)circles.get(i).getRadius();
+            _audioPoints.get(i).Position = pointMarkers.get(i).getPosition();
         }
     }
 }

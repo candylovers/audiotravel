@@ -1,11 +1,13 @@
 package com.home.croaton.audiotravel;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.domain.Point;
+import com.home.croaton.audiotravel.maps.MapHelper;
+
+import org.osmdroid.bonuspack.overlays.Marker;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
 
 import java.util.ArrayList;
 
@@ -14,17 +16,18 @@ public class TestTracker
     private static Thread _trackerThread;
 
     public static void startFakeLocationTracking(MapsActivity activity, ArrayList<Point> points,
-        GoogleMap map)
+        MapView map)
     {
         final MapsActivity activityCopy = activity;
         final ArrayList<Point> pointsCopy = points;
-        final GoogleMap innerMap = map;
+        final MapView innerMap = map;
 
         _trackerThread = new Thread()
         {
             public void run()
             {
                 Point prev = null;
+                final ArrayList<Marker> markers = new ArrayList<>();
                 for(Point point : pointsCopy)
                 {
                     if (prev == null)
@@ -35,17 +38,16 @@ public class TestTracker
 
                     for (double i = 0.1; i <= 1; i += 0.1)
                     {
-                        final LatLng position = new LatLng(
-                                point.Position.getLatitude() * i + prev.Position.getLongitude() * (1d - i),
-                                point.Position.getLatitude() * i + prev.Position.getLongitude() * (1d - i));
+                        final GeoPoint position = new GeoPoint(
+                                point.Position.getLatitude() * i + prev.Position.getLatitude() * (1d - i),
+                                point.Position.getLongitude() * i + prev.Position.getLongitude() * (1d - i));
 
                         activityCopy.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                innerMap.addMarker(new MarkerOptions()
-                                        .position(position)
-                                        .icon(BitmapDescriptorFactory.defaultMarker()));
-                                activityCopy.locationChanged(position);
+                                markers.add(MapHelper.putMarker(activityCopy, innerMap, position, R.drawable.step));
+
+                                activityCopy.locationChanged(new LatLng(position.getLatitude(), position.getLongitude()));
                             }
                         });
 

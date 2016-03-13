@@ -3,16 +3,13 @@ package com.home.croaton.audiotravel.maps;
 import android.content.Context;
 import android.os.Build;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.Polygon;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 public class MapHelper
 {
-    public static Marker putMarker(Context context, MapView map, GeoPoint position, Integer resourceId)
+    public static Marker putMarker(Context context, MapView map, GeoPoint position, int resourceId)
     {
         Marker marker = new Marker(map);
         marker.setPosition(position);
@@ -34,17 +31,11 @@ public class MapHelper
         return marker;
     }
 
-    public static Marker putMarker(Context context, MapView map, LatLng position, Integer resourceId)
+    public static Circle addCircle(Context context, MapView map, GeoPoint position, Integer radius)
     {
-        return putMarker(context, map, new GeoPoint(position.latitude, position.longitude), resourceId);
-    }
-
-    public static Polygon addCircle(Context context, MapView map, GeoPoint position, Integer radius)
-    {
-        Polygon circle = new Polygon(context);
-        circle.setPoints(Polygon.pointsAsCircle(position, radius));
+        Circle circle = new Circle(context, position, radius);
         circle.setStrokeColor(0xFFFF0050);
-        circle.setStrokeWidth(2);
+        circle.setStrokeWidth(4);
 
         map.getOverlays().add(circle);
         map.invalidate();
