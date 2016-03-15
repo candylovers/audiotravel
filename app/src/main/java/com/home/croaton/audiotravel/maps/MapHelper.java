@@ -7,6 +7,8 @@ import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.util.ArrayList;
+
 public class MapHelper
 {
     public static Marker putMarker(Context context, MapView map, GeoPoint position, int resourceId)
@@ -15,14 +17,7 @@ public class MapHelper
         marker.setPosition(position);
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
-            marker.setIcon(context.getResources().getDrawable(resourceId, null));
-        }
-        else
-        {
-            marker.setIcon(context.getResources().getDrawable(resourceId));
-        }
+        setMarkerIconFromResource(context, resourceId, marker);
 
         marker.setDraggable(true);
         map.getOverlays().add(marker);
@@ -43,9 +38,20 @@ public class MapHelper
         return circle;
     }
 
-//    public static void changeIcon(ArrayList<Marker> audioPointMarkers, Integer index, int resId)
-//    {
-//        if (audioPointMarkers.size() > index)
-//            audioPointMarkers.get(index).setIcon(BitmapDescriptorFactory.fromResource(resId));
-//    }
+    public static void changeIcon(Context context, ArrayList<Marker> audioPointMarkers, Integer index, int resId)
+    {
+        if (audioPointMarkers.size() > index)
+            setMarkerIconFromResource(context, resId, audioPointMarkers.get(index));
+    }
+
+    private static void setMarkerIconFromResource(Context context, int resourceId, Marker marker) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            marker.setIcon(context.getResources().getDrawable(resourceId, null));
+        }
+        else
+        {
+            marker.setIcon(context.getResources().getDrawable(resourceId));
+        }
+    }
 }

@@ -53,6 +53,7 @@ public class MapsActivity extends FragmentActivity {
     private int _currentRouteId = -1;
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
+    private MyLocationNewOverlay _locationOverlay;
     ArrayList<Circle> _circles = new ArrayList<>();
 
     @Override
@@ -107,7 +108,7 @@ public class MapsActivity extends FragmentActivity {
         _audioPlaybackController.startPlaying(this, audioAtPoint.second);
         _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
 
-        //MapHelper.changeIcon(_audioPointMarkers, audioAtPoint.first, R.drawable.passed);
+        MapHelper.changeIcon(this, _audioPointMarkers, audioAtPoint.first, R.drawable.passed);
     }
 
     private synchronized void startLocationTracking()
@@ -140,9 +141,10 @@ public class MapsActivity extends FragmentActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
         {
-            MyLocationNewOverlay mLocationOverlay = new MyLocationNewOverlay(this,
+            _locationOverlay = new MyLocationNewOverlay(this,
                     new GpsMyLocationProvider(this),_map);
-            _map.getOverlays().add(mLocationOverlay);
+            _locationOverlay.enableMyLocation();
+            _map.getOverlays().add(_locationOverlay);
         }
 
         if (_fakeLocation && !_fakeLocationStarted)
@@ -180,11 +182,9 @@ public class MapsActivity extends FragmentActivity {
                 _map.invalidate();
                 return null;
             }
-        },  _circles)));
+        }, _circles)));
 
- //        _map.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
-//                route.getPoints().get(0), 16)));
-//
+        _map.getController().setCenter(geoPoints.get(0));
     }
 
     @Override
@@ -202,8 +202,10 @@ public class MapsActivity extends FragmentActivity {
                     if (allGranted)
                     {
                         _tracker.startLocationTracking();
-                        // set my location enabled
-                        //_map.setMyLocationEnabled(true);
+                        _locationOverlay = new MyLocationNewOverlay(this,
+                                new GpsMyLocationProvider(this),_map);
+                        _locationOverlay.enableMyLocation();
+                        _map.getOverlays().add(_locationOverlay);
                     }
                 }
             }
