@@ -49,6 +49,7 @@ public class AudioService extends android.app.Service implements
 
     private volatile int _position;
     private volatile boolean _playbackFinished = false;
+    private volatile boolean _isRunning = true;
 
     @Override
     // OOP cries. Me too.
@@ -140,9 +141,13 @@ public class AudioService extends android.app.Service implements
                 @Override
                 public void run() {
                     boolean onPrevStepWasPlaying = false;
-                    while (true)
+                    while (_isRunning)
                     {
                         _playerLock.lock();
+
+                        if (_mediaPlayer == null)
+                            continue;
+
                         boolean isPlaying = _mediaPlayer.isPlaying();
                         if (isPlaying)
                         {
@@ -179,7 +184,6 @@ public class AudioService extends android.app.Service implements
 
     }
 
-    // ToDo: show notification during audio is playing
     void setUpAsForeground(String text)
     {
         if (_notificationBuilder == null)
@@ -259,18 +263,6 @@ public class AudioService extends android.app.Service implements
     }
 
     @Override
-    public void onDestroy()
-    {
-        super.onDestroy();
-
-        if (_mediaPlayer != null)
-        {
-            _mediaPlayer.release();
-            _mediaPlayer = null;
-        }
-    }
-
-    @Override
     public void onCompletion(MediaPlayer player)
     {
         stopForeground(true);
@@ -286,5 +278,29 @@ public class AudioService extends android.app.Service implements
         }
 
         _playerLock.unlock();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        _isRunning = false;
+
+        if (_mediaPlayer != null)
+        {
+            _playerLock.lock();
+
+            _mediaPlayer.release();
+            _mediaPlayer = null;
+
+            _playerLock.unlock();
+        }
+    }
+
+    public void onTaskRemoved(Intent rootIntent)
+    {
+        stopForeground(true);
+        stopSelf();
     }
 }

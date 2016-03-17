@@ -148,4 +148,9 @@ public class AudioPlaybackController
 
         context.startService(startingIntent);
     }
+
+    public static void stopAnyPlayback(Context context)
+    {
+        context.stopService(new Intent(context, AudioService.class));
+    }
 }

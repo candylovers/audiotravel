@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
+import android.view.KeyEvent;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.home.croaton.audiotravel.LocationTracker;
@@ -221,8 +222,7 @@ public class MapsActivity extends FragmentActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
-        savedInstanceState.putBooleanArray(getString(R.string.audio_point_state),
-                _audioPlaybackController.GetDoneArray());
+        savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.GetDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
         savedInstanceState.putInt(getString(R.string.route_name), _currentRouteId);
 
@@ -251,5 +251,14 @@ public class MapsActivity extends FragmentActivity {
 
         super.onStop();
         TestTracker.stop();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+            AudioPlaybackController.stopAnyPlayback(this);
+
+        return super.onKeyDown(keyCode, event);
     }
 }
