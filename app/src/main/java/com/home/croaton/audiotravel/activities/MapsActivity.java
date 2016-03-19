@@ -14,15 +14,15 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 import android.view.KeyEvent;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.home.croaton.audiotravel.LocationTracker;
 import com.home.croaton.audiotravel.R;
-import com.home.croaton.audiotravel.TestTracker;
 import com.home.croaton.audiotravel.audio.AudioPlaybackController;
 import com.home.croaton.audiotravel.audio.AudioPlayerUI;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
+import com.home.croaton.audiotravel.location.LocationService;
+import com.home.croaton.audiotravel.location.TrackEmulator;
+import com.home.croaton.audiotravel.location.TrackerCommand;
 import com.home.croaton.audiotravel.maps.Circle;
 import com.home.croaton.audiotravel.maps.MapHelper;
 import com.home.croaton.audiotravel.maps.MapOnClickListener;
@@ -47,7 +47,7 @@ public class MapsActivity extends FragmentActivity {
 
     public static final String WAKE_LOCK_NAME = "MyWakeLock";
     private MapView _map;
-    private LocationTracker _tracker;
+    //private LocationHelper _tracker;
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
     private boolean _fakeLocation;
@@ -98,10 +98,9 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    public void locationChanged(LatLng point) {
-        GeoPoint geoPoint = new GeoPoint(point.latitude, point.longitude);
+    public void locationChanged(GeoPoint point) {
         Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController
-                .getResourceToPlay(this, geoPoint, false);
+                .getResourceToPlay(this, point, false);
 
         if (audioAtPoint == null)
             return;
@@ -114,16 +113,23 @@ public class MapsActivity extends FragmentActivity {
 
     private synchronized void startLocationTracking()
     {
-        _tracker = new LocationTracker(this);
-        _tracker.LocationChanged.subscribe(new IObserver<LatLng>() {
+        if (!PermissionChecker.CheckForLocationDetectionPermission(this))
+            return;
+
+        sendCommandToLocationService(TrackerCommand.Start);
+    }
+
+    private void sendCommandToLocationService(TrackerCommand command) {
+        Intent startingIntent = new Intent(this, LocationService.class);
+        startingIntent.putExtra(LocationService.Command, command);
+        LocationService.LocationChanged.subscribe(new IObserver<GeoPoint>() {
             @Override
-            public void notify(LatLng location) {
+            public void notify(GeoPoint location) {
                 locationChanged(location);
             }
         });
-        boolean stupid = PermissionChecker.CheckForLocationDetectionPermission(this);
-        if (stupid)
-            _tracker.startLocationTracking();
+
+        startService(startingIntent);
     }
 
     private boolean _fakeLocationStarted = false;
@@ -150,7 +156,7 @@ public class MapsActivity extends FragmentActivity {
 
         if (_fakeLocation && !_fakeLocationStarted)
         {
-            TestTracker.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
+            TrackEmulator.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
             _fakeLocationStarted = true;
         }
 
@@ -202,7 +208,7 @@ public class MapsActivity extends FragmentActivity {
 
                     if (allGranted)
                     {
-                        _tracker.startLocationTracking();
+                        sendCommandToLocationService(TrackerCommand.Start);
                         _locationOverlay = new MyLocationNewOverlay(this,
                                 new GpsMyLocationProvider(this),_map);
                         _locationOverlay.enableMyLocation();
@@ -236,11 +242,6 @@ public class MapsActivity extends FragmentActivity {
     public void onResume()
     {
         super.onResume();
-
-        if (_tracker == null)
-            return;
-
-        _tracker.resume();
     }
 
     @Override
@@ -250,15 +251,16 @@ public class MapsActivity extends FragmentActivity {
             _wakeLock.release();
 
         super.onStop();
-        TestTracker.stop();
+        TrackEmulator.stop();
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-        if (keyCode == KeyEvent.KEYCODE_BACK)
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             AudioPlaybackController.stopAnyPlayback(this);
-
+            sendCommandToLocationService(TrackerCommand.Stop);
+        }
         return super.onKeyDown(keyCode, event);
     }
 }

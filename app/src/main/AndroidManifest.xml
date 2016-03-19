@@ -16,6 +16,8 @@
         android:theme="@style/AppTheme">
         <service android:name=".audio.AudioService"
             android:stopWithTask="false"/>
+        <service android:name=".location.LocationService"
+            android:stopWithTask="false"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

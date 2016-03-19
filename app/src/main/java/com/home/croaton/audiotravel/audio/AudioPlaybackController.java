@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Pair;
 
-import com.home.croaton.audiotravel.LocationTracker;
+import com.home.croaton.audiotravel.location.LocationHelper;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
@@ -74,7 +74,7 @@ public class AudioPlaybackController
             if (!ignoreDone && point.Done)
                 continue;
 
-            float distance = LocationTracker.GetDistance(position, point.Position);
+            float distance = LocationHelper.GetDistance(position, point.Position);
             if (distance < min && distance <= point.Radius)
             {
                 min = distance;

@@ -59,8 +59,7 @@ public class AudioService extends android.app.Service implements
             return START_STICKY;
 
         AudioServiceCommand command = (AudioServiceCommand)intent.getSerializableExtra(Command);
-
-        if (command == AudioServiceCommand.ReverseState)
+        if (command == AudioServiceCommand.ToggleState)
         {
             if (_mediaPlayer == null)
                 return START_STICKY;
@@ -69,47 +68,44 @@ public class AudioService extends android.app.Service implements
                     ? AudioServiceCommand.Pause
                     : AudioServiceCommand.Play;
         }
-        if (command == AudioServiceCommand.LoadTracks)
+        switch (command)
         {
-            ArrayList<Uri> newUris = (ArrayList<Uri>)intent.getSerializableExtra(NewUris);
+            case LoadTracks:
+                ArrayList<Uri> newUris = (ArrayList<Uri>)intent.getSerializableExtra(NewUris);
+                RenewPlayer();
 
-            RenewPlayer();
+                _uriQueue.clear();
+                _uriQueue.addAll(newUris);
 
-            _uriQueue.clear();
-            _uriQueue.addAll(newUris);
-
-            setPlayerListeners();
-
-            preparePlayerWithNextTrack();
-        }
-        if (command == AudioServiceCommand.Pause)
-        {
-            _playerLock.lock();
-            if (_mediaPlayer != null)
-            {
-                _mediaPlayer.pause();
-                _innerState.notifyObservers(PlayerState.Paused);
-            }
-            _playerLock.unlock();
-        }
-        if (command == AudioServiceCommand.Play)
-        {
-            _playerLock.lock();
-            if (_mediaPlayer != null)
-            {
-                _playbackFinished = false;
-                _mediaPlayer.start();
-                _innerState.notifyObservers(PlayerState.Playing);
-            }
-            _playerLock.unlock();
-        }
-        if (command == AudioServiceCommand.Rewind)
-        {
-            int progress = intent.getIntExtra(Progress, 0);
-            _playerLock.lock();
-            if (_mediaPlayer != null)
-                _mediaPlayer.seekTo(_mediaPlayer.getDuration() * progress / 100);
-            _playerLock.unlock();
+                setPlayerListeners();
+                preparePlayerWithNextTrack();
+                break;
+            case Pause:
+                _playerLock.lock();
+                if (_mediaPlayer != null)
+                {
+                    _mediaPlayer.pause();
+                    _innerState.notifyObservers(PlayerState.Paused);
+                }
+                _playerLock.unlock();
+                break;
+            case Play:
+                _playerLock.lock();
+                if (_mediaPlayer != null)
+                {
+                    _playbackFinished = false;
+                    _mediaPlayer.start();
+                    _innerState.notifyObservers(PlayerState.Playing);
+                }
+                _playerLock.unlock();
+                break;
+            case Rewind:
+                int progress = intent.getIntExtra(Progress, 0);
+                _playerLock.lock();
+                if (_mediaPlayer != null)
+                    _mediaPlayer.seekTo(_mediaPlayer.getDuration() * progress / 100);
+                _playerLock.unlock();
+                break;
         }
 
         return START_STICKY;

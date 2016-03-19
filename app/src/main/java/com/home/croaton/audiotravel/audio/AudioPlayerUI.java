@@ -2,13 +2,6 @@ package com.home.croaton.audiotravel.audio;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
@@ -16,7 +9,6 @@ import android.widget.SeekBar;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
-import com.home.croaton.audiotravel.maps.MapHelper;
 
 public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
@@ -34,7 +26,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
             @Override
             public void onClick(View v) {
                 Intent startingIntent = new Intent(activity, AudioService.class);
-                startingIntent.putExtra(AudioService.Command, AudioServiceCommand.ReverseState);
+                startingIntent.putExtra(AudioService.Command, AudioServiceCommand.ToggleState);
                 activity.startService(startingIntent);
             }
         });

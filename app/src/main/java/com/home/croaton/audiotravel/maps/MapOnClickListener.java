@@ -1,7 +1,7 @@
 package com.home.croaton.audiotravel.maps;
 
 
-import com.home.croaton.audiotravel.LocationTracker;
+import com.home.croaton.audiotravel.location.LocationHelper;
 
 import org.osmdroid.bonuspack.overlays.MapEventsReceiver;
 import org.osmdroid.util.GeoPoint;
@@ -26,7 +26,7 @@ public class MapOnClickListener implements MapEventsReceiver
         boolean shouldCallCallback = false;
         for(Circle c : _circles)
         {
-            if (LocationTracker.GetDistance(c.getCenter(), p) <= c.getRadius())
+            if (LocationHelper.GetDistance(c.getCenter(), p) <= c.getRadius())
             {
                 shouldCallCallback = true;
                 if (p.getLatitude() >= c.getCenter().getLatitude())

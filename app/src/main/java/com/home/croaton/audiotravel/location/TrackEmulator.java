@@ -1,6 +1,6 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.audiotravel.location;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.maps.MapHelper;
@@ -11,7 +11,7 @@ import org.osmdroid.views.MapView;
 
 import java.util.ArrayList;
 
-public class TestTracker
+public class TrackEmulator
 {
     private static Thread _trackerThread;
 
@@ -47,7 +47,7 @@ public class TestTracker
                             public void run() {
                                 markers.add(MapHelper.putMarker(activityCopy, innerMap, position, R.drawable.step));
 
-                                activityCopy.locationChanged(new LatLng(position.getLatitude(), position.getLongitude()));
+                                activityCopy.locationChanged(position);
                             }
                         });
 
