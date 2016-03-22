@@ -33,7 +33,7 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.bonuspack.overlays.Polyline;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -136,7 +136,12 @@ public class MapsActivity extends FragmentActivity {
 
     public void setUpMap() {
         _map = (MapView) findViewById(R.id.map);
-        _map.setTileSource(TileSourceFactory.MAPNIK);
+        _map.getTileProvider().clearTileCache();
+        final MapBoxTileSource tileSource = new MapBoxTileSource(this);
+        tileSource.setMapboxMapid("mapbox.emerald");
+
+        _map.setTileSource(tileSource);
+        _map.getTileProvider().clearTileCache();
         _map.setMultiTouchControls(true);
 
         Polyline line = new Polyline(this);
