@@ -153,4 +153,14 @@ public class AudioPlaybackController
     {
         context.stopService(new Intent(context, AudioService.class));
     }
+
+    public AudioPoint getFirstNotDoneAudioPoint() {
+        for(AudioPoint audioPoint : _route.audioPoints())
+        {
+            if (!audioPoint.Done)
+                return (AudioPoint)audioPoint.clone();
+        }
+
+        return null;
+    }
 }

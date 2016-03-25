@@ -19,6 +19,7 @@ import com.home.croaton.audiotravel.audio.AudioPlaybackController;
 import com.home.croaton.audiotravel.audio.AudioPlayerUI;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
+import com.home.croaton.audiotravel.instrumentation.ConnectionHelper;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
 import com.home.croaton.audiotravel.location.LocationService;
 import com.home.croaton.audiotravel.location.TrackEmulator;
@@ -29,15 +30,12 @@ import com.home.croaton.audiotravel.maps.MapOnClickListener;
 import com.home.croaton.audiotravel.maps.OnMarkerClick;
 import com.home.croaton.audiotravel.security.PermissionChecker;
 
-import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.cachemanager.CacheManager;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.bonuspack.overlays.Polyline;
-import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
+import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +45,12 @@ public class MapsActivity extends FragmentActivity {
 
     public static final String WAKE_LOCK_NAME = "MyWakeLock";
     private MapView _map;
-    //private LocationHelper _tracker;
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
     private boolean _fakeLocation;
     private int _currentRouteId = -1;
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
-    private MyLocationNewOverlay _locationOverlay;
     ArrayList<Circle> _circles = new ArrayList<>();
 
     @Override
@@ -136,27 +132,18 @@ public class MapsActivity extends FragmentActivity {
 
     public void setUpMap() {
         _map = (MapView) findViewById(R.id.map);
-        _map.getTileProvider().clearTileCache();
-        final MapBoxTileSource tileSource = new MapBoxTileSource(this);
-        tileSource.setMapboxMapid("mapbox.emerald");
+        MapHelper.chooseBeautifulMapProvider(this, _map);
 
-        _map.setTileSource(tileSource);
-        _map.getTileProvider().clearTileCache();
+        if (ConnectionHelper.hasInternetConnection(this)) {
+            CacheManager cacheManager = new CacheManager(_map);
+            cacheManager.downloadAreaAsync(this, new BoundingBoxE6(59.32829, 18.07929, 59.32023, 18.05884), 5, 18);
+        }
         _map.setMultiTouchControls(true);
-
-        Polyline line = new Polyline(this);
-        line.setSubDescription(Polyline.class.getCanonicalName());
-        line.setWidth(15f);
-        line.setColor(0x7F0000FF);
-        List<GeoPoint> geoPoints = new ArrayList<>();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
         {
-            _locationOverlay = new MyLocationNewOverlay(this,
-                    new GpsMyLocationProvider(this),_map);
-            _locationOverlay.enableMyLocation();
-            _map.getOverlays().add(_locationOverlay);
+            MapHelper.addLocationOverlay(this, _map);
         }
 
         if (_fakeLocation && !_fakeLocationStarted)
@@ -165,28 +152,16 @@ public class MapsActivity extends FragmentActivity {
             _fakeLocationStarted = true;
         }
 
-        for(Point point : _audioPlaybackController.geoPoints())
-            geoPoints.add(point.Position);
+        List<Point> routePoints = _audioPlaybackController.geoPoints();
+        MapHelper.drawRoute(this, _map, routePoints);
+        MapHelper.focusCameraOnPoint(_map, _audioPlaybackController.getFirstNotDoneAudioPoint());
+        MapHelper.setStartRouteIcon(this, _map, routePoints.get(0).Position);
+        MapHelper.setEndRouteIcon(this, _map, routePoints.get(routePoints.size() - 1).Position);
+        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController.audioPoints(),
+                _audioPointMarkers, _circles);
 
-        line.setPoints(geoPoints);
-        line.setGeodesic(true);
-        _map.getOverlayManager().add(line);
-
-        IMapController mapController = _map.getController();
-        mapController.setZoom(16);
-        mapController.setCenter(geoPoints.get(0));
-
-        MapHelper.putMarker(this, _map, geoPoints.get(0), R.drawable.start);
-        MapHelper.putMarker(this, _map, geoPoints.get(geoPoints.size() - 1), R.drawable.finish);
-
-        for(AudioPoint point : _audioPlaybackController.audioPoints())
-        {
-            int resId = point.Done ? R.drawable.passed : R.drawable.play;
-            Marker marker = MapHelper.putMarker(this, _map, point.Position, resId);
-            _audioPointMarkers.add(marker);
+        for(Marker marker : _audioPointMarkers)
             marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController));
-            _circles.add(MapHelper.addCircle(this, _map, point.Position, point.Radius));
-        }
 
         _map.getOverlays().add(new MapEventsOverlay(this, new MapOnClickListener(new Callable<Void>() {
             @Override
@@ -195,8 +170,6 @@ public class MapsActivity extends FragmentActivity {
                 return null;
             }
         }, _circles)));
-
-        _map.getController().setCenter(geoPoints.get(0));
     }
 
     @Override
@@ -214,10 +187,7 @@ public class MapsActivity extends FragmentActivity {
                     if (allGranted)
                     {
                         sendCommandToLocationService(TrackerCommand.Start);
-                        _locationOverlay = new MyLocationNewOverlay(this,
-                                new GpsMyLocationProvider(this),_map);
-                        _locationOverlay.enableMyLocation();
-                        _map.getOverlays().add(_locationOverlay);
+                        MapHelper.addLocationOverlay(this, _map);
                     }
                 }
             }

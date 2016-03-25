@@ -2,7 +2,7 @@ package com.home.croaton.audiotravel.domain;
 
 import org.osmdroid.util.GeoPoint;
 
-public class Point
+public class Point implements Cloneable
 {
     public Integer Number;
     public GeoPoint Position;
@@ -33,5 +33,10 @@ public class Point
     public int hashCode()
     {
         return Position.hashCode();
+    }
+
+    @Override
+    public Object clone() {
+        return new Point(Number, Position.clone());
     }
 }
