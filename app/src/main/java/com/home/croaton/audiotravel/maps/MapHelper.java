@@ -62,8 +62,8 @@ public class MapHelper
     {
         MapBoxTileSource tileSource = new MapBoxTileSource(context);
         map.setTilesScaledToDpi(true);
+        map.setMaxZoomLevel(17);
         tileSource.setMapboxMapid("mapbox.emerald");
-        //tileSource.setMapboxMapid("mapbox.streets");
         map.setTileSource(tileSource);
     }
 
@@ -105,7 +105,7 @@ public class MapHelper
                                   List<Marker> markers, List<Circle> circles) {
         for(AudioPoint point : points)
         {
-            int resId = point.Done ? R.drawable.passed : R.drawable.audio_point;
+            int resId = point.Done ? R.drawable.passed : R.drawable.audio_point_mini;
             float anchor = point.Done ? Marker.ANCHOR_CENTER : Marker.ANCHOR_BOTTOM;
             Marker marker = MapHelper.putMarker(context, map, point.Position, resId, anchor);
             markers.add(marker);
@@ -125,7 +125,7 @@ public class MapHelper
     }
 
     public static void setEndRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
-        putMarker(context, map, position, R.drawable.finish, Marker.ANCHOR_CENTER);
+        putMarker(context, map, position, R.drawable.finish4, Marker.ANCHOR_CENTER);
     }
 
     private static void setMarkerIconFromResource(Context context, int resourceId, Marker marker) {
