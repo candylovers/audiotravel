@@ -46,7 +46,7 @@ public class MapHelper
         circle.setStrokeColor(0xFFFF0050);
         circle.setStrokeWidth(4);
 
-        //map.getOverlays().add(circle);
+        map.getOverlays().add(circle);
         map.invalidate();
 
         return circle;

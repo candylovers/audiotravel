@@ -12,7 +12,7 @@ public class Route
 {
     private ArrayList<AudioPoint> _audioPoints;
     private ArrayList<Point> _geoPoints;
-    private Hashtable<Point, ArrayList<String>> _pointTrackMapper;
+    private Hashtable<Integer, ArrayList<String>> _pointTrackMapper;
 
     public Route()
     {
@@ -58,20 +58,20 @@ public class Route
 
     public ArrayList<String> getAudiosForPoint(AudioPoint audioPoint)
     {
-        return _pointTrackMapper.get(audioPoint);
+        return _pointTrackMapper.get(audioPoint.Number);
     }
 
     public void addAudioTrack(AudioPoint point, String fileName)
     {
-        if (_pointTrackMapper.containsKey(point))
+        if (_pointTrackMapper.containsKey(point.Number))
         {
-            _pointTrackMapper.get(point).add(fileName);
+            _pointTrackMapper.get(point.Number).add(fileName);
             return;
         }
 
         ArrayList<String> audioFilesIds = new ArrayList<>();
         audioFilesIds.add(fileName);
-        _pointTrackMapper.put(point, audioFilesIds);
+        _pointTrackMapper.put(point.Number, audioFilesIds);
     }
 
     public void updateAudioPoints(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers)
