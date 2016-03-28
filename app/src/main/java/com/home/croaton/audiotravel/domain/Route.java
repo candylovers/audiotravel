@@ -12,6 +12,7 @@ public class Route
 {
     private ArrayList<AudioPoint> _audioPoints;
     private ArrayList<Point> _geoPoints;
+    private ArrayList<Boolean> _passedPoints;
     private Hashtable<Integer, ArrayList<String>> _pointTrackMapper;
 
     public Route()
@@ -19,11 +20,7 @@ public class Route
         _pointTrackMapper = new Hashtable<>();
         _geoPoints = new ArrayList<>();
         _audioPoints = new ArrayList<>();
-    }
-
-    public void addGeoPoint(GeoPoint position)
-    {
-        _geoPoints.add(new Point(_geoPoints.size() + 1, position));
+        _passedPoints = new ArrayList<>();
     }
 
     public void addGeoPoint(int number, GeoPoint position)
@@ -34,11 +31,7 @@ public class Route
     public void addAudioPoint(AudioPoint audioPoint)
     {
         _audioPoints.add(audioPoint);
-    }
-
-    public Point getGeoPoint(int index)
-    {
-        return _geoPoints.get(index);
+        _passedPoints.add(false);
     }
 
     public ArrayList<Point> geoPoints()
@@ -51,9 +44,13 @@ public class Route
         return (ArrayList<AudioPoint>)_audioPoints.clone();
     }
 
-    public void markAudioPointDone(int pointNumber)
+    public void markAudioPoint(int pointNumber, boolean passed)
     {
-        _audioPoints.get(pointNumber).Done = true;
+        if (_passedPoints == null) {
+
+        }
+
+        _passedPoints.set(pointNumber, passed);
     }
 
     public ArrayList<String> getAudiosForPoint(AudioPoint audioPoint)
@@ -78,8 +75,12 @@ public class Route
     {
         for(int i = 0; i < _audioPoints.size(); i++)
         {
-            _audioPoints.get(i).Radius = (int)circles.get(i).getRadius();
+            _audioPoints.get(i).Radius = circles.get(i).getRadius();
             _audioPoints.get(i).Position = pointMarkers.get(i).getPosition();
         }
+    }
+
+    public boolean isAudioPointPassed(Integer number) {
+        return _passedPoints.get(number);
     }
 }

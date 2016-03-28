@@ -84,7 +84,7 @@ public class MapsActivity extends FragmentActivity {
             if (done != null) {
                 int i = 0;
                 for (AudioPoint p : _audioPlaybackController.audioPoints())
-                    p.Done = done[i++];
+                    _audioPlaybackController.markAudioPoint(p.Number, done[i++]);
             }
             _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
         } else {
@@ -102,7 +102,7 @@ public class MapsActivity extends FragmentActivity {
             return;
 
         _audioPlaybackController.startPlaying(this, audioAtPoint.second);
-        _audioPlaybackController.doneAudioPoint(audioAtPoint.first);
+        _audioPlaybackController.markAudioPoint(audioAtPoint.first, true);
 
         MapHelper.changeIcon(this, _audioPointMarkers, audioAtPoint.first, R.drawable.passed);
     }
@@ -157,8 +157,8 @@ public class MapsActivity extends FragmentActivity {
         MapHelper.focusCameraOnPoint(_map, _audioPlaybackController.getFirstNotDoneAudioPoint());
         MapHelper.setStartRouteIcon(this, _map, routePoints.get(0).Position);
         MapHelper.setEndRouteIcon(this, _map, routePoints.get(routePoints.size() - 1).Position);
-        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController.audioPoints(),
-                _audioPointMarkers, _circles);
+        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController, _audioPointMarkers,
+                _circles);
 
         for(Marker marker : _audioPointMarkers)
             marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController));

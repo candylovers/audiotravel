@@ -40,11 +40,6 @@ public class RouteSerializer {
 
     public static void serialize(Route route, FileOutputStream fileOutputStream)
     {
-        serialize(route, fileOutputStream, true);
-    }
-
-    public static void serialize(Route route, FileOutputStream fileOutputStream, boolean writeDone)
-    {
         try
         {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -74,9 +69,6 @@ public class RouteSerializer {
                 pointElement.setAttribute(PointNumber, audioPoint.Number.toString());
                 pointElement.setAttribute(PointPosition, geoPointToString(audioPoint));
                 pointElement.setAttribute(PointRadius, audioPoint.Radius.toString());
-                pointElement.setAttribute(DoneIndicator, writeDone
-                        ? String.valueOf(audioPoint.Done)
-                        : "false");
 
                 for(String fileName : route.getAudiosForPoint(audioPoint))
                 {

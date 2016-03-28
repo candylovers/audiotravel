@@ -5,6 +5,7 @@ import android.os.Build;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
+import com.home.croaton.audiotravel.audio.AudioPlaybackController;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 
@@ -101,12 +102,19 @@ public class MapHelper
         map.getOverlayManager().add(line);
     }
 
-    public static void drawAudioPoints(Context context, MapView map, List<AudioPoint> points,
+    public static void drawAudioPoints(Context context, MapView map, AudioPlaybackController controller,
                                   List<Marker> markers, List<Circle> circles) {
-        for(AudioPoint point : points)
+        for(AudioPoint point : controller.audioPoints())
         {
-            int resId = point.Done ? R.drawable.passed : R.drawable.audio_point_mini;
-            float anchor = point.Done ? Marker.ANCHOR_CENTER : Marker.ANCHOR_BOTTOM;
+            boolean isPointPassed = controller.isAudioPointPassed(point.Number);
+            int resId = isPointPassed
+                    ? R.drawable.passed
+                    : R.drawable.audio_point_mini;
+
+            float anchor = isPointPassed
+                    ? Marker.ANCHOR_CENTER
+                    : Marker.ANCHOR_BOTTOM;
+
             Marker marker = MapHelper.putMarker(context, map, point.Position, resId, anchor);
             markers.add(marker);
             circles.add(MapHelper.addCircle(context, map, point.Position, point.Radius));

@@ -71,7 +71,7 @@ public class AudioPlaybackController
 
         for (AudioPoint point : _route.audioPoints())
         {
-            if (!ignoreDone && point.Done)
+            if (!ignoreDone && _route.isAudioPointPassed(point.Number))
                 continue;
 
             float distance = LocationHelper.GetDistance(position, point.Position);
@@ -98,9 +98,9 @@ public class AudioPlaybackController
         return result;
     }
 
-    public void doneAudioPoint(int pointNumber)
+    public void markAudioPoint(int pointNumber, boolean passed)
     {
-        _route.markAudioPointDone(pointNumber);
+        _route.markAudioPoint(pointNumber, passed);
     }
 
     public ArrayList<Point> geoPoints()
@@ -119,7 +119,7 @@ public class AudioPlaybackController
         boolean[] doneIndicators = new boolean[audioPoints.size()];
 
         for(int i = 0; i < audioPoints.size(); i++)
-            doneIndicators[i] = audioPoints.get(i).Done;
+            doneIndicators[i] = _route.isAudioPointPassed(i);
 
         return doneIndicators;
     }
@@ -138,7 +138,7 @@ public class AudioPlaybackController
         {
             e.printStackTrace();
         }
-        RouteSerializer.serialize(_route, fs, false);
+        RouteSerializer.serialize(_route, fs);
     }
 
     public void startPlaying(Context context, ArrayList<Uri> audioToPlay) {
@@ -154,10 +154,14 @@ public class AudioPlaybackController
         context.stopService(new Intent(context, AudioService.class));
     }
 
+    public boolean isAudioPointPassed(Integer number) {
+        return _route.isAudioPointPassed(number);
+    }
+
     public AudioPoint getFirstNotDoneAudioPoint() {
         for(AudioPoint audioPoint : _route.audioPoints())
         {
-            if (!audioPoint.Done)
+            if (!_route.isAudioPointPassed(audioPoint.Number))
                 return (AudioPoint)audioPoint.clone();
         }
 
