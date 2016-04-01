@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<names>
+
+	<audioPoint number="0">
+        <audio name="test_1">
+		    <en>Home close</en>
+		    <ru>Возле дома</ru>
+        </audio>
+	</audioPoint>
+
+	<audioPoint number="1">
+        <audio name="test_2">
+		    <en>Very very long name to see how it works</en>
+		    <ru>Очень очень очень длинный текст</ru>
+        </audio>
+	</audioPoint>
+
+	<!--<audio number="2">-->
+		<!--<en>Near rubbish</en>-->
+		<!--<ru>Возле мусора</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="3">-->
+		<!--<en>In the rubbish</en>-->
+		<!--<ru>В мусоре</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="4">-->
+		<!--<en>Somewhere</en>-->
+		<!--<ru>Гдето</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="5">-->
+		<!--<en>Ready</en>-->
+		<!--<ru>Настарт</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="6">-->
+		<!--<en>Steady</en>-->
+		<!--<ru>Внимание</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="7">-->
+		<!--<en>Go</en>-->
+		<!--<ru>Марш</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="8">-->
+		<!--<en>Yo!</en>-->
+		<!--<ru>Йо!</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="9">-->
+		<!--<en>Far away</en>-->
+		<!--<ru>Далеко</ru>-->
+	<!--</audio>-->
+
+	<!--<audio number="10">-->
+		<!--<en>Far away2</en>-->
+		<!--<ru>Далеко2</ru>-->
+	<!--</audio>-->
+
+</names>

@@ -52,6 +52,7 @@ public class MapsActivity extends FragmentActivity {
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
     ArrayList<Circle> _circles = new ArrayList<>();
+    private String _language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class MapsActivity extends FragmentActivity {
     private void loadState(Bundle savedInstanceState) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
-        String language = sharedPref.getString(getString(R.string.settings_language_preference), "en");
+        _language = sharedPref.getString(getString(R.string.settings_language_preference), "en");
 
         if (savedInstanceState != null) {
             _currentRouteId = savedInstanceState.getInt(getString(R.string.route_name));
@@ -101,6 +102,7 @@ public class MapsActivity extends FragmentActivity {
         if (audioAtPoint == null)
             return;
 
+        _audioPlayerUi.changeTrackCaption(_audioPlaybackController.getCaptionForPoint(audioAtPoint.first, "not used right now", _language));
         _audioPlaybackController.startPlaying(this, audioAtPoint.second);
         _audioPlaybackController.markAudioPoint(audioAtPoint.first, true);
 
@@ -203,7 +205,7 @@ public class MapsActivity extends FragmentActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
-        savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.GetDoneArray());
+        savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.getDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
         savedInstanceState.putInt(getString(R.string.route_name), _currentRouteId);
 

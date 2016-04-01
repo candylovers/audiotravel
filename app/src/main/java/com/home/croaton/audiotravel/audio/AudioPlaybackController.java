@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Pair;
 
-import com.home.croaton.audiotravel.location.LocationHelper;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
 import com.home.croaton.audiotravel.domain.Route;
 import com.home.croaton.audiotravel.domain.RouteSerializer;
+import com.home.croaton.audiotravel.location.LocationHelper;
 import com.home.croaton.audiotravel.maps.Circle;
 
 import org.osmdroid.bonuspack.overlays.Marker;
@@ -19,12 +19,14 @@ import org.osmdroid.util.GeoPoint;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AudioPlaybackController
 {
     private static final String RESOURCE_FOLDER = "android.resource://com.home.croaton.audiotravel/";
     private Route _route;
     private String _routeFileName;
+    private HashMap<String, HashMap<Integer, ArrayList<Pair<String, String>>>> _audiopointNames;
 
     public AudioPlaybackController(Context context, int routeId)
     {
@@ -37,10 +39,15 @@ public class AudioPlaybackController
             case R.id.route_abrahamsberg:
                 _routeFileName = "Abrahamsberg";
                 decerializeFromFileOrResource(context, R.raw.abrahamsberg);
+                deserializeAudioPointNames(context, R.raw.abrahamsberg_point_names);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported route id");
         }
+    }
+
+    private void deserializeAudioPointNames(Context context, int fileResId) {
+        _audiopointNames =  RouteSerializer.deserializeAudioPointNames(context.getResources(), fileResId);
     }
 
     private void decerializeFromFileOrResource(Context context, int resId)
@@ -113,7 +120,7 @@ public class AudioPlaybackController
         return _route.audioPoints();
     }
 
-    public boolean[] GetDoneArray()
+    public boolean[] getDoneArray()
     {
         ArrayList<AudioPoint> audioPoints = _route.audioPoints();
         boolean[] doneIndicators = new boolean[audioPoints.size()];
@@ -166,5 +173,9 @@ public class AudioPlaybackController
         }
 
         return null;
+    }
+
+    public String getCaptionForPoint(Integer pointNumber, String test_1, String language) {
+        return _audiopointNames.get(language).get(pointNumber).get(0).second;
     }
 }

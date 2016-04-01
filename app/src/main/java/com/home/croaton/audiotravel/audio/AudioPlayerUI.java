@@ -1,10 +1,12 @@
 package com.home.croaton.audiotravel.audio;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
@@ -12,7 +14,7 @@ import com.home.croaton.audiotravel.instrumentation.IObserver;
 
 public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
-    private final Context _context;
+    private final Activity _context;
 
     public AudioPlayerUI(MapsActivity mapsActivity)
     {
@@ -48,6 +50,12 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
                 seekBar.setProgress(progress);
             }
         });
+    }
+
+    public void changeTrackCaption(String caption)
+    {
+        TextView textView = (TextView)_context.findViewById(R.id.textViewSongName);
+        textView.setText(caption);
     }
 
     @Override

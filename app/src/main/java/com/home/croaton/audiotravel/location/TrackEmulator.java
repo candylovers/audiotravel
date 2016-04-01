@@ -45,7 +45,7 @@ public class TrackEmulator
                         activityCopy.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                markers.add(MapHelper.putMarker(activityCopy, innerMap, position, R.drawable.step, Marker.ANCHOR_CENTER));
+                                markers.add(MapHelper.putMarker(activityCopy, innerMap, position, R.drawable.step, Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER));
 
                                 activityCopy.locationChanged(position);
                             }

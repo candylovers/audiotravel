@@ -2,6 +2,7 @@ package com.home.croaton.audiotravel.domain;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 import org.osmdroid.util.GeoPoint;
 import org.w3c.dom.Document;
@@ -14,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,6 +40,7 @@ public class RouteSerializer {
     public static final String DoneIndicator = "done";
     public static final String AudioFile = "audio";
     public static final String Id = "id";
+    public static final String Name = "name";
 
     public static void serialize(Route route, FileOutputStream fileOutputStream)
     {
@@ -123,7 +127,6 @@ public class RouteSerializer {
             e.printStackTrace();
         }
 
-
         NodeList list = document.getElementsByTagName(GeoPoint);
         Route route = new Route();
 
@@ -170,5 +173,60 @@ public class RouteSerializer {
     private static String geoPointToString(Point geoPoint)
     {
         return geoPoint.Position.getLatitude() + "," + geoPoint.Position.getLongitude();
+    }
+
+    public static HashMap<String, HashMap<Integer, ArrayList<Pair<String, String>>>> deserializeAudioPointNames
+            (Resources resources, int resId) {
+
+        InputStream stream = resources.openRawResource(resId);
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+        Document document = null;
+
+        try
+        {
+            builder = docFactory.newDocumentBuilder();
+            document = builder.parse(stream);
+        }
+        catch (ParserConfigurationException | IOException | SAXException e)
+        {
+            e.printStackTrace();
+        }
+
+        HashMap<String, HashMap<Integer, ArrayList<Pair<String, String>>>> res = new HashMap<>();
+        NodeList audioPoints = document.getElementsByTagName(AudioPoint);
+        for(int i = 0; i < audioPoints.getLength(); i++)
+        {
+            NamedNodeMap audioPointAttrs = audioPoints.item(i).getAttributes();
+            int number = Integer.parseInt(audioPointAttrs.getNamedItem(PointNumber).getNodeValue());
+
+            NodeList audios = audioPoints.item(i).getChildNodes();
+            for(int j = 0; j < audios.getLength(); j++)
+            {
+                if (audios.item(j).getLocalName() != AudioFile)
+                    continue;
+
+                NamedNodeMap audioFileAttrs = audios.item(j).getAttributes();
+                String name = audioFileAttrs.getNamedItem(Name).getNodeValue();
+
+                NodeList languageNames = audios.item(j).getChildNodes();
+
+                for(int k = 0; k < languageNames.getLength(); k++)
+                {
+                    String lang = languageNames.item(k).getLocalName();
+                    if (!res.containsKey(lang))
+                        res.put(lang, new HashMap<Integer, ArrayList<Pair<String,String>>>());
+
+                    String audioPointName = languageNames.item(k).getNodeValue();
+
+                    if (res.get(lang).get(number) == null)
+                        res.get(lang).put(number, new ArrayList<Pair<String, String>>());
+
+                    res.get(lang).get(number).add(new Pair<>(name, audioPointName));
+                }
+            }
+        }
+
+        return res;
     }
 }

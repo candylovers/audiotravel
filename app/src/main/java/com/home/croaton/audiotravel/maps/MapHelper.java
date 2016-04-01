@@ -26,11 +26,11 @@ import java.util.List;
 public class MapHelper
 {
     public static Marker putMarker(Context context, MapView map, GeoPoint position, int resourceId,
-                                  float anchor)
+        float horizontalAnchor, float verticalAnchor)
     {
         Marker marker = new Marker(map);
         marker.setPosition(position);
-        marker.setAnchor(Marker.ANCHOR_CENTER, anchor);
+        marker.setAnchor(horizontalAnchor, verticalAnchor);
 
         setMarkerIconFromResource(context, resourceId, marker);
 
@@ -47,7 +47,7 @@ public class MapHelper
         circle.setStrokeColor(0xFFFF0050);
         circle.setStrokeWidth(4);
 
-        map.getOverlays().add(circle);
+        //map.getOverlays().add(circle);
         map.invalidate();
 
         return circle;
@@ -109,13 +109,14 @@ public class MapHelper
             boolean isPointPassed = controller.isAudioPointPassed(point.Number);
             int resId = isPointPassed
                     ? R.drawable.passed
-                    : R.drawable.audio_point_mini;
+                    : R.drawable.audio_point_big;
 
             float anchor = isPointPassed
                     ? Marker.ANCHOR_CENTER
                     : Marker.ANCHOR_BOTTOM;
 
-            Marker marker = MapHelper.putMarker(context, map, point.Position, resId, anchor);
+            Marker marker = MapHelper.putMarker(context, map, point.Position, resId,
+                    Marker.ANCHOR_CENTER, anchor);
             markers.add(marker);
             circles.add(MapHelper.addCircle(context, map, point.Position, point.Radius));
         }
@@ -129,11 +130,11 @@ public class MapHelper
     }
 
     public static void setStartRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
-        putMarker(context, map, position, R.drawable.start, Marker.ANCHOR_CENTER);
+        putMarker(context, map, position, R.drawable.start, Marker.ANCHOR_CENTER, 0.9f);
     }
 
     public static void setEndRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
-        putMarker(context, map, position, R.drawable.finish4, Marker.ANCHOR_CENTER);
+        putMarker(context, map, position, R.drawable.finish, 0.15f, 0.9f);
     }
 
     private static void setMarkerIconFromResource(Context context, int resourceId, Marker marker) {
