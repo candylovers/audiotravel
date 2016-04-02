@@ -2,7 +2,6 @@ package com.home.croaton.audiotravel.audio;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Pair;
 
 import com.home.croaton.audiotravel.R;
@@ -19,14 +18,11 @@ import org.osmdroid.util.GeoPoint;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AudioPlaybackController
 {
-    private static final String RESOURCE_FOLDER = "android.resource://com.home.croaton.audiotravel/";
     private Route _route;
     private String _routeFileName;
-    private HashMap<String, HashMap<Integer, ArrayList<Pair<String, String>>>> _audiopointNames;
 
     public AudioPlaybackController(Context context, int routeId)
     {
@@ -34,23 +30,18 @@ public class AudioPlaybackController
         {
             case R.id.route_demo:
                 _routeFileName = "Demo";
-                decerializeFromFileOrResource(context, R.raw.demo);
+                deserializeFromFileOrResource(context, R.raw.demo);
                 break;
             case R.id.route_abrahamsberg:
                 _routeFileName = "Abrahamsberg";
-                decerializeFromFileOrResource(context, R.raw.abrahamsberg);
-                deserializeAudioPointNames(context, R.raw.abrahamsberg_point_names);
+                deserializeFromFileOrResource(context, R.raw.abrahamsberg);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported route id");
         }
     }
 
-    private void deserializeAudioPointNames(Context context, int fileResId) {
-        _audiopointNames =  RouteSerializer.deserializeAudioPointNames(context.getResources(), fileResId);
-    }
-
-    private void decerializeFromFileOrResource(Context context, int resId)
+    private void deserializeFromFileOrResource(Context context, int resId)
     {
         if (fileExists(context, _routeFileName))
         {
@@ -70,8 +61,13 @@ public class AudioPlaybackController
         return context.getFileStreamPath(fileName).exists();
     }
 
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position)
+    {
+        return getResourceToPlay(position, false);
+    }
+
     // ToDo: according to user choose files
-    public Pair<Integer, ArrayList<Uri>> getResourceToPlay(Context context, GeoPoint position, boolean ignoreDone)
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position, boolean ignoreDone)
     {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
@@ -92,17 +88,7 @@ public class AudioPlaybackController
         if (closestPoint == null)
             return null;
 
-        ArrayList<Uri> uris = new ArrayList<>();
-        Pair<Integer, ArrayList<Uri>> result = new Pair<>(closestPoint.Number, uris);
-        for(String resourceName : _route.getAudiosForPoint(closestPoint))
-        {
-            int id = context.getResources().getIdentifier(resourceName, "raw", context.getPackageName());
-            if (id == 0)
-                throw new IllegalArgumentException("No such file found " + resourceName);
-            uris.add(Uri.parse(RESOURCE_FOLDER + id));
-        }
-
-        return result;
+        return new Pair<>(closestPoint.Number, _route.getAudiosForPoint(closestPoint));
     }
 
     public void markAudioPoint(int pointNumber, boolean passed)
@@ -148,10 +134,10 @@ public class AudioPlaybackController
         RouteSerializer.serialize(_route, fs);
     }
 
-    public void startPlaying(Context context, ArrayList<Uri> audioToPlay) {
+    public void startPlaying(Context context, ArrayList<String> audioToPlay) {
         Intent startingIntent = new Intent(context, AudioService.class);
         startingIntent.putExtra(AudioService.Command, AudioServiceCommand.LoadTracks);
-        startingIntent.putExtra(AudioService.NewUris, audioToPlay);
+        startingIntent.putExtra(AudioService.NewTracks, audioToPlay);
 
         context.startService(startingIntent);
     }
@@ -173,9 +159,5 @@ public class AudioPlaybackController
         }
 
         return null;
-    }
-
-    public String getCaptionForPoint(Integer pointNumber, String test_1, String language) {
-        return _audiopointNames.get(language).get(pointNumber).get(0).second;
     }
 }

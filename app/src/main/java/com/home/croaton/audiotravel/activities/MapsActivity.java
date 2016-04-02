@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -69,7 +68,7 @@ public class MapsActivity extends FragmentActivity {
         if (!_fakeLocation)
             startLocationTracking();
 
-        _audioPlayerUi = new AudioPlayerUI(this);
+        _audioPlayerUi = new AudioPlayerUI(this, _currentRouteId);
     }
 
     private void loadState(Bundle savedInstanceState) {
@@ -95,14 +94,17 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    public String getLanguage()
+    {
+        return _language;
+    }
+
     public void locationChanged(GeoPoint point) {
-        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioPlaybackController
-                .getResourceToPlay(this, point, false);
+        Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
 
         if (audioAtPoint == null)
             return;
 
-        _audioPlayerUi.changeTrackCaption(_audioPlaybackController.getCaptionForPoint(audioAtPoint.first, "not used right now", _language));
         _audioPlaybackController.startPlaying(this, audioAtPoint.second);
         _audioPlaybackController.markAudioPoint(audioAtPoint.first, true);
 

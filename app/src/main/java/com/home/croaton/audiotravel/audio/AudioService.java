@@ -26,13 +26,14 @@ public class AudioService extends android.app.Service implements
         MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener
 {
-    public static final String NewUris = "Uris";
+    public static final String NewTracks = "Tracks";
     public static final String Command = "Command";
     public static final String Progress = "Progress";
     private static final String ServiceName = "Audio Service";
+    private static final String ResourceFolder = "android.resource://com.home.croaton.audiotravel/";
 
     private volatile MediaPlayer _mediaPlayer;
-    private Queue<Uri> _uriQueue = new LinkedList<>();
+    private Queue<String> _uriQueue = new LinkedList<>();
     private final int _positionPollTime = 500;
     private int FullProgress = 100;
 
@@ -46,6 +47,9 @@ public class AudioService extends android.app.Service implements
 
     private static MyObservable<Integer> _innerPosition = new MyObservable<>();
     public static IObservable<Integer> Position = _innerPosition;
+
+    private static MyObservable<String> _innerTrackName = new MyObservable<>();
+    public static IObservable<String> TrackName = _innerTrackName;
 
     private volatile int _position;
     private volatile boolean _playbackFinished = false;
@@ -71,11 +75,11 @@ public class AudioService extends android.app.Service implements
         switch (command)
         {
             case LoadTracks:
-                ArrayList<Uri> newUris = (ArrayList<Uri>)intent.getSerializableExtra(NewUris);
+                ArrayList<String> newTracks = (ArrayList<String>)intent.getSerializableExtra(NewTracks);
                 RenewPlayer();
 
                 _uriQueue.clear();
-                _uriQueue.addAll(newUris);
+                _uriQueue.addAll(newTracks);
 
                 setPlayerListeners();
                 preparePlayerWithNextTrack();
@@ -206,8 +210,9 @@ public class AudioService extends android.app.Service implements
     {
         try
         {
-            setUpAsForeground("Audio + " + _uriQueue.peek().getLastPathSegment());
-            _mediaPlayer.setDataSource(this, _uriQueue.poll());
+            setUpAsForeground("Audio + " + _uriQueue.peek());
+            _innerTrackName.notifyObservers(_uriQueue.peek());
+            _mediaPlayer.setDataSource(this, generateUri(_uriQueue.poll()));
         } catch (Exception e)
         {
             Log.e(ServiceName, e.toString());
@@ -220,6 +225,15 @@ public class AudioService extends android.app.Service implements
         {
             Log.e(ServiceName, e.getMessage());
         }
+    }
+
+    private Uri generateUri(String fileName) {
+        int resourceId = getResources().getIdentifier(fileName, "raw", getPackageName());
+
+        if (resourceId == 0)
+            throw new IllegalArgumentException("No such file found " + fileName);
+
+        return Uri.parse(ResourceFolder + resourceId);
     }
 
     private boolean hasNextTrack() {

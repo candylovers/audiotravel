@@ -1,7 +1,6 @@
 package com.home.croaton.audiotravel.maps;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Pair;
 
 import com.home.croaton.audiotravel.audio.AudioPlaybackController;
@@ -24,8 +23,8 @@ public class OnMarkerClick implements Marker.OnMarkerClickListener {
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
-        Pair<Integer, ArrayList<Uri>> audioAtPoint = _audioController
-                .getResourceToPlay(_context, marker.getPosition(), true);
+        Pair<Integer, ArrayList<String>> audioAtPoint = _audioController
+                .getResourceToPlay(marker.getPosition(), true);
 
         _audioController.startPlaying(_context, audioAtPoint.second);
         return true;

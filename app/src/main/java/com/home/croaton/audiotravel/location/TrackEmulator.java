@@ -36,7 +36,8 @@ public class TrackEmulator
                         continue;
                     }
 
-                    for (double i = 0.1; i <= 1; i += 0.1)
+                    final double step = 0.25;
+                    for (double i = step; i <= 1; i += step)
                     {
                         final GeoPoint position = new GeoPoint(
                                 point.Position.getLatitude() * i + prev.Position.getLatitude() * (1d - i),
@@ -50,8 +51,6 @@ public class TrackEmulator
                                 activityCopy.locationChanged(position);
                             }
                         });
-
-
 
                         try
                         {

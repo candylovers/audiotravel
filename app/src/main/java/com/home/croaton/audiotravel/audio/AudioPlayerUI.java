@@ -1,6 +1,5 @@
 package com.home.croaton.audiotravel.audio;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -10,13 +9,17 @@ import android.widget.TextView;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
+import com.home.croaton.audiotravel.domain.RouteSerializer;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
+
+import java.util.HashMap;
 
 public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
-    private final Activity _context;
+    private final MapsActivity _context;
+    private HashMap<String, HashMap<String, String>> _audioPointNames;
 
-    public AudioPlayerUI(MapsActivity mapsActivity)
+    public AudioPlayerUI(MapsActivity mapsActivity, int routeId)
     {
         _context = mapsActivity;
         final Button pause = (Button) mapsActivity.findViewById(R.id.button_pause);
@@ -24,6 +27,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         final SeekBar seekBar = (SeekBar) mapsActivity.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(this);
 
+        readAudioPointNames(routeId);
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -50,12 +54,30 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
                 seekBar.setProgress(progress);
             }
         });
+
+        AudioService.TrackName.subscribe(new IObserver<String>() {
+            @Override
+            public void notify(String trackName) {
+                changeTrackCaption(_audioPointNames.get(_context.getLanguage()).get(trackName));
+
+            }
+        });
     }
 
-    public void changeTrackCaption(String caption)
-    {
-        TextView textView = (TextView)_context.findViewById(R.id.textViewSongName);
-        textView.setText(caption);
+    private void readAudioPointNames(int routeId) {
+        switch (routeId)
+        {
+            case R.id.route_demo:
+                deserializeAudioPointNames(R.raw.demo);
+                break;
+
+            case R.id.route_abrahamsberg:
+                deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported route id");
+        }
     }
 
     @Override
@@ -73,5 +95,15 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         startingIntent.putExtra(AudioService.Progress, seekBar.getProgress());
 
         _context.startService(startingIntent);
+    }
+
+    private void changeTrackCaption(String caption)
+    {
+        TextView textView = (TextView)_context.findViewById(R.id.textViewSongName);
+        textView.setText(caption);
+    }
+
+    private void deserializeAudioPointNames(int fileResId) {
+        _audioPointNames =  RouteSerializer.deserializeAudioPointNames(_context.getResources(), fileResId);
     }
 }

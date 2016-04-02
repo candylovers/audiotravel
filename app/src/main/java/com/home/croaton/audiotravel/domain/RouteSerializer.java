@@ -2,7 +2,6 @@ package com.home.croaton.audiotravel.domain;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.util.Pair;
 
 import org.osmdroid.util.GeoPoint;
 import org.w3c.dom.Document;
@@ -15,7 +14,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -37,8 +35,7 @@ public class RouteSerializer {
     public static final String AudioPoints = "audioPoints";
     public static final String AudioPoint = "audioPoint";
     public static final String PointRadius = "radius";
-    public static final String DoneIndicator = "done";
-    public static final String AudioFile = "audio";
+    public static final String AudioFile = "audioFile";
     public static final String Id = "id";
     public static final String Name = "name";
 
@@ -175,11 +172,12 @@ public class RouteSerializer {
         return geoPoint.Position.getLatitude() + "," + geoPoint.Position.getLongitude();
     }
 
-    public static HashMap<String, HashMap<Integer, ArrayList<Pair<String, String>>>> deserializeAudioPointNames
+    public static HashMap<String, HashMap<String, String>> deserializeAudioPointNames
             (Resources resources, int resId) {
 
         InputStream stream = resources.openRawResource(resId);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        docFactory.setNamespaceAware(true);
         DocumentBuilder builder;
         Document document = null;
 
@@ -193,37 +191,34 @@ public class RouteSerializer {
             e.printStackTrace();
         }
 
-        HashMap<String, HashMap<Integer, ArrayList<Pair<String, String>>>> res = new HashMap<>();
-        NodeList audioPoints = document.getElementsByTagName(AudioPoint);
-        for(int i = 0; i < audioPoints.getLength(); i++)
+        HashMap<String, HashMap<String, String>> res = new HashMap<>();
+        NodeList audios = document.getElementsByTagName(AudioFile);
+        for(int i = 0; i < audios.getLength(); i++)
         {
-            NamedNodeMap audioPointAttrs = audioPoints.item(i).getAttributes();
-            int number = Integer.parseInt(audioPointAttrs.getNamedItem(PointNumber).getNodeValue());
+            String tagName = audios.item(i).getLocalName();
+            if (tagName == null || !tagName.equals(AudioFile))
+                continue;
 
-            NodeList audios = audioPoints.item(i).getChildNodes();
-            for(int j = 0; j < audios.getLength(); j++)
+            NamedNodeMap audioFileAttrs = audios.item(i).getAttributes();
+            String name = audioFileAttrs.getNamedItem(Name).getNodeValue();
+
+            NodeList languageNames = audios.item(i).getChildNodes();
+
+            for(int k = 0; k < languageNames.getLength(); k++)
             {
-                if (audios.item(j).getLocalName() != AudioFile)
+                String lang = languageNames.item(k).getLocalName();
+                if (lang == null)
                     continue;
 
-                NamedNodeMap audioFileAttrs = audios.item(j).getAttributes();
-                String name = audioFileAttrs.getNamedItem(Name).getNodeValue();
+                if (!res.containsKey(lang))
+                    res.put(lang, new HashMap<String,String>());
 
-                NodeList languageNames = audios.item(j).getChildNodes();
+                String audioPointName = languageNames.item(k).getTextContent();
 
-                for(int k = 0; k < languageNames.getLength(); k++)
-                {
-                    String lang = languageNames.item(k).getLocalName();
-                    if (!res.containsKey(lang))
-                        res.put(lang, new HashMap<Integer, ArrayList<Pair<String,String>>>());
+                if (res.get(lang) == null)
+                    res.put(lang, new HashMap<String, String>());
 
-                    String audioPointName = languageNames.item(k).getNodeValue();
-
-                    if (res.get(lang).get(number) == null)
-                        res.get(lang).put(number, new ArrayList<Pair<String, String>>());
-
-                    res.get(lang).get(number).add(new Pair<>(name, audioPointName));
-                }
+                res.get(lang).put(name, audioPointName);
             }
         }
 
