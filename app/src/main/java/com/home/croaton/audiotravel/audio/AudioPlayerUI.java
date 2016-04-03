@@ -59,7 +59,6 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
             @Override
             public void notify(String trackName) {
                 changeTrackCaption(_audioPointNames.get(_context.getLanguage()).get(trackName));
-
             }
         });
     }
@@ -68,7 +67,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         switch (routeId)
         {
             case R.id.route_demo:
-                deserializeAudioPointNames(R.raw.demo);
+                deserializeAudioPointNames(R.raw.demo_point_names);
                 break;
 
             case R.id.route_abrahamsberg:

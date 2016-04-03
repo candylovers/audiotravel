@@ -91,7 +91,10 @@ public class MapHelper
 
         line.setSubDescription(Polyline.class.getCanonicalName());
         line.setWidth(15f);
-        line.setColor(0x7F0000FF);
+        //line.setColor(0x7F0000FF);
+        //line.setColor(0x7F76CDD2);
+        line.setColor(0x7Ff39c12);
+
         List<GeoPoint> geoPoints = new ArrayList<>();
 
         for(Point point : points)
