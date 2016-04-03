@@ -72,6 +72,8 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
     }
 
     private void readAudioPointNames(int routeId) {
+
+        String resourceName = _context.getResources().getResourceName(routeId);
         switch (routeId)
         {
             case R.id.route_demo:
@@ -80,6 +82,10 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
             case R.id.route_abrahamsberg:
                 deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
+                break;
+
+            case R.id.route_gamlastan:
+                deserializeAudioPointNames(R.raw.gamlastan_point_names);
                 break;
 
             default:

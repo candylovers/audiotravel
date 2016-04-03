@@ -199,11 +199,12 @@ public class AudioService extends android.app.Service implements
             PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                     notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+
             _notificationBuilder = new Notification.Builder(this)
                     .setContentIntent(pendInt)
                     .setOngoing(true)
                     .setContentTitle(getString(R.string.audio_track_notification_caption))
-                    .setSmallIcon(R.drawable.icon_tmp_small);
+                    .setSmallIcon(R.drawable.notification_icon_small);
         }
         _notificationBuilder.setContentText(text);
         _notificationBuilder.setTicker(text);

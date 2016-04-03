@@ -129,7 +129,7 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:id="@+id/route3_id"
+            android:id="@+id/route_gamlastan"
             style="@style/CardViewStyle"
             android:layout_width="300dp"
             android:layout_height="260dp"

@@ -31,6 +31,7 @@ public class ChooseRouteActivity extends AppCompatActivity {
     {
         View route1 = findViewById(R.id.route_demo);
         View route2 = findViewById(R.id.route_abrahamsberg);
+        View route3 = findViewById(R.id.route_gamlastan);
 
         final Context self = this;
         View.OnClickListener onClick = new View.OnClickListener() {
@@ -41,21 +42,13 @@ public class ChooseRouteActivity extends AppCompatActivity {
 
                 intent.putExtra(getString(R.string.route_name), v.getId());
 
-                //int id = v.getId();
-                //switch (id)
-                //{
-                //    case R.id.route_demo:
-                //
-                //        break;
-                //    case R.id.route_abrahamsberg:
-               // }
-
                 startActivity(intent);
             }
         };
 
         route1.setOnClickListener(onClick);
         route2.setOnClickListener(onClick);
+        route3.setOnClickListener(onClick);
     }
 
     @Override

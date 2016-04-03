@@ -36,6 +36,10 @@ public class AudioPlaybackController
                 _routeFileName = "Abrahamsberg";
                 deserializeFromFileOrResource(context, R.raw.abrahamsberg);
                 break;
+            case R.id.route_gamlastan:
+                _routeFileName = "gamlastan";
+                deserializeFromFileOrResource(context, R.raw.gamlastan);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported route id");
         }
