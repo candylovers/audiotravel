@@ -43,7 +43,7 @@ public class ChooseRouteActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ExcursionBrief excursion = (ExcursionBrief)parent.getItemAtPosition(position);
+                ExcursionBrief excursion = (ExcursionBrief) parent.getItemAtPosition(position);
 
                 Intent intent = new Intent(self, MapsActivity.class);
                 intent.putExtra(getString(R.string.route_name), excursion.getName());

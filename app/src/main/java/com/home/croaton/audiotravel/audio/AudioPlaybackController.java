@@ -24,13 +24,15 @@ public class AudioPlaybackController {
     private String _routeFileName;
 
     public AudioPlaybackController(Context context, String excursionName) {
-        if (excursionName.equals("Gamlastan")) {
+        if (excursionName.equals("Demo")) {
             _routeFileName = "Demo";
             deserializeFromFileOrResource(context, R.raw.demo);
-        }
-        if (excursionName.equals("Abrahamsberg")) {
+        } else if (excursionName.equals("Abrahamsberg")) {
             _routeFileName = "Abrahamsberg";
             deserializeFromFileOrResource(context, R.raw.abrahamsberg);
+        } else if (excursionName.equals("Gamlastan")) {
+            _routeFileName = "gamlastan";
+            deserializeFromFileOrResource(context, R.raw.gamlastan);
         } else {
             throw new IllegalArgumentException("Unsupported excursion");
 

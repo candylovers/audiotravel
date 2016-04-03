@@ -29,8 +29,11 @@ public class AudioService extends android.app.Service implements
     public static final String NewTracks = "Tracks";
     public static final String Command = "Command";
     public static final String Progress = "Progress";
+    public static final String TrackCaption = "TrackCaption";
+
     private static final String ServiceName = "Audio Service";
     private static final String ResourceFolder = "android.resource://com.home.croaton.audiotravel/";
+    private static final int notificationId = 1;
 
     private volatile MediaPlayer _mediaPlayer;
     private Queue<String> _uriQueue = new LinkedList<>();
@@ -110,6 +113,9 @@ public class AudioService extends android.app.Service implements
                     _mediaPlayer.seekTo(_mediaPlayer.getDuration() * progress / 100);
                 _playerLock.unlock();
                 break;
+            case StartForeground:
+                String caption = intent.getStringExtra(TrackCaption);
+                setUpAsForeground(caption);
         }
 
         return START_STICKY;
@@ -193,24 +199,24 @@ public class AudioService extends android.app.Service implements
             PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                     notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+
             _notificationBuilder = new Notification.Builder(this)
                     .setContentIntent(pendInt)
                     .setOngoing(true)
-                    .setTicker(text)
-                    .setContentTitle("Arrived to new point")
-                    .setSmallIcon(R.drawable.icon_tmp_small);
+                    .setContentTitle(getString(R.string.audio_track_notification_caption))
+                    .setSmallIcon(R.drawable.notification_icon_small);
         }
         _notificationBuilder.setContentText(text);
+        _notificationBuilder.setTicker(text);
         _notification = _notificationBuilder.build();
 
-        startForeground(1, _notification);
+        startForeground(notificationId, _notification);
     }
 
     private void preparePlayerWithNextTrack()
     {
         try
         {
-            setUpAsForeground("Audio + " + _uriQueue.peek());
             _innerTrackName.notifyObservers(_uriQueue.peek());
             _mediaPlayer.setDataSource(this, generateUri(_uriQueue.poll()));
         } catch (Exception e)

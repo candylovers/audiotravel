@@ -7,8 +7,8 @@ public enum AudioServiceCommand
     Stop(           1<<2),
     Rewind(         1<<3),
     LoadTracks(     1<<4),
-    ToggleState(   1<<5);
-
+    ToggleState(    1<<5),
+    StartForeground(1<<6);
 
     private final int value;
     AudioServiceCommand(int value) {

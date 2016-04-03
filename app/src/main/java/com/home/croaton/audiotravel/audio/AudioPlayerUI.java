@@ -19,6 +19,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
     private final MapsActivity _context;
     private HashMap<String, HashMap<String, String>> _audioPointNames;
 
+    // ToDo: at some point we need to start to unsubscribe...
     public AudioPlayerUI(MapsActivity mapsActivity, String excursionName)
     {
         _context = mapsActivity;
@@ -58,16 +59,26 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         AudioService.TrackName.subscribe(new IObserver<String>() {
             @Override
             public void notify(String trackName) {
-                changeTrackCaption(_audioPointNames.get(_context.getLanguage()).get(trackName));
+                String caption = _audioPointNames.get(_context.getLanguage()).get(trackName);
+                changeTrackCaption(caption);
+
+                Intent startingIntent = new Intent(_context, AudioService.class);
+                startingIntent.putExtra(AudioService.Command, AudioServiceCommand.StartForeground);
+                startingIntent.putExtra(AudioService.TrackCaption, caption);
+
+                _context.startService(startingIntent);
             }
         });
     }
 
     private void readAudioPointNames(String excursionName) {
-        if (excursionName.equals("Gamlastan")) {
+        if (excursionName.equals("Demo")) {
             deserializeAudioPointNames(R.raw.demo_point_names);
         }
-        if (excursionName.equals("Abrahamsberg")) {
+        else if (excursionName.equals("Gamlastan")) {
+            deserializeAudioPointNames(R.raw.gamlastan_point_names);
+        }
+        else if (excursionName.equals("Abrahamsberg")) {
             deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
         } else {
             throw new IllegalArgumentException("Unsupported excursion");

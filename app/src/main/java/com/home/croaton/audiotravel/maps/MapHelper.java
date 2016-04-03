@@ -133,7 +133,7 @@ public class MapHelper
     }
 
     public static void setStartRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
-        putMarker(context, map, position, R.drawable.start, Marker.ANCHOR_CENTER, 0.9f);
+        putMarker(context, map, position, R.drawable.start, 0.15f, 0.9f);
     }
 
     public static void setEndRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
