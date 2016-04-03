@@ -19,6 +19,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
     private final MapsActivity _context;
     private HashMap<String, HashMap<String, String>> _audioPointNames;
 
+    // ToDo: at some point we need to start to unsubscribe...
     public AudioPlayerUI(MapsActivity mapsActivity, int routeId)
     {
         _context = mapsActivity;
@@ -58,7 +59,14 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         AudioService.TrackName.subscribe(new IObserver<String>() {
             @Override
             public void notify(String trackName) {
-                changeTrackCaption(_audioPointNames.get(_context.getLanguage()).get(trackName));
+                String caption = _audioPointNames.get(_context.getLanguage()).get(trackName);
+                changeTrackCaption(caption);
+
+                Intent startingIntent = new Intent(_context, AudioService.class);
+                startingIntent.putExtra(AudioService.Command, AudioServiceCommand.StartForeground);
+                startingIntent.putExtra(AudioService.TrackCaption, caption);
+
+                _context.startService(startingIntent);
             }
         });
     }
