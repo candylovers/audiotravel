@@ -19,67 +19,58 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-public class AudioPlaybackController
-{
+public class AudioPlaybackController {
     private Route _route;
     private String _routeFileName;
 
-    public AudioPlaybackController(Context context, int routeId)
-    {
-        switch (routeId)
-        {
-            case R.id.route_demo:
-                _routeFileName = "Demo";
-                deserializeFromFileOrResource(context, R.raw.demo);
-                break;
-            case R.id.route_abrahamsberg:
-                _routeFileName = "Abrahamsberg";
-                deserializeFromFileOrResource(context, R.raw.abrahamsberg);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported route id");
+    public AudioPlaybackController(Context context, String excursionName) {
+        if (excursionName.equals("Gamlastan")) {
+            _routeFileName = "Demo";
+            deserializeFromFileOrResource(context, R.raw.demo);
+        }
+        if (excursionName.equals("Abrahamsberg")) {
+            _routeFileName = "Abrahamsberg";
+            deserializeFromFileOrResource(context, R.raw.abrahamsberg);
+        } else {
+            throw new IllegalArgumentException("Unsupported excursion");
+
         }
     }
 
-    private void deserializeFromFileOrResource(Context context, int resId)
-    {
-        if (fileExists(context, _routeFileName))
-        {
-            try
-            {
+    public static void stopAnyPlayback(Context context) {
+        context.stopService(new Intent(context, AudioService.class));
+    }
+
+    private void deserializeFromFileOrResource(Context context, int resId) {
+        if (fileExists(context, _routeFileName)) {
+            try {
                 _route = RouteSerializer.deserializeFromFile(context.openFileInput(_routeFileName));
-            } catch (FileNotFoundException e)
-            {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-        }
-        else
+        } else
             _route = RouteSerializer.deserializeFromResource(context.getResources(), resId);
     }
 
-    public boolean fileExists(Context context, String fileName){
+    public boolean fileExists(Context context, String fileName) {
         return context.getFileStreamPath(fileName).exists();
     }
 
-    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position)
-    {
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position) {
         return getResourceToPlay(position, false);
     }
 
     // ToDo: according to user choose files
-    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position, boolean ignoreDone)
-    {
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position, boolean ignoreDone) {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
 
-        for (AudioPoint point : _route.audioPoints())
-        {
+        for (AudioPoint point : _route.audioPoints()) {
             if (!ignoreDone && _route.isAudioPointPassed(point.Number))
                 continue;
 
             float distance = LocationHelper.GetDistance(position, point.Position);
-            if (distance < min && distance <= point.Radius)
-            {
+            if (distance < min && distance <= point.Radius) {
                 min = distance;
                 closestPoint = point;
             }
@@ -91,44 +82,37 @@ public class AudioPlaybackController
         return new Pair<>(closestPoint.Number, _route.getAudiosForPoint(closestPoint));
     }
 
-    public void markAudioPoint(int pointNumber, boolean passed)
-    {
+    public void markAudioPoint(int pointNumber, boolean passed) {
         _route.markAudioPoint(pointNumber, passed);
     }
 
-    public ArrayList<Point> geoPoints()
-    {
+    public ArrayList<Point> geoPoints() {
         return _route.geoPoints();
     }
 
-    public ArrayList<AudioPoint> audioPoints()
-    {
+    public ArrayList<AudioPoint> audioPoints() {
         return _route.audioPoints();
     }
 
-    public boolean[] getDoneArray()
-    {
+    public boolean[] getDoneArray() {
         ArrayList<AudioPoint> audioPoints = _route.audioPoints();
         boolean[] doneIndicators = new boolean[audioPoints.size()];
 
-        for(int i = 0; i < audioPoints.size(); i++)
+        for (int i = 0; i < audioPoints.size(); i++)
             doneIndicators[i] = _route.isAudioPointPassed(i);
 
         return doneIndicators;
     }
 
     public void specialSaveRouteToDisc(ArrayList<Circle> circles, ArrayList<Marker> pointMarkers,
-        Context context)
-    {
+                                       Context context) {
         if (circles.size() > 0 && pointMarkers.size() > 0)
             _route.updateAudioPoints(circles, pointMarkers);
 
         FileOutputStream fs = null;
-        try
-        {
+        try {
             fs = context.openFileOutput(_routeFileName, Context.MODE_PRIVATE);
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         RouteSerializer.serialize(_route, fs);
@@ -142,20 +126,14 @@ public class AudioPlaybackController
         context.startService(startingIntent);
     }
 
-    public static void stopAnyPlayback(Context context)
-    {
-        context.stopService(new Intent(context, AudioService.class));
-    }
-
     public boolean isAudioPointPassed(Integer number) {
         return _route.isAudioPointPassed(number);
     }
 
     public AudioPoint getFirstNotDoneAudioPoint() {
-        for(AudioPoint audioPoint : _route.audioPoints())
-        {
+        for (AudioPoint audioPoint : _route.audioPoints()) {
             if (!_route.isAudioPointPassed(audioPoint.Number))
-                return (AudioPoint)audioPoint.clone();
+                return (AudioPoint) audioPoint.clone();
         }
 
         return null;

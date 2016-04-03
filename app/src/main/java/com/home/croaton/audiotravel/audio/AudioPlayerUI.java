@@ -19,7 +19,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
     private final MapsActivity _context;
     private HashMap<String, HashMap<String, String>> _audioPointNames;
 
-    public AudioPlayerUI(MapsActivity mapsActivity, int routeId)
+    public AudioPlayerUI(MapsActivity mapsActivity, String excursionName)
     {
         _context = mapsActivity;
         final Button pause = (Button) mapsActivity.findViewById(R.id.button_pause);
@@ -27,7 +27,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         final SeekBar seekBar = (SeekBar) mapsActivity.findViewById(R.id.seekBar);
         seekBar.setOnSeekBarChangeListener(this);
 
-        readAudioPointNames(routeId);
+        readAudioPointNames(excursionName);
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,19 +63,14 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
         });
     }
 
-    private void readAudioPointNames(int routeId) {
-        switch (routeId)
-        {
-            case R.id.route_demo:
-                deserializeAudioPointNames(R.raw.demo_point_names);
-                break;
-
-            case R.id.route_abrahamsberg:
-                deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
-                break;
-
-            default:
-                throw new IllegalArgumentException("Unsupported route id");
+    private void readAudioPointNames(String excursionName) {
+        if (excursionName.equals("Gamlastan")) {
+            deserializeAudioPointNames(R.raw.demo_point_names);
+        }
+        if (excursionName.equals("Abrahamsberg")) {
+            deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
+        } else {
+            throw new IllegalArgumentException("Unsupported excursion");
         }
     }
 

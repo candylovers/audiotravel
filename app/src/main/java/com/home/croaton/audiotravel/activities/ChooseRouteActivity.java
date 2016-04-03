@@ -9,11 +9,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.domain.ExcursionBrief;
+import com.home.croaton.audiotravel.domain.ExcursionGallery;
 import com.home.croaton.audiotravel.settings.SettingsActivity;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class ChooseRouteActivity extends AppCompatActivity {
+    private final ExcursionGallery excursionGallery = new ExcursionGallery();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,38 +32,24 @@ public class ChooseRouteActivity extends AppCompatActivity {
         toolbar.setTitle("Choose route");
         setSupportActionBar(toolbar);
 
-        configureRoutList();
-    }
-
-    private void configureRoutList()
-    {
-        View route1 = findViewById(R.id.route_demo);
-        View route2 = findViewById(R.id.route_abrahamsberg);
+        ListView listView = (ListView) findViewById(R.id.excursion_gallery);
+        ExcursionBriefAdapter adapter = new ExcursionBriefAdapter(
+                this,
+                R.layout.excursion_brief_item,
+                excursionGallery.getAvailableExcursions());
+        listView.setAdapter(adapter);
 
         final Context self = this;
-        View.OnClickListener onClick = new View.OnClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ExcursionBrief excursion = (ExcursionBrief)parent.getItemAtPosition(position);
+
                 Intent intent = new Intent(self, MapsActivity.class);
-
-                intent.putExtra(getString(R.string.route_name), v.getId());
-
-                //int id = v.getId();
-                //switch (id)
-                //{
-                //    case R.id.route_demo:
-                //
-                //        break;
-                //    case R.id.route_abrahamsberg:
-               // }
-
+                intent.putExtra(getString(R.string.route_name), excursion.getName());
                 startActivity(intent);
             }
-        };
-
-        route1.setOnClickListener(onClick);
-        route2.setOnClickListener(onClick);
+        });
     }
 
     @Override

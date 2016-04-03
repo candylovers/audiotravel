@@ -47,7 +47,7 @@ public class MapsActivity extends FragmentActivity {
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
     private boolean _fakeLocation;
-    private int _currentRouteId = -1;
+    private String _currentRouteId = "";
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
     ArrayList<Circle> _circles = new ArrayList<>();
@@ -77,7 +77,7 @@ public class MapsActivity extends FragmentActivity {
         _language = sharedPref.getString(getString(R.string.settings_language_preference), "en");
 
         if (savedInstanceState != null) {
-            _currentRouteId = savedInstanceState.getInt(getString(R.string.route_name));
+            _currentRouteId = savedInstanceState.getString(getString(R.string.route_name));
             _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
 
             boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
@@ -89,7 +89,7 @@ public class MapsActivity extends FragmentActivity {
             _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
         } else {
             Intent intent = getIntent();
-            _currentRouteId = intent.getIntExtra(getString(R.string.route_name), R.id.route_demo);
+            _currentRouteId = intent.getStringExtra(getString(R.string.route_name));
             _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
         }
     }
@@ -209,7 +209,7 @@ public class MapsActivity extends FragmentActivity {
     {
         savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.getDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
-        savedInstanceState.putInt(getString(R.string.route_name), _currentRouteId);
+        savedInstanceState.putString(getString(R.string.route_name), _currentRouteId);
 
         // Only for route creation
         _audioPlaybackController.specialSaveRouteToDisc(_circles, _audioPointMarkers, this);
