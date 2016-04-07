@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity {
         _wakeLock.acquire();
 
         loadState(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps2);
         setUpMap();
 
         if (!_fakeLocation)

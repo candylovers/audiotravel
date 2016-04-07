@@ -16,4 +16,5 @@
     <string name="settings_language_caption">Language</string>
 
     <string name="audio_track_notification_caption">Now at point:</string>
+    <string name="title_activity_maps2">Maps2Activity</string>
 </resources>

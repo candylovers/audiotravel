@@ -2,8 +2,10 @@ package com.home.croaton.audiotravel.audio;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,9 +25,14 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
     public AudioPlayerUI(MapsActivity mapsActivity, String excursionName)
     {
         _context = mapsActivity;
-        final Button pause = (Button) mapsActivity.findViewById(R.id.button_pause);
+
+        final FloatingActionButton pause = (FloatingActionButton) mapsActivity.findViewById(R.id.button_pause);
         final Context activity = mapsActivity;
         final SeekBar seekBar = (SeekBar) mapsActivity.findViewById(R.id.seekBar);
+        int color = ContextCompat.getColor(_context, R.color.blue_main);
+        seekBar.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+        seekBar.getThumb().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+
         seekBar.setOnSeekBarChangeListener(this);
 
         readAudioPointNames(excursionName);
@@ -41,10 +48,10 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
             @Override
             public void notify(PlayerState state) {
                 if (state == PlayerState.Paused || state == PlayerState.PlaybackCompleted) {
-                    pause.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_arrow_black_48dp, 0, 0, 0);
+                    pause.setImageDrawable(ContextCompat.getDrawable(_context, android.R.drawable.ic_media_play));
                 }
                 if (state == PlayerState.Playing) {
-                    pause.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pause_black_48dp, 0, 0, 0);
+                    pause.setImageDrawable(ContextCompat.getDrawable(_context, android.R.drawable.ic_media_pause));
                 }
             }
         });

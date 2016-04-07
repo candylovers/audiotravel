@@ -2,6 +2,7 @@ package com.home.croaton.audiotravel.maps;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.activities.MapsActivity;
@@ -91,9 +92,7 @@ public class MapHelper
 
         line.setSubDescription(Polyline.class.getCanonicalName());
         line.setWidth(15f);
-        //line.setColor(0x7F0000FF);
-        //line.setColor(0x7F76CDD2);
-        line.setColor(0x7Ff39c12);
+        line.setColor(ContextCompat.getColor(context, R.color.orange_partially_transparent));
 
         List<GeoPoint> geoPoints = new ArrayList<>();
 
