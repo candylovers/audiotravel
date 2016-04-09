@@ -1,33 +1,33 @@
 package com.home.croaton.audiotravel.security;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 
+import java.util.ArrayList;
+
 public class PermissionChecker
 {
-    public static final int LocationPermissions = 1;
+    public static final int LocationRequestCode = 1;
+    public static final int LocalStorageRequestCode = 2;
 
-    public static boolean CheckForLocationDetectionPermission(Activity activity)
+    public static boolean checkForPermissions(Activity activity, String[] permissionNames,
+                                              int requestCode)
     {
-        int fineLocationPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION);
-        int coarseLocationPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
-
-        boolean alreadyHavePermission = true;
-        if (fineLocationPermission != PackageManager.PERMISSION_GRANTED
-                || coarseLocationPermission != PackageManager.PERMISSION_GRANTED)
+        Integer[] permissions = new Integer[permissionNames.length];
+        ArrayList<String> notPermited = new ArrayList<>();
+        for(int i = 0; i < permissions.length; i++)
         {
-            ActivityCompat.requestPermissions(activity,
-                new String[]
-                    {
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    }, LocationPermissions);
-
-            alreadyHavePermission = false;
+            permissions[i] = ActivityCompat.checkSelfPermission(activity, permissionNames[i]);
+            if (permissions[i] != PackageManager.PERMISSION_GRANTED)
+                notPermited.add(permissionNames[i]);
         }
 
-        return alreadyHavePermission;
+        if (notPermited.size() == 0)
+            return true;
+
+        ActivityCompat.requestPermissions(activity, notPermited.toArray(new String[0]), requestCode);
+
+        return false;
     }
 }

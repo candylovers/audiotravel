@@ -1,6 +1,5 @@
 package com.home.croaton.audiotravel.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,7 +14,6 @@ import android.widget.ListView;
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.domain.ExcursionBrief;
 import com.home.croaton.audiotravel.domain.ExcursionRepository;
-import com.home.croaton.audiotravel.settings.SettingsActivity;
 
 public class ChooseRouteActivity extends AppCompatActivity {
     private final ExcursionRepository excursionRepository = new ExcursionRepository(this);

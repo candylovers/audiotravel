@@ -8,6 +8,7 @@ import android.preference.PreferenceFragment;
 import android.view.MenuItem;
 
 import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.activities.SettingsActivity;
 
 /**
  * This fragment shows notification preferences only. It is used when the

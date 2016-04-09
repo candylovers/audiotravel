@@ -34,7 +34,7 @@
                 android:layout_marginBottom="10dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:id="@+id/textViewSongName"
-                android:text="Riddarholmen church"
+                android:text=""
                 android:gravity="center" />
 
             <SeekBar

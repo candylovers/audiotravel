@@ -18,7 +18,6 @@ import com.home.croaton.audiotravel.audio.AudioPlaybackController;
 import com.home.croaton.audiotravel.audio.AudioPlayerUI;
 import com.home.croaton.audiotravel.domain.AudioPoint;
 import com.home.croaton.audiotravel.domain.Point;
-import com.home.croaton.audiotravel.instrumentation.ConnectionHelper;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
 import com.home.croaton.audiotravel.location.LocationService;
 import com.home.croaton.audiotravel.location.TrackEmulator;
@@ -29,10 +28,8 @@ import com.home.croaton.audiotravel.maps.MapOnClickListener;
 import com.home.croaton.audiotravel.maps.OnMarkerClick;
 import com.home.croaton.audiotravel.security.PermissionChecker;
 
-import org.osmdroid.bonuspack.cachemanager.CacheManager;
 import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.util.BoundingBoxE6;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
@@ -52,6 +49,7 @@ public class MapsActivity extends FragmentActivity {
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
     ArrayList<Circle> _circles = new ArrayList<>();
     private String _language;
+    private IObserver<GeoPoint> _locationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +67,10 @@ public class MapsActivity extends FragmentActivity {
             startLocationTracking();
 
         _audioPlayerUi = new AudioPlayerUI(this, _currentRouteId);
+        PermissionChecker.checkForPermissions(this, new String[]
+        {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, PermissionChecker.LocalStorageRequestCode);
     }
 
     private void loadState(Bundle savedInstanceState) {
@@ -113,8 +115,24 @@ public class MapsActivity extends FragmentActivity {
 
     private synchronized void startLocationTracking()
     {
-        if (!PermissionChecker.CheckForLocationDetectionPermission(this))
+        String[] requestedPermissions = new String[]
+        {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        };
+
+        if (!PermissionChecker.checkForPermissions(this, requestedPermissions,
+                PermissionChecker.LocalStorageRequestCode)) {
             return;
+        }
+
+        _locationListener = new IObserver<GeoPoint>() {
+            @Override
+            public void notify(GeoPoint location) {
+                locationChanged(location);
+            }
+        };
+        LocationService.LocationChanged.subscribe(_locationListener);
 
         sendCommandToLocationService(TrackerCommand.Start);
     }
@@ -122,12 +140,6 @@ public class MapsActivity extends FragmentActivity {
     private void sendCommandToLocationService(TrackerCommand command) {
         Intent startingIntent = new Intent(this, LocationService.class);
         startingIntent.putExtra(LocationService.Command, command);
-        LocationService.LocationChanged.subscribe(new IObserver<GeoPoint>() {
-            @Override
-            public void notify(GeoPoint location) {
-                locationChanged(location);
-            }
-        });
 
         startService(startingIntent);
     }
@@ -138,10 +150,12 @@ public class MapsActivity extends FragmentActivity {
         _map = (MapView) findViewById(R.id.map);
         MapHelper.chooseBeautifulMapProvider(this, _map);
 
-        if (ConnectionHelper.hasInternetConnection(this)) {
-            CacheManager cacheManager = new CacheManager(_map);
-            cacheManager.downloadAreaAsync(this, new BoundingBoxE6(59.32829, 18.07929, 59.32023, 18.05884), 5, 18);
-        }
+        // ToDo: use this code snippet to download parts of the map
+        //
+        // if (ConnectionHelper.hasInternetConnection(this)) {
+        //    CacheManager cacheManager = new CacheManager(_map);
+        //    cacheManager.downloadAreaAsync(this, new BoundingBoxE6(59.32829, 18.07929, 59.32023, 18.05884), 5, 18);
+        //}
         _map.setMultiTouchControls(true);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -180,21 +194,23 @@ public class MapsActivity extends FragmentActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
     {
         switch (requestCode) {
-            case PermissionChecker.LocationPermissions:
-            {
-                if (grantResults.length > 0)
-                {
-                    boolean allGranted = true;
-                        for(int i = 0; i < grantResults.length; i++)
-                        allGranted &= grantResults[i] == PackageManager.PERMISSION_GRANTED;
+            case PermissionChecker.LocationRequestCode:
+                for(int i = 0; i < grantResults.length; i++)
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
+                        return;
 
-                    if (allGranted)
+                sendCommandToLocationService(TrackerCommand.Start);
+                MapHelper.addLocationOverlay(this, _map);
+
+                break;
+            case PermissionChecker.LocalStorageRequestCode:
+                for(int i = 0; i < grantResults.length; i++)
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
                     {
-                        sendCommandToLocationService(TrackerCommand.Start);
-                        MapHelper.addLocationOverlay(this, _map);
+                        finish();
+                        System.exit(0);
                     }
-                }
-            }
+                break;
         }
     }
 

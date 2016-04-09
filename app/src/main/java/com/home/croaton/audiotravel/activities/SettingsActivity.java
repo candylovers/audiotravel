@@ -1,4 +1,4 @@
-package com.home.croaton.audiotravel.settings;
+package com.home.croaton.audiotravel.activities;
 
 
 import android.annotation.TargetApi;
@@ -21,7 +21,9 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.home.croaton.audiotravel.R;
-import com.home.croaton.audiotravel.activities.ChooseRouteActivity;
+import com.home.croaton.audiotravel.settings.AppCompatPreferenceActivity;
+import com.home.croaton.audiotravel.settings.GeneralPreferenceFragment;
+import com.home.croaton.audiotravel.settings.NotificationPreferenceFragment;
 
 import java.util.List;
 
