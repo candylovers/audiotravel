@@ -12,16 +12,21 @@
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <service
+            android:name=".audio.AudioService"
+            android:stopWithTask="false" />
+        <service
+            android:name=".location.LocationService"
+            android:stopWithTask="false" />
 
-        <service android:name=".audio.AudioService"
-            android:stopWithTask="false"/>
-        <service android:name=".location.LocationService"
-            android:stopWithTask="false"/>
-
-        <meta-data android:name="MAPBOX_MAPID" android:value="mapbox.emerald" />
-        <meta-data android:name="ACCESS_TOKEN" android:value="pk.eyJ1IjoiY3JvYXRvbiIsImEiOiJjaW0yajFpZ20wMG51dXhtNGtkcW5temd0In0.ZdfAVCZA5_f4YfB4brpJ1A" />
+        <meta-data
+            android:name="MAPBOX_MAPID"
+            android:value="mapbox.emerald" />
+        <meta-data
+            android:name="ACCESS_TOKEN"
+            android:value="pk.eyJ1IjoiY3JvYXRvbiIsImEiOiJjaW0yajFpZ20wMG51dXhtNGtkcW5temd0In0.ZdfAVCZA5_f4YfB4brpJ1A" />
 
         <activity
             android:name=".activities.MapsActivity"
@@ -30,7 +35,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.ChooseRouteActivity"
             android:label="@string/app_name"
@@ -43,7 +47,11 @@
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".activities.ExcursionOverviewActivity"
+            android:label="@string/title_activity_excursion_overview"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
