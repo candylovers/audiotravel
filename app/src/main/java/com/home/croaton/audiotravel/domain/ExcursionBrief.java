@@ -1,20 +1,31 @@
 package com.home.croaton.audiotravel.domain;
 
-import java.util.UUID;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Root;
 
+@Root(name="excursionBrief")
 public class ExcursionBrief {
-    private final UUID excursionId;
-    private final String name;
-    private final String thumbnailFilePath;
+    @Attribute(name="id")
+    private String id;
 
-    public ExcursionBrief(UUID excursionId, String name, String thumbnailFilePath) {
-        this.excursionId = excursionId;
+    @Attribute(name="name")
+    private String name;
+
+    @Attribute(name="thumbnailFilePath")
+    private String thumbnailFilePath;
+
+    public ExcursionBrief(){
+        this("", "", "");
+    }
+
+    public ExcursionBrief(String id, String name, String thumbnailFilePath) {
+        this.id = id;
         this.name = name;
         this.thumbnailFilePath = thumbnailFilePath;
     }
 
-    public UUID getExcursionId() {
-        return excursionId;
+    public String getId() {
+        return id;
     }
 
     public String getName() {

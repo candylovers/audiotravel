@@ -20,6 +20,12 @@ android {
     }
 }
 
+configurations {
+    compile.exclude module: 'stax'
+    compile.exclude module: 'stax-api'
+    compile.exclude module: 'xpp3'
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -30,10 +36,15 @@ dependencies {
 
     compile 'org.osmdroid:osmdroid-android:5.1@aar'
     compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.7'
+    compile 'org.simpleframework:simple-xml:2.7.1'
 
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
 
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.squareup.okhttp:okhttp:2.5.0'
+}
+
+repositories {
+    mavenCentral()
 }

@@ -1,15 +1,24 @@
 package com.home.croaton.audiotravel.domain;
 
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+
 import java.util.ArrayList;
-import java.util.UUID;
 
+@Root(name = "excursionGallery")
 public class ExcursionGallery {
-    public ArrayList<ExcursionBrief> getAvailableExcursions(){
-        ArrayList<ExcursionBrief> excursions = new ArrayList<ExcursionBrief>();
-        excursions.add(new ExcursionBrief(UUID.randomUUID(), "Demo", "gamlastan"));
-        excursions.add(new ExcursionBrief(UUID.randomUUID(), "Abrahamsberg", "abrahamsberg"));
-        excursions.add(new ExcursionBrief(UUID.randomUUID(), "Gamlastan", "gamlastan"));
+    @ElementList(required = true, inline = true)
+    private ArrayList<ExcursionBrief> availableExcursions;
 
-        return excursions;
+    public ExcursionGallery() {
+        this(new ArrayList<ExcursionBrief>());
+    }
+
+    public ExcursionGallery(ArrayList<ExcursionBrief> availableExcursions) {
+        this.availableExcursions = availableExcursions;
+    }
+
+    public ArrayList<ExcursionBrief> getAvailableExcursions() {
+        return availableExcursions;
     }
 }

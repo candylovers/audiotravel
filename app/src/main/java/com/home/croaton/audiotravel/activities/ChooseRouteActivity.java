@@ -14,14 +14,11 @@ import android.widget.ListView;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.domain.ExcursionBrief;
-import com.home.croaton.audiotravel.domain.ExcursionGallery;
+import com.home.croaton.audiotravel.domain.ExcursionRepository;
 import com.home.croaton.audiotravel.settings.SettingsActivity;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
 public class ChooseRouteActivity extends AppCompatActivity {
-    private final ExcursionGallery excursionGallery = new ExcursionGallery();
+    private final ExcursionRepository excursionRepository = new ExcursionRepository(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +33,7 @@ public class ChooseRouteActivity extends AppCompatActivity {
         ExcursionBriefAdapter adapter = new ExcursionBriefAdapter(
                 this,
                 R.layout.excursion_brief_item,
-                excursionGallery.getAvailableExcursions());
+                excursionRepository.getGallery().getAvailableExcursions());
         listView.setAdapter(adapter);
 
         final Context self = this;
