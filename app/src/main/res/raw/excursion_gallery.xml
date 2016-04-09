@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <excursionGallery>
-    <excursionBrief name="Demo" id="510d530d-beb8-4384-9b05-d8ff6cdde036"
-        thumbnailFilePath="gamlastan" />
     <excursionBrief name="Abrahamsberg" id="f9a859b1-7224-40fc-8f5e-feb8c69e18e5"
         thumbnailFilePath="abrahamsberg" />
     <excursionBrief name="Gamlastan" id="bf918255-ea59-4093-aeaa-71706494ffb1"

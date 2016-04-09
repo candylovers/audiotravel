@@ -24,10 +24,7 @@ public class AudioPlaybackController {
     private String _routeFileName;
 
     public AudioPlaybackController(Context context, String excursionName) {
-        if (excursionName.equals("Demo")) {
-            _routeFileName = "Demo";
-            deserializeFromFileOrResource(context, R.raw.demo);
-        } else if (excursionName.equals("Abrahamsberg")) {
+        if (excursionName.equals("Abrahamsberg")) {
             _routeFileName = "Abrahamsberg";
             deserializeFromFileOrResource(context, R.raw.abrahamsberg);
         } else if (excursionName.equals("Gamlastan")) {
