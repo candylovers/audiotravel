@@ -239,6 +239,13 @@ public class MapsActivity extends FragmentActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             AudioPlaybackController.stopAnyPlayback(this);
             sendCommandToLocationService(TrackerCommand.Stop);
+
+            try {
+                _audioPlayerUi.close();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return super.onKeyDown(keyCode, event);
     }

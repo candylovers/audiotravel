@@ -47,68 +47,96 @@
 	<geoPoint number="44" position="59.32222, 18.07233"/>
 	<geoPoint number="45" position="59.32255, 18.0714"/>
 </geoPoints>
-<audioPoints>
-	<audioPoint number="0" position="59.32303,18.06742" radius="15" done="false">
-		<audio id="a00"/>
-	</audioPoint>
-	<audioPoint number="1" position="59.3228,18.06668" radius="15" done="false">
-		<audio id="a01"/>
-		<audio id="a1"/>
-	</audioPoint>
-	<audioPoint number="2" position="59.32382,18.06607" radius="15" done="false">
-		<audio id="a2"/>
-		<audio id="a3"/>
-	</audioPoint>
-	<audioPoint number="3" position="59.3249,18.06383" radius="15" done="false">
-		<audio id="a4"/>
-		<audio id="a5"/>
-	</audioPoint>
-	<audioPoint number="4" position="59.32463,18.06216" radius="15" done="false">
-		<audio id="a6"/>
-		<audio id="a7"/>
-	</audioPoint>
-	<audioPoint number="5" position="59.32538, 18.06568" radius="15" done="false">
-		<audio id="a8"/>
-		<audio id="a9"/>
-		<audio id="a10"/>
-	</audioPoint>
-	<audioPoint number="6" position="59.32672, 18.0686" radius="15" done="false">
-		<audio id="a11"/>
-	</audioPoint>
-	<audioPoint number="7" position="59.32579, 18.06883" radius="15" done="false">
-		<audio id="a12"/>
-	</audioPoint>
-	<audioPoint number="8" position="59.3257, 18.06896" radius="15" done="false">
-		<audio id="a13"/>
-	</audioPoint>
-	<audioPoint number="9" position="59.326, 18.07084" radius="15" done="false">
-		<audio id="a14"/>
-		<audio id="a15"/>
-		<audio id="a16"/>
-	</audioPoint>
-	<audioPoint number="10" position="59.32561, 18.07205" radius="15" done="false">
-		<audio id="a17"/>
-		<audio id="a18"/>
-	</audioPoint>
-	<audioPoint number="11" position="59.3251, 18.07373" radius="15" done="false">
-		<audio id="a19"/>
-	</audioPoint>
-	<audioPoint number="12" position="59.32511, 18.07132" radius="15" done="false">
-		<audio id="a20"/>
-	</audioPoint>
-	<audioPoint number="13" position="59.32474, 18.06996" radius="15" done="false">
-		<audio id="a21"/>
-		<audio id="a22"/>
-	</audioPoint>
-	<audioPoint number="14" position="59.324, 18.07109" radius="15" done="false">
-		<audio id="a23"/>
-	</audioPoint>
-	<audioPoint number="15" position="59.32317, 18.07263" radius="15" done="false">
-		<audio id="a24"/>
-	</audioPoint>
-	<audioPoint number="16" position="59.32276, 18.07293" radius="15" done="false">
-		<audio id="a25"/>
-		<audio id="a26"/>
-	</audioPoint>
+	<audioPoints>
+		<audioPoint number="0" position="59.32302,18.06653" radius="20">
+			<audio id="a1"/>
+		</audioPoint>
+		<audioPoint number="1" position="59.32389, 18.06601" radius="20">
+			<audio id="a2_2"/>
+		</audioPoint>
+		<audioPoint number="2" position="59.32382, 18.06426" radius="20">
+			<audio id="a3"/>
+		</audioPoint>
+		<audioPoint number="3" position="59.32445, 18.06185" radius="20">
+			<audio id="a4"/>
+		</audioPoint>
+		<audioPoint number="4" position="59.32474, 18.06172" radius="20">
+			<audio id="a5"/>
+		</audioPoint>
+		<audioPoint number="5" position="59.32524, 18.06187" radius="20">
+			<audio id="a6"/>
+		</audioPoint>
+		<audioPoint number="6" position="59.3257, 18.06152" radius="20">
+			<audio id="a7"/>
+		</audioPoint>
+		<audioPoint number="7" position="59.326, 18.06151" radius="20">
+			<audio id="a8"/>
+		</audioPoint>
+		<audioPoint number="8" position="59.32604, 18.06205" radius="20">
+			<audio id="a9"/>
+		</audioPoint>
+		<audioPoint number="9" position="59.32521, 18.06357" radius="20">
+			<audio id="a10"/>
+		</audioPoint>
+		<audioPoint number="10" position="59.32499, 18.06432" radius="20">
+			<audio id="a11"/>
+		</audioPoint>
+		<audioPoint number="11" position="59.32527, 18.0654" radius="20">
+			<audio id="a12"/>
+		</audioPoint>
+		<audioPoint number="12" position="59.32537, 18.06567" radius="20">
+			<audio id="a13"/>
+		</audioPoint>
+		<audioPoint number="13" position="59.32672, 18.0686" radius="20">
+			<audio id="a14"/>
+		</audioPoint>
+		<audioPoint number="14" position="59.32708, 18.06823" radius="20">
+			<audio id="a15"/>
+		</audioPoint>
+		<audioPoint number="15" position="59.32798, 18.06731" radius="20">
+			<audio id="a16"/>
+		</audioPoint>
+		<audioPoint number="16" position="59.32858, 18.0696" radius="20">
+			<audio id="a17"/>
+		</audioPoint>
+		<audioPoint number="17" position="59.32782, 18.0705" radius="20">
+			<audio id="a18_1"/>
+			<audio id="a18_2"/>
+		</audioPoint>
+		<audioPoint number="18" position="59.32592, 18.06985" radius="20">
+			<audio id="a19"/>
+		</audioPoint>
+		<audioPoint number="19" position="59.32585, 18.07121" radius="20">
+			<audio id="a20"/>
+		</audioPoint>
+		<audioPoint number="20" position="59.32551, 18.07212" radius="20">
+			<audio id="a21_1"/>
+			<audio id="a21_2"/>
+		</audioPoint>
+		<audioPoint number="21" position="59.32502, 18.07084" radius="30">
+			<audio id="a22"/>
+		</audioPoint>
+		<audioPoint number="22" position="59.32495, 18.07042" radius="20">
+			<audio id="a23_1"/>
+			<audio id="a23_2"/>
+			<audio id="a23_3"/>
+		</audioPoint>
+		<audioPoint number="23" position="59.32398, 18.07113" radius="20">
+			<audio id="a24_1"/>
+			<audio id="a24_2"/>
+		</audioPoint>
+		<audioPoint number="24" position="59.32385, 18.07132" radius="20">
+			<audio id="a25"/>
+		</audioPoint>
+		<audioPoint number="25" position="59.32318, 18.07269" radius="20">
+			<audio id="a26"/>
+		</audioPoint>
+		<audioPoint number="26" position="59.32279, 18.07287" radius="20">
+			<audio id="a27"/>
+		</audioPoint>
+		<audioPoint number="27" position="59.32255, 18.07138" radius="20">
+			<audio id="a28"/>
+			<audio id="a29"/>
+		</audioPoint>
 	</audioPoints>
 </route>

@@ -16,12 +16,14 @@ import com.home.croaton.audiotravel.instrumentation.IObserver;
 
 import java.util.HashMap;
 
-public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
+public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoCloseable {
 
     private final MapsActivity _context;
     private HashMap<String, HashMap<String, String>> _audioPointNames;
+    private IObserver<PlayerState> _stateListener;
+    private IObserver<String> _trackNameListener;
+    private IObserver<Integer> _positionListener;
 
-    // ToDo: at some point we need to start to unsubscribe...
     public AudioPlayerUI(MapsActivity mapsActivity, String excursionName)
     {
         _context = mapsActivity;
@@ -44,7 +46,8 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
                 activity.startService(startingIntent);
             }
         });
-        AudioService.State.subscribe(new IObserver<PlayerState>() {
+
+        _stateListener = new IObserver<PlayerState>() {
             @Override
             public void notify(PlayerState state) {
                 if (state == PlayerState.Paused || state == PlayerState.PlaybackCompleted) {
@@ -54,16 +57,18 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
                     pause.setImageDrawable(ContextCompat.getDrawable(_context, android.R.drawable.ic_media_pause));
                 }
             }
-        });
+        };
+        AudioService.State.subscribe(_stateListener);
 
-        AudioService.Position.subscribe(new IObserver<Integer>() {
+        _positionListener = new IObserver<Integer>() {
             @Override
             public void notify(Integer progress) {
                 seekBar.setProgress(progress);
             }
-        });
+        };
+        AudioService.Position.subscribe(_positionListener);
 
-        AudioService.TrackName.subscribe(new IObserver<String>() {
+        _trackNameListener = new IObserver<String>() {
             @Override
             public void notify(String trackName) {
                 String caption = _audioPointNames.get(_context.getLanguage()).get(trackName);
@@ -75,14 +80,12 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
                 _context.startService(startingIntent);
             }
-        });
+        };
+        AudioService.TrackName.subscribe(_trackNameListener);
     }
 
     private void readAudioPointNames(String excursionName) {
-        if (excursionName.equals("Demo")) {
-            deserializeAudioPointNames(R.raw.demo_point_names);
-        }
-        else if (excursionName.equals("Gamlastan")) {
+        if (excursionName.equals("Gamlastan")) {
             deserializeAudioPointNames(R.raw.gamlastan_point_names);
         }
         else if (excursionName.equals("Abrahamsberg")) {
@@ -117,5 +120,12 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener {
 
     private void deserializeAudioPointNames(int fileResId) {
         _audioPointNames =  RouteSerializer.deserializeAudioPointNames(_context.getResources(), fileResId);
+    }
+
+    @Override
+    public void close() throws Exception {
+        AudioService.State.unSubscribe(_stateListener);
+        AudioService.TrackName.unSubscribe(_trackNameListener);
+        AudioService.Position.unSubscribe(_positionListener);
     }
 }
