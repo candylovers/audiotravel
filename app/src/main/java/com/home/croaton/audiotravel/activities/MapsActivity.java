@@ -89,7 +89,7 @@ public class MapsActivity extends FragmentActivity {
             _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
         } else {
             Intent intent = getIntent();
-            _currentRouteId = intent.getStringExtra(getString(R.string.route_name));
+            _currentRouteId = intent.getStringExtra(IntentNames.SELECTED_EXCURSION_NAME);
             _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
         }
     }

@@ -36,14 +36,13 @@ public class ChooseRouteActivity extends AppCompatActivity {
                 excursionRepository.getGallery().getAvailableExcursions());
         listView.setAdapter(adapter);
 
-        final Context self = this;
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ExcursionBrief excursion = (ExcursionBrief) parent.getItemAtPosition(position);
 
-                Intent intent = new Intent(self, MapsActivity.class);
-                intent.putExtra(getString(R.string.route_name), excursion.getName());
+                Intent intent = new Intent(ChooseRouteActivity.this, ExcursionOverviewActivity.class);
+                intent.putExtra(IntentNames.SELECTED_EXCURSION_BRIEF, excursion);
                 startActivity(intent);
             }
         });
@@ -60,7 +59,7 @@ public class ChooseRouteActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.settings_button_id:
-                Intent intent = new Intent(this, SettingsActivity.class);
+                Intent intent = new Intent(ChooseRouteActivity.this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
 
