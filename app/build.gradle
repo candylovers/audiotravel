@@ -37,6 +37,7 @@ dependencies {
     compile 'org.osmdroid:osmdroid-android:5.1@aar'
     compile 'com.github.MKergall.osmbonuspack:OSMBonusPack:v5.7'
     compile 'org.simpleframework:simple-xml:2.7.1'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.2.14'
 
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
