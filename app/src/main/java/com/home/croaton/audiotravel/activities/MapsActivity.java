@@ -148,6 +148,7 @@ public class MapsActivity extends FragmentActivity {
 
     public void setUpMap() {
         _map = (MapView) findViewById(R.id.map);
+
         MapHelper.chooseBeautifulMapProvider(this, _map);
 
         // ToDo: use this code snippet to download parts of the map

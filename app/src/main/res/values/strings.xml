@@ -16,6 +16,7 @@
     <string name="settings_language_caption">Language</string>
 
     <string name="audio_track_notification_caption">Now at point:</string>
+    <string name="audio_choose_tack">Click at point to choose audio</string>
     <string name="title_activity_maps2">Maps2Activity</string>
 
     <string name="title_activity_excursion_overview">ExcursionOverviewActivity</string>
