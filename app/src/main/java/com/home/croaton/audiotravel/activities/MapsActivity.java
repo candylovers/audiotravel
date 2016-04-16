@@ -8,10 +8,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.home.croaton.audiotravel.R;
 import com.home.croaton.audiotravel.audio.AudioPlaybackController;
@@ -32,6 +34,8 @@ import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,10 +163,24 @@ public class MapsActivity extends FragmentActivity {
         //}
         _map.setMultiTouchControls(true);
 
+        RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(this, _map);
+        mRotationGestureOverlay.setEnabled(true);
+        _map.getOverlayManager().add(mRotationGestureOverlay);
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
         {
-            MapHelper.addLocationOverlay(this, _map);
+            final MyLocationNewOverlay locationOverlay = MapHelper.addLocationOverlay(this, _map);
+            FloatingActionButton btCenterMap = (FloatingActionButton) findViewById(R.id.button_center_map);
+            locationOverlay.setDrawAccuracyEnabled(true);
+            btCenterMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GeoPoint myPosition = locationOverlay.getMyLocation();
+                    if (myPosition != null)
+                        _map.getController().animateTo(myPosition);
+                }
+            });
         }
 
         if (_fakeLocation && !_fakeLocationStarted)

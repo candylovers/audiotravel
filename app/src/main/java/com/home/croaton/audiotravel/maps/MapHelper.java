@@ -69,7 +69,7 @@ public class MapHelper
         map.setTileSource(tileSource);
     }
 
-    public static void addLocationOverlay(Context context, MapView map)
+    public static MyLocationNewOverlay addLocationOverlay(Context context, MapView map)
     {
         OverlayManager overlayManager = map.getOverlayManager();
         List<Overlay> overlays = overlayManager.overlays();
@@ -84,7 +84,10 @@ public class MapHelper
         MyLocationNewOverlay locationOverlay = new MyLocationNewOverlay(context,
                 new GpsMyLocationProvider(context),map);
         locationOverlay.enableMyLocation();
+        //locationOverlay.setPersonIcon();
         map.getOverlays().add(locationOverlay);
+
+        return locationOverlay;
     }
 
     public static void drawRoute(Context context, MapView map, List<Point> points) {

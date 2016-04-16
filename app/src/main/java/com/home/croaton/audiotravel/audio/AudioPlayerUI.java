@@ -78,7 +78,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
 
                 if (trackName == "")
                     return;
-                
+
                 Intent startingIntent = new Intent(_context, AudioService.class);
                 startingIntent.putExtra(AudioService.Command, AudioServiceCommand.StartForeground);
                 startingIntent.putExtra(AudioService.TrackCaption, caption);
