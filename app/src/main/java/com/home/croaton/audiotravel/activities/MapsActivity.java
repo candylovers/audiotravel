@@ -254,16 +254,25 @@ public class MapsActivity extends FragmentActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            AudioPlaybackController.stopAnyPlayback(this);
-            sendCommandToLocationService(TrackerCommand.Stop);
 
             try {
                 _audioPlayerUi.close();
+                _audioPlayerUi = null;
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
+
+            LocationService.LocationChanged.unSubscribe(_locationListener);
+            AudioPlaybackController.stopAnyPlayback(this);
+            sendCommandToLocationService(TrackerCommand.Stop);
+            stopService(new Intent(this, LocationService.class));
         }
+
         return super.onKeyDown(keyCode, event);
+    }
+
+    public String getExcursionName() {
+        return _currentRouteId;
     }
 }

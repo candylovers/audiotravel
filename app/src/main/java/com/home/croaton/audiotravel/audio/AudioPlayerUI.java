@@ -10,6 +10,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.activities.IntentNames;
 import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.domain.RouteSerializer;
 import com.home.croaton.audiotravel.instrumentation.IObserver;
@@ -59,6 +60,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
             }
         };
         AudioService.State.subscribe(_stateListener);
+        _stateListener.notify(AudioService.getCurrentState());
 
         _positionListener = new IObserver<Integer>() {
             @Override
@@ -67,21 +69,26 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
             }
         };
         AudioService.Position.subscribe(_positionListener);
+        _positionListener.notify(AudioService.getCurrentPosition());
 
         _trackNameListener = new IObserver<String>() {
             @Override
             public void notify(String trackName) {
-                String caption = _audioPointNames.get(_context.getLanguage()).get(trackName);
-                changeTrackCaption(caption);
+                String caption = changeAndGetTrackCaption(trackName);
 
+                if (trackName == "")
+                    return;
+                
                 Intent startingIntent = new Intent(_context, AudioService.class);
                 startingIntent.putExtra(AudioService.Command, AudioServiceCommand.StartForeground);
                 startingIntent.putExtra(AudioService.TrackCaption, caption);
+                startingIntent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, _context.getExcursionName());
 
                 _context.startService(startingIntent);
             }
         };
         AudioService.TrackName.subscribe(_trackNameListener);
+        _trackNameListener.notify(AudioService.getLastTrackName());
     }
 
     private void readAudioPointNames(String excursionName) {
@@ -112,10 +119,16 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
         _context.startService(startingIntent);
     }
 
-    private void changeTrackCaption(String caption)
+    private String changeAndGetTrackCaption(String trackName)
     {
+        String caption = trackName.equals("")
+            ? _context.getString(R.string.audio_choose_tack)
+            : _audioPointNames.get(_context.getLanguage()).get(trackName);
+
         TextView textView = (TextView)_context.findViewById(R.id.textViewSongName);
         textView.setText(caption);
+
+        return caption;
     }
 
     private void deserializeAudioPointNames(int fileResId) {

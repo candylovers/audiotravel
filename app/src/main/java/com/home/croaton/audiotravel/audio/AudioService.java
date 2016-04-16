@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.home.croaton.audiotravel.R;
+import com.home.croaton.audiotravel.activities.IntentNames;
 import com.home.croaton.audiotravel.activities.MapsActivity;
 import com.home.croaton.audiotravel.instrumentation.IObservable;
 import com.home.croaton.audiotravel.instrumentation.MyObservable;
@@ -31,9 +32,12 @@ public class AudioService extends android.app.Service implements
     public static final String Progress = "Progress";
     public static final String TrackCaption = "TrackCaption";
 
-    private static final String ServiceName = "Audio Service";
-    private static final String ResourceFolder = "android.resource://com.home.croaton.audiotravel/";
+    private static final String _serviceName = "Audio Service";
+    private static final String _resourceFolder = "android.resource://com.home.croaton.audiotravel/";
     private static final int notificationId = 1;
+    private static String _lastPlayedTrackName = "";
+    private static volatile int _position;
+    private static PlayerState _playerState;
 
     private volatile MediaPlayer _mediaPlayer;
     private Queue<String> _uriQueue = new LinkedList<>();
@@ -54,7 +58,6 @@ public class AudioService extends android.app.Service implements
     private static MyObservable<String> _innerTrackName = new MyObservable<>();
     public static IObservable<String> TrackName = _innerTrackName;
 
-    private volatile int _position;
     private volatile boolean _playbackFinished = false;
     private volatile boolean _isRunning = true;
 
@@ -93,6 +96,7 @@ public class AudioService extends android.app.Service implements
                 {
                     _mediaPlayer.pause();
                     _innerState.notifyObservers(PlayerState.Paused);
+                    _playerState = PlayerState.Paused;
                 }
                 _playerLock.unlock();
                 break;
@@ -103,6 +107,7 @@ public class AudioService extends android.app.Service implements
                     _playbackFinished = false;
                     _mediaPlayer.start();
                     _innerState.notifyObservers(PlayerState.Playing);
+                    _playerState = PlayerState.Playing;
                 }
                 _playerLock.unlock();
                 break;
@@ -115,7 +120,9 @@ public class AudioService extends android.app.Service implements
                 break;
             case StartForeground:
                 String caption = intent.getStringExtra(TrackCaption);
-                setUpAsForeground(caption);
+                String excursionName = intent.getStringExtra(IntentNames.SELECTED_EXCURSION_NAME);
+                setUpAsForeground(caption, excursionName);
+                break;
         }
 
         return START_STICKY;
@@ -141,6 +148,7 @@ public class AudioService extends android.app.Service implements
         _playerLock.unlock();
 
         _innerState.notifyObservers(PlayerState.NotPrepared);
+        _playerState = PlayerState.NotPrepared;
 
         if (_positionPoller == null) {
             _positionPoller = new Thread(new Runnable() {
@@ -190,15 +198,15 @@ public class AudioService extends android.app.Service implements
 
     }
 
-    void setUpAsForeground(String text)
+    void setUpAsForeground(String text, String excursionName)
     {
         if (_notificationBuilder == null)
         {
             Intent notIntent = new Intent(this, MapsActivity.class);
+            notIntent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, excursionName);
             notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                     notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
 
             _notificationBuilder = new Notification.Builder(this)
                     .setContentIntent(pendInt)
@@ -217,11 +225,12 @@ public class AudioService extends android.app.Service implements
     {
         try
         {
+            _lastPlayedTrackName = _uriQueue.peek();
             _innerTrackName.notifyObservers(_uriQueue.peek());
             _mediaPlayer.setDataSource(this, generateUri(_uriQueue.poll()));
         } catch (Exception e)
         {
-            Log.e(ServiceName, e.toString());
+            Log.e(_serviceName, e.toString());
         }
 
         try
@@ -229,7 +238,7 @@ public class AudioService extends android.app.Service implements
             _mediaPlayer.prepareAsync();
         } catch (IllegalStateException e)
         {
-            Log.e(ServiceName, e.getMessage());
+            Log.e(_serviceName, e.getMessage());
         }
     }
 
@@ -239,7 +248,7 @@ public class AudioService extends android.app.Service implements
         if (resourceId == 0)
             throw new IllegalArgumentException("No such file found " + fileName);
 
-        return Uri.parse(ResourceFolder + resourceId);
+        return Uri.parse(_resourceFolder + resourceId);
     }
 
     private boolean hasNextTrack() {
@@ -248,6 +257,9 @@ public class AudioService extends android.app.Service implements
 
     public void onPrepared(MediaPlayer player)
     {
+        if (!_isRunning)
+            return;
+
         _playerLock.lock();
 
         if (playerIsActual(player))
@@ -255,6 +267,7 @@ public class AudioService extends android.app.Service implements
             player.start();
             _playbackFinished = false;
             _innerState.notifyObservers(PlayerState.Playing);
+            _playerState = PlayerState.Playing;
         }
 
         _playerLock.unlock();
@@ -263,6 +276,21 @@ public class AudioService extends android.app.Service implements
     private boolean playerIsActual(MediaPlayer player)
     {
         return _mediaPlayer != null && _mediaPlayer.hashCode() == player.hashCode();
+    }
+
+    public static String getLastTrackName()
+    {
+        return _lastPlayedTrackName;
+    }
+
+    public static int getCurrentPosition()
+    {
+        return _position;
+    }
+
+    public static PlayerState getCurrentState()
+    {
+        return _playerState;
     }
 
     @Nullable
@@ -285,6 +313,7 @@ public class AudioService extends android.app.Service implements
         _playerLock.lock();
         _playbackFinished = true;
         _innerState.notifyObservers(PlayerState.PlaybackCompleted);
+        _playerState = PlayerState.PlaybackCompleted;
 
         if (playerIsActual(player) && hasNextTrack())
         {
@@ -302,6 +331,7 @@ public class AudioService extends android.app.Service implements
         super.onDestroy();
 
         _isRunning = false;
+        stopForeground(true);
 
         if (_mediaPlayer != null)
         {
@@ -312,6 +342,10 @@ public class AudioService extends android.app.Service implements
 
             _playerLock.unlock();
         }
+
+        _lastPlayedTrackName = "";
+        _position = 0;
+        _playerState = PlayerState.PlaybackCompleted;
     }
 
     public void onTaskRemoved(Intent rootIntent)

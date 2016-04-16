@@ -27,6 +27,8 @@ public class LocationService extends Service implements
     private LocationRequest _locationRequest;
     public static MyObservable<GeoPoint> LocationChanged = new MyObservable<>();
 
+    private boolean _isRunning;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
@@ -40,12 +42,13 @@ public class LocationService extends Service implements
                 if (_googleApiClient == null)
                     setUpComponents();
 
-                //_started = true;
                 _googleApiClient.connect();
+                _isRunning = true;
                 break;
             case Stop:
                 if (_googleApiClient != null)
                 _googleApiClient.disconnect();
+                _isRunning = false;
                 break;
         }
 
@@ -68,6 +71,9 @@ public class LocationService extends Service implements
     @Override
     public void onLocationChanged(Location location)
     {
+        if (!_isRunning)
+            return;
+
         LocationChanged.notifyObservers(new GeoPoint(location.getLatitude(), location.getLongitude()));
     }
 
