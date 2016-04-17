@@ -1,4 +1,4 @@
-package com.home.croaton.audiotravel;
+package com.home.croaton.followme;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
