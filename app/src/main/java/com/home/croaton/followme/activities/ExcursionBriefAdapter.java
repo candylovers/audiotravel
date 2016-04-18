@@ -34,12 +34,21 @@ public class ExcursionBriefAdapter extends ArrayAdapter<ExcursionBrief> {
         if (excursion != null) {
             ImageView thumbnailView = (ImageView) convertView.findViewById(R.id.thumbnail);
             TextView nameText = (TextView) convertView.findViewById(R.id.name);
+            TextView costText = (TextView) convertView.findViewById(R.id.cost);
+
             if (thumbnailView != null) {
                 int imageId = getImageId(excursion.getThumbnailFilePath());
                 thumbnailView.setImageResource(imageId);
             }
             if (nameText != null) {
                 nameText.setText(excursion.getName());
+            }
+            if (costText != null)
+            {
+                if (excursion.getCost() == 0.0)
+                    costText.setText(R.string.cost_free);
+                else
+                    costText.setText(String.valueOf(excursion.getCost()) + "€");
             }
         }
         return convertView;

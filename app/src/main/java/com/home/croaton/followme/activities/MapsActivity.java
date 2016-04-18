@@ -194,8 +194,7 @@ public class MapsActivity extends FragmentActivity {
         MapHelper.focusCameraOnPoint(_map, _audioPlaybackController.getFirstNotDoneAudioPoint());
         MapHelper.setStartRouteIcon(this, _map, routePoints.get(0).Position);
         MapHelper.setEndRouteIcon(this, _map, routePoints.get(routePoints.size() - 1).Position);
-        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController, _audioPointMarkers,
-                _circles);
+        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController, _audioPointMarkers, _circles);
 
         for(Marker marker : _audioPointMarkers)
             marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController));

@@ -17,4 +17,6 @@
 
     <string name="audio_track_notification_caption">Сейчас на точке:</string>
     <string name="audio_choose_tack">Кликните на точку для воспроизведения</string>
+
+    <string name="cost_free">Бесплатно</string>
 </resources>

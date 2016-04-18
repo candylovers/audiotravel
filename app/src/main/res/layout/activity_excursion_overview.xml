@@ -12,6 +12,16 @@
         android:background="@drawable/shape_bg_white_rounded_rect"
         android:orientation="vertical">
 
+        <com.daimajia.slider.library.SliderLayout
+            android:id="@+id/slider"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/excursion_overview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=" about excursion"/>
         <Button
             android:id="@+id/open_button"
             android:layout_width="fill_parent"
