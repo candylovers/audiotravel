@@ -86,8 +86,14 @@ public class ExcursionBrief implements Parcelable {
         return cost;
     }
 
-    public List<ExcursionBriefContent> getContentByLanguage() {
-        return contentByLanguage;
+    public ExcursionBriefContent getContentByLanguage(String language) {
+        for(ExcursionBriefContent content : contentByLanguage)
+        {
+            if (content.getLang().equals(language))
+                return content;
+        }
+
+        return null;
     }
 
     public double getLength() {

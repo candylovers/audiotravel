@@ -80,7 +80,7 @@ public class MapsActivity extends FragmentActivity {
     private void loadState(Bundle savedInstanceState) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
-        _language = sharedPref.getString(getString(R.string.settings_language_preference), "en");
+        _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
 
         if (savedInstanceState != null) {
             _currentRouteId = savedInstanceState.getString(getString(R.string.route_name));
@@ -280,7 +280,8 @@ public class MapsActivity extends FragmentActivity {
                 e.printStackTrace();
             }
 
-            LocationService.LocationChanged.unSubscribe(_locationListener);
+            if (!_fakeLocation)
+                LocationService.LocationChanged.unSubscribe(_locationListener);
             AudioPlaybackController.stopAnyPlayback(this);
             sendCommandToLocationService(TrackerCommand.Stop);
             stopService(new Intent(this, LocationService.class));

@@ -4,22 +4,20 @@
     <excursionBrief name="Abrahamsberg" id="f9a859b1-7224-40fc-8f5e-feb8c69e18e5" thumbnailFilePath="abrahamsberg">
 
         <content lang="ru">
-            <name>Гамластан</name>
+            <name>Абрахамсберг</name>
             <overview>
-                Этот текст описывает экскурсию по Гамластану.
-                Добро пожаловать в тур Follow mi по сердцу Стокгольма  - Гамла Стану!
-                Для начала экскурсии доберитесь до станции метро Гамла Стан и выйдите к заливу через туннель метрополитена. Там мы и начнем наше увлекательное путешествие.
+                Этот текст описывает экскурсию по Абрахамсберг.
             </overview>
         </content>
 
         <content lang="en">
-                <name>Gamlastan</name>
-                <overview>
-                    No text in English about Gamlastan. Will be in next releases.
-                </overview>
+            <name>Abrahamsberg</name>
+            <overview>
+                Some text in English.
+            </overview>
         </content>
 
-        <cost>10.0</cost>
+        <cost>0.0</cost>
         <length>3.0</length>
         <duration>2.0</duration>
 
@@ -28,20 +26,21 @@
     <excursionBrief name="Gamlastan" id="bf918255-ea59-4093-aeaa-71706494ffb1" thumbnailFilePath="gamlastan" >
 
         <content lang="ru">
-                <name>Абрахамсберг</name>
-                <overview>
-                    Этот текст описывает экскурсию по Абрахамсберг.
-                </overview>
+            <name>Гамластан</name>
+            <overview>
+        Этот текст описывает экскурсию по Гамластану.
+        Добро пожаловать в тур Follow mi по сердцу Стокгольма  - Гамла Стану! Для начала экскурсии доберитесь до станции метро Гамла Стан и выйдите к заливу через туннель метрополитена. Там мы и начнем наше увлекательное путешествие.
+            </overview>
         </content>
 
         <content lang="en">
-                <name>Abrahamsberg</name>
-                <overview>
-                    Some text in English.
-                </overview>
+            <name>Gamlastan</name>
+            <overview>
+                No text in English about Gamlastan. Will be in next releases.
+            </overview>
         </content>
 
-        <cost>0.0</cost>
+        <cost>10.0</cost>
         <length>3.0</length>
         <duration>2.0</duration>
 

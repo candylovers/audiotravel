@@ -19,4 +19,9 @@
     <string name="audio_choose_tack">Кликните на точку для воспроизведения</string>
 
     <string name="cost_free">Бесплатно</string>
+
+    <string name="excursion_length">Длинна: </string>
+    <string name="excursion_duration">Продолжительность: </string>
+    <string name="excursion_cost">Стоимость: </string>
+
 </resources>

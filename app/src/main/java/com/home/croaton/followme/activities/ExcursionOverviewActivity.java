@@ -3,8 +3,10 @@ package com.home.croaton.followme.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,7 @@ import android.widget.TextView;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
-import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.home.croaton.followme.R;
 import com.home.croaton.followme.domain.Excursion;
 import com.home.croaton.followme.domain.ExcursionBrief;
@@ -31,6 +33,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
     private Button loadButton;
     private ProgressDialog progressDialog;
     private SliderLayout _slider;
+    private String _language;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,9 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         excursion = intent.getParcelableExtra(IntentNames.SELECTED_EXCURSION_BRIEF);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
 
         initUI();
     }
@@ -50,12 +56,11 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         file_maps.put("Write smart text here2", R.drawable.gamlastan1);
         file_maps.put("Write smart text here3", R.drawable.gamlastan2);
 
-         for(String name : file_maps.keySet()){
-            TextSliderView textSliderView = new TextSliderView(this);
+        for(String name : file_maps.keySet()){
+            DefaultSliderView textSliderView = new DefaultSliderView(this);
 
             // initialize a SliderLayout
             textSliderView
-                    .description(name)
                     .image(file_maps.get(name))
                     .setScaleType(BaseSliderView.ScaleType.Fit);
 
@@ -63,11 +68,10 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             _slider.addSlider(textSliderView);
         }
         _slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
-        _slider.setPresetTransformer(SliderLayout.Transformer.Fade);
+        _slider.setPresetTransformer(SliderLayout.Transformer.RotateDown);
         _slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         _slider.setCustomAnimation(new DescriptionAnimation());
         _slider.setDuration(4000);
-        //_slider.addOnPageChangeListener(this);
 
         openButton = (Button) findViewById(R.id.open_button);
         openButton.setOnClickListener(new View.OnClickListener() {
@@ -94,9 +98,17 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(true);
 
-        // ToDo: fix excursion order and language
         TextView aboutExcursion = (TextView)findViewById(R.id.excursion_overview);
-        aboutExcursion.setText(excursion.getContentByLanguage().get(0).getOverview());
+        aboutExcursion.setText(excursion.getContentByLanguage(_language).getOverview());
+
+        TextView excursionDuration = (TextView)findViewById(R.id.excursion_duration);
+        excursionDuration.setText(getString(R.string.excursion_duration) + Double.toString(excursion.getDuration()));
+
+        TextView excursionLength = (TextView)findViewById(R.id.excursion_length);
+        excursionLength.setText(getString(R.string.excursion_length)+ Double.toString(excursion.getLength()));
+
+        TextView excursionCost = (TextView)findViewById(R.id.excursion_cost);
+        excursionCost.setText(getString(R.string.excursion_cost)+ Double.toString(excursion.getCost()) + "€");
     }
 
     private class DownloadExcursionTask extends AsyncTask<ExcursionBrief, Integer, Excursion> {

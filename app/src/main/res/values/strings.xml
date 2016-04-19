@@ -21,4 +21,9 @@
 
     <string name="title_activity_excursion_overview">ExcursionOverviewActivity</string>
     <string name="cost_free">Free</string>
+
+    <string name="excursion_length">Length: </string>
+    <string name="excursion_duration">Duration: </string>
+    <string name="excursion_cost">Cost: </string>
+
 </resources>

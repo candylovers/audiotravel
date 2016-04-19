@@ -1,39 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".activities.ExcursionOverviewActivity">
+    android:fillViewport="true">
 
-    <LinearLayout
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/shape_bg_white_rounded_rect"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true"
+        tools:context=".activities.ExcursionOverviewActivity">
 
-        <com.daimajia.slider.library.SliderLayout
-            android:id="@+id/slider"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"/>
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_bg_white_rounded_rect"
+            android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/excursion_overview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=" about excursion"/>
-        <Button
-            android:id="@+id/open_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="Open" />
+            <com.daimajia.slider.library.SliderLayout
+                android:id="@+id/slider"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"/>
 
-        <Button
-            android:id="@+id/load_button"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:text="Load" />
-    </LinearLayout>
-</RelativeLayout>
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/excursion_overview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="fill"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/excursion_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="fill"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/excursion_length"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="fill"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/excursion_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="fill"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="right">
+                <Button
+                    android:id="@+id/open_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_margin="6dp"
+                    android:text="Open"
+                    style="@style/Widget.AppCompat.Button.Colored"/>
+
+                <Button
+                    android:id="@+id/load_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_margin="6dp"
+                    android:text="Load"
+                    android:elevation="1dp"
+                    style="@style/Widget.AppCompat.Button.Colored"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>
