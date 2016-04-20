@@ -102,13 +102,15 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         aboutExcursion.setText(excursion.getContentByLanguage(_language).getOverview());
 
         TextView excursionDuration = (TextView)findViewById(R.id.excursion_duration);
-        excursionDuration.setText(getString(R.string.excursion_duration) + Double.toString(excursion.getDuration()));
+        excursionDuration.setText(Double.toString(excursion.getDuration()) + getString(R.string.hours));
 
         TextView excursionLength = (TextView)findViewById(R.id.excursion_length);
-        excursionLength.setText(getString(R.string.excursion_length)+ Double.toString(excursion.getLength()));
+        excursionLength.setText(Double.toString(excursion.getLength()) + getString(R.string.kilometers));
 
         TextView excursionCost = (TextView)findViewById(R.id.excursion_cost);
-        excursionCost.setText(getString(R.string.excursion_cost)+ Double.toString(excursion.getCost()) + "€");
+        excursionCost.setText(Double.toString(excursion.getCost()) + getString(R.string.euro));
+
+        setTitle(excursion.getContentByLanguage(_language).getName());
     }
 
     private class DownloadExcursionTask extends AsyncTask<ExcursionBrief, Integer, Excursion> {

@@ -20,8 +20,9 @@
 
     <string name="cost_free">Бесплатно</string>
 
-    <string name="excursion_length">Длинна: </string>
-    <string name="excursion_duration">Продолжительность: </string>
-    <string name="excursion_cost">Стоимость: </string>
-
+    <string name="kilometers">км</string>
+    <string name="hours">ч</string>
+    <string name="euro">€</string>
+    <string name="excursion_load">Загрузить</string>
+    <string name="excursion_Open">Открыть</string>
 </resources>

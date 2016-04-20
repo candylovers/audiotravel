@@ -30,29 +30,62 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"/>
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/excursion_duration"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="fill"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp" />
+                android:orientation="horizontal">
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/distance"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="5dp"/>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/excursion_length"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="fill"
+                    android:text="3 km"/>
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/excursion_length"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="fill"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp" />
+            </LinearLayout>
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/excursion_cost"
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="fill"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp" />
+                android:orientation="horizontal">
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/duration"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="5dp"/>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/excursion_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="fill"
+                    android:text="2.0h"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <android.support.v7.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/cost"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="5dp"/>
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/excursion_cost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="fill"
+                    android:text="2.99€"/>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -64,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:layout_margin="6dp"
-                    android:text="Open"
+                    android:text="@string/excursion_Open"
                     style="@style/Widget.AppCompat.Button.Colored"/>
 
                 <Button
@@ -72,8 +105,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
                     android:layout_margin="6dp"
-                    android:text="Load"
-                    android:elevation="1dp"
+                    android:text="@string/excursion_load"
                     style="@style/Widget.AppCompat.Button.Colored"/>
             </LinearLayout>
 
