@@ -64,7 +64,6 @@ public class MapHelper
     {
         MapBoxTileSource tileSource = new MapBoxTileSource(context);
         map.setTilesScaledToDpi(true);
-        map.setMaxZoomLevel(17);
         tileSource.setMapboxMapid("mapbox.emerald");
         map.setTileSource(tileSource);
     }

@@ -162,7 +162,8 @@ public class MapsActivity extends FragmentActivity {
         //    cacheManager.downloadAreaAsync(this, new BoundingBoxE6(59.32829, 18.07929, 59.32023, 18.05884), 5, 18);
         //}
         _map.setMultiTouchControls(true);
-
+        _map.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        _map.setFlingEnabled(false);
         RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(this, _map);
         mRotationGestureOverlay.setEnabled(true);
         _map.getOverlayManager().add(mRotationGestureOverlay);
