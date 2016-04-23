@@ -23,7 +23,7 @@ import com.home.croaton.followme.domain.ExcursionBrief;
 import com.home.croaton.followme.download.IExcursionDownloader;
 import com.home.croaton.followme.download.S3ExcursionDownloader;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class ExcursionOverviewActivity extends AppCompatActivity {
 
@@ -50,28 +50,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
     }
 
     private void initUI() {
-        _slider = (SliderLayout)findViewById(R.id.slider);
-        HashMap<String,Integer> file_maps = new HashMap<>();
-        file_maps.put("Write smart text here1", R.drawable.gamlastan);
-        file_maps.put("Write smart text here2", R.drawable.gamlastan1);
-        file_maps.put("Write smart text here3", R.drawable.gamlastan2);
-
-        for(String name : file_maps.keySet()){
-            DefaultSliderView textSliderView = new DefaultSliderView(this);
-
-            // initialize a SliderLayout
-            textSliderView
-                    .image(file_maps.get(name))
-                    .setScaleType(BaseSliderView.ScaleType.Fit);
-
-            //add your extra information
-            _slider.addSlider(textSliderView);
-        }
-        _slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
-        _slider.setPresetTransformer(SliderLayout.Transformer.RotateDown);
-        _slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        _slider.setCustomAnimation(new DescriptionAnimation());
-        _slider.setDuration(4000);
+        initSlider();
 
         openButton = (Button) findViewById(R.id.open_button);
         openButton.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +90,29 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         excursionCost.setText(Double.toString(excursion.getCost()) + getString(R.string.euro));
 
         setTitle(excursion.getContentByLanguage(_language).getName());
+    }
+
+    private void initSlider() {
+        _slider = (SliderLayout)findViewById(R.id.slider);
+        ArrayList<Integer> imageIds = new ArrayList<>();
+        imageIds.add(R.drawable.gamlastan);
+        imageIds.add(R.drawable.gamlastan1);
+        imageIds.add(R.drawable.gamlastan2);
+
+        for(int imageId : imageIds){
+            DefaultSliderView textSliderView = new DefaultSliderView(this);
+
+            textSliderView
+                    .image(imageId)
+                    .setScaleType(BaseSliderView.ScaleType.Fit);
+
+            _slider.addSlider(textSliderView);
+        }
+        _slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
+        _slider.setPresetTransformer(SliderLayout.Transformer.RotateDown);
+        _slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        _slider.setCustomAnimation(new DescriptionAnimation());
+        _slider.setDuration(4000);
     }
 
     private class DownloadExcursionTask extends AsyncTask<ExcursionBrief, Integer, Excursion> {
