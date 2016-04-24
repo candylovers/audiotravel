@@ -20,6 +20,10 @@
         <cost>0.0</cost>
         <length>3.0</length>
         <duration>2.0</duration>
+        <area>
+            <geoPoint latitude="59.32829" longitude="18.07929"/>
+            <geoPoint latitude="59.32023" longitude="18.05884"/>
+        </area>
 
     </excursionBrief>
 
@@ -44,7 +48,10 @@
         <cost>0.0</cost>
         <length>4.0</length>
         <duration>2.0</duration>
-
+        <area>
+            <geoPoint latitude="59.32829" longitude="18.05884"/>
+            <geoPoint latitude="59.32023" longitude="18.07929"/>
+        </area>
     </excursionBrief>
 
 </excursionGallery>

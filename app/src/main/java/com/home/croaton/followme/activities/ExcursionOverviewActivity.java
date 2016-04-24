@@ -22,13 +22,19 @@ import com.home.croaton.followme.domain.Excursion;
 import com.home.croaton.followme.domain.ExcursionBrief;
 import com.home.croaton.followme.download.IExcursionDownloader;
 import com.home.croaton.followme.download.S3ExcursionDownloader;
+import com.home.croaton.followme.instrumentation.ConnectionHelper;
+import com.home.croaton.followme.maps.MapHelper;
+
+import org.osmdroid.bonuspack.cachemanager.CacheManager;
+import org.osmdroid.util.BoundingBoxE6;
+import org.osmdroid.views.MapView;
 
 import java.util.ArrayList;
 
 public class ExcursionOverviewActivity extends AppCompatActivity {
 
     private ExcursionBrief excursion;
-
+    private String DOWNLOADED_MAP_KEY_PREFIX = "com.home.croaton.followme_map_";
     private Button openButton;
     private Button loadButton;
     private ProgressDialog progressDialog;
@@ -45,7 +51,6 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
-
         initUI();
     }
 
@@ -66,6 +71,27 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ExcursionOverviewActivity.this);
+                boolean mapDownloaded = settings.getBoolean(DOWNLOADED_MAP_KEY_PREFIX + excursion.getName(), false);
+                if (!mapDownloaded)
+                {
+                     if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
+                         MapView mapView = new MapView(ExcursionOverviewActivity.this);
+                         MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
+                         mapView.setMinZoomLevel(1);
+                         mapView.setMaxZoomLevel(18);
+                         CacheManager cacheManager = new CacheManager(mapView);
+
+                         cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
+                                 new BoundingBoxE6(excursion.getArea().get(0).getLatitude(),
+                                         excursion.getArea().get(1).getLongitude(),
+                                         excursion.getArea().get(1).getLatitude(),
+                                         excursion.getArea().get(0).getLongitude()), 5, 18);
+                         settings.edit().putBoolean(DOWNLOADED_MAP_KEY_PREFIX + excursion.getName(), true);
+                     }
+                }
+
                 DownloadExcursionTask downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
                 downloadTask.execute(excursion);
             }

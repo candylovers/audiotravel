@@ -48,7 +48,7 @@ public class ExcursionBriefAdapter extends ArrayAdapter<ExcursionBrief> {
                 if (excursion.getCost() == 0.0)
                     costText.setText(R.string.cost_free);
                 else
-                    costText.setText(String.valueOf(excursion.getCost()) + "€");
+                    costText.setText(String.valueOf(excursion.getCost()) + R.string.euro);
             }
         }
         return convertView;
