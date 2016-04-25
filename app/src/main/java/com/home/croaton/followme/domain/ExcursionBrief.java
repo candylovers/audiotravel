@@ -47,6 +47,8 @@ public class ExcursionBrief implements Parcelable {
     @ElementList(name="area")
     private List<SerializableGeoPoint> area;
 
+    private String language;
+
     public ExcursionBrief(){
         this("", "", "", 0.0, 0.0, 0.0, new ArrayList<ExcursionBriefContent>(), new ArrayList<SerializableGeoPoint>());
     }
@@ -77,6 +79,8 @@ public class ExcursionBrief implements Parcelable {
 
         area = new ArrayList<>();
         in.readList(area, GeoPoint.class.getClassLoader());
+
+        language = in.readString();
     }
 
     public String getId() {
@@ -132,5 +136,14 @@ public class ExcursionBrief implements Parcelable {
         out.writeDouble(duration);
         out.writeList(contentByLanguage);
         out.writeList(area);
+        out.writeString(language);
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 }

@@ -17,6 +17,9 @@ import java.io.InputStream;
 public class S3ExcursionDownloader implements IExcursionDownloader {
     private static final String COGNITO_POOL_ID = "us-east-1:ddabcbf7-9b32-47a4-a958-d9475c989850";
     private static final String BUCKET_NAME = "followme";
+    private static final String AUDIO_FOLDER_NAME = "audio";
+    private static final String FOLDER_SEPARATOR = "/";
+    private static final String ZIP_EXTENSION = ".zip";
 
     private static CognitoCachingCredentialsProvider sCredProvider;
     private static AmazonS3Client sS3Client;
@@ -49,9 +52,15 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
 
     @Override
     public Excursion downloadExcursion(ExcursionBrief brief) {
+
         AmazonS3Client s3Client = getS3Client(context);
-        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, "abrahamsberg.xml"));
+        String key = AUDIO_FOLDER_NAME
+                + FOLDER_SEPARATOR + "gamlastan"
+                + FOLDER_SEPARATOR + brief.getLanguage() + ZIP_EXTENSION;
+        
+        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, key));
         InputStream objectData = object.getObjectContent();
+
         return new Excursion();
     }
 }

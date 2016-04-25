@@ -51,6 +51,8 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
+        excursion.setLanguage(_language);
+
         initUI();
     }
 
