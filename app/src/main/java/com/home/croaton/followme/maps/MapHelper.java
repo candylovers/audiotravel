@@ -48,7 +48,7 @@ public class MapHelper
         circle.setStrokeColor(0xFFFF0050);
         circle.setStrokeWidth(4);
 
-        //map.getOverlays().add(circle);
+        map.getOverlays().add(circle);
         map.invalidate();
 
         return circle;
@@ -98,8 +98,18 @@ public class MapHelper
 
         List<GeoPoint> geoPoints = new ArrayList<>();
 
-        for(Point point : points)
+        for(Point point : points) {
+
+//            Marker marker = new Marker(map);
+//            marker.setPosition(point.Position);
+//            marker.setAnchor(0.5f, 1f);
+//
+//            setMarkerIconFromResource(context, R.drawable.bonuspack_bubble, marker);
+//            marker.setTitle(Integer.toString(point.Number));
+//            marker.setDraggable(true);
+//            map.getOverlays().add(marker);
             geoPoints.add(point.Position);
+        }
 
         line.setPoints(geoPoints);
         line.setGeodesic(true);

@@ -30,6 +30,9 @@ public class AudioPlaybackController {
         } else if (excursionName.equals("Gamlastan")) {
             _routeFileName = "gamlastan";
             deserializeFromFileOrResource(context, R.raw.gamlastan);
+        }else if (excursionName.equals("djurgarden")) {
+            _routeFileName = "djurgarden";
+            deserializeFromFileOrResource(context, R.raw.djurgarden);
         } else {
             throw new IllegalArgumentException("Unsupported excursion");
 

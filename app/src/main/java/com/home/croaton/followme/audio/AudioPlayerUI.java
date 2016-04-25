@@ -95,11 +95,15 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
         if (excursionName.equals("Gamlastan")) {
             deserializeAudioPointNames(R.raw.gamlastan_point_names);
         }
-        else if (excursionName.equals("Abrahamsberg")) {
-            deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
-        } else {
-            throw new IllegalArgumentException("Unsupported excursion");
-        }
+        else
+            if (excursionName.equals("Abrahamsberg")) {
+                deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
+            }
+            else if (excursionName.equals("djurgarden")) {
+                deserializeAudioPointNames(R.raw.djurgarden_point_names);
+            } else {
+                throw new IllegalArgumentException("Unsupported excursion");
+            }
     }
 
     @Override

@@ -104,28 +104,31 @@
 			<audio id="a21_1"/>
 			<audio id="a21_2"/>
 		</audioPoint>
-		<audioPoint number="18" position="59.32502, 18.07084" radius="30">
+		<audioPoint number="18" position="59.32512, 18.07363" radius="20">
+			<audio id="a21_3_george"/>
+		</audioPoint>
+		<audioPoint number="19" position="59.32502, 18.07084" radius="30">
 			<audio id="a22"/>
 		</audioPoint>
-		<audioPoint number="19" position="59.32495, 18.07042" radius="20">
+		<audioPoint number="20" position="59.32495, 18.07042" radius="20">
 			<audio id="a23_1"/>
 			<audio id="a23_2"/>
 			<audio id="a23_3"/>
 		</audioPoint>
-		<audioPoint number="20" position="59.32398, 18.07113" radius="20">
+		<audioPoint number="21" position="59.32398, 18.07113" radius="20">
 			<audio id="a24_1"/>
 			<audio id="a24_2"/>
 		</audioPoint>
-		<audioPoint number="21" position="59.32385, 18.07132" radius="20">
+		<audioPoint number="22" position="59.32385, 18.07132" radius="20">
 			<audio id="a25"/>
 		</audioPoint>
-		<audioPoint number="22" position="59.32318, 18.07269" radius="20">
+		<audioPoint number="23" position="59.32318, 18.07269" radius="20">
 			<audio id="a26"/>
 		</audioPoint>
-		<audioPoint number="23" position="59.32279, 18.07287" radius="20">
+		<audioPoint number="24" position="59.32279, 18.07287" radius="20">
 			<audio id="a27"/>
 		</audioPoint>
-		<audioPoint number="24" position="59.32255, 18.07138" radius="20">
+		<audioPoint number="25" position="59.32255, 18.07138" radius="20">
 			<audio id="a28"/>
 			<audio id="a29"/>
 		</audioPoint>

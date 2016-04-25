@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<route>
+	<geoPoints>
+		<geoPoint number="1" position="59.33185, 18.09369"/>
+		<geoPoint number="2" position="59.33141, 18.09369"/>
+		<geoPoint number="3" position="59.33064, 18.09409"/>
+		<geoPoint number="4" position="59.3304, 18.0941"/>
+		<geoPoint number="5" position="59.3303, 18.09336"/>
+		<geoPoint number="6" position="59.33005, 18.09309"/>
+		<geoPoint number="7" position="59.33005, 18.09294"/>
+		<geoPoint number="8" position="59.33002, 18.09283"/>
+		<geoPoint number="9" position="59.32976, 18.09202"/>
+		<geoPoint number="10" position="59.32964, 18.09142"/>
+		<geoPoint number="11" position="59.32955, 18.0913"/>
+		<geoPoint number="12" position="59.32959, 18.09075"/>
+		<geoPoint number="13" position="59.3297, 18.09019"/>
+		<geoPoint number="14" position="59.32946, 18.09024"/>
+		<geoPoint number="15" position="59.32935, 18.09018"/>
+		<geoPoint number="16" position="59.3293, 18.09011"/>
+		<geoPoint number="17" position="59.32927, 18.09004"/>
+		<geoPoint number="18" position="59.32817, 18.09058"/>
+		<geoPoint number="19" position="59.32868, 18.0916"/>
+		<geoPoint number="20" position="59.3286, 18.0917"/>
+		<geoPoint number="21" position="59.32856, 18.09192"/>
+		<geoPoint number="22" position="59.32855, 18.09221"/>
+		<geoPoint number="23" position="59.32834, 18.09291"/>
+		<geoPoint number="24" position="59.32783, 18.09545"/>
+		<geoPoint number="25" position="59.32785, 18.09589"/>
+		<geoPoint number="26" position="59.3278, 18.09598"/>
+		<geoPoint number="27" position="59.32774, 18.09636"/>
+		<geoPoint number="28" position="59.3275, 18.09622"/>
+		<geoPoint number="29" position="59.32743, 18.09674"/>
+		<geoPoint number="30" position="59.32742, 18.09741"/>
+		<geoPoint number="31" position="59.32742, 18.09615"/>
+		<geoPoint number="32" position="59.32676, 18.09589"/>
+		<geoPoint number="33" position="59.32647, 18.09589"/>
+		<geoPoint number="34" position="59.32602, 18.09616"/>
+		<geoPoint number="35" position="59.32584, 18.09536"/>
+		<geoPoint number="36" position="59.32534, 18.09518"/>
+		<geoPoint number="37" position="59.32455, 18.09583"/>
+		<geoPoint number="38" position="59.3244, 18.09647"/>
+		<geoPoint number="39" position="59.32461, 18.09757"/>
+		<geoPoint number="40" position="59.32443, 18.09793"/>
+		<geoPoint number="41" position="59.32453, 18.09815"/>
+		<geoPoint number="42" position="59.3235, 18.103"/>
+		<geoPoint number="43" position="59.32318, 18.10309"/>
+		<geoPoint number="44" position="59.32302, 18.10265"/>
+		<geoPoint number="45" position="59.32296, 18.10154"/>
+		<geoPoint number="46" position="59.32274, 18.1015"/>
+		<geoPoint number="47" position="59.3222, 18.10215"/>
+		<geoPoint number="48" position="59.3215, 18.10182"/>
+		<geoPoint number="49" position="59.3214, 18.10155"/>
+		<geoPoint number="50" position="59.32154, 18.10107"/>
+		<geoPoint number="51" position="59.3215, 18.10078"/>
+		<geoPoint number="52" position="59.3208, 18.10013"/>
+		<geoPoint number="53" position="59.32042, 18.10077"/>
+		<geoPoint number="54" position="59.32063, 18.10118"/>
+		<geoPoint number="55" position="59.32068, 18.10211"/>
+	</geoPoints>
+    <audioPoints>
+        <audioPoint number="0" position="59.33181, 18.09369" radius="75">
+            <audio id="d1_1_welcome"/>
+			<audio id="d1_2_ykazatel"/>
+			<audio id="d1_3_bridge"/>
+        </audioPoint>
+		<audioPoint number="1" position="59.33068, 18.09406" radius="30">
+			<audio id="d2_0"/>
+			<audio id="d2_1_hist"/>
+		</audioPoint>
+		<audioPoint number="2" position="59.3298, 18.09014" radius="30">
+			<audio id="d3_1"/>
+			<audio id="d3_2_jun"/>
+			<audio id="d3_3"/>
+		</audioPoint>
+		<audioPoint number="3" position="59.32925, 18.09006" radius="30">
+			<audio id="d4_gp"/>
+		</audioPoint>
+		<audioPoint number="4" position="59.32821, 18.09063" radius="30">
+			<audio id="d5_1"/>
+			<audio id="d5_2_vasa"/>
+		</audioPoint>
+		<audioPoint number="5" position="59.32834, 18.09291" radius="30">
+			<audio id="d6_1"/>
+			<audio id="d6_2_gv"/>
+			<audio id="d6_3"/>
+			<audio id="d6_4_sc"/>
+		</audioPoint>
+		<audioPoint number="6" position="59.32742, 18.0974" radius="30">
+			<audio id="d7_1_biom"/>
+			<audio id="d7_2"/>
+		</audioPoint>
+		<audioPoint number="7" position="59.32601, 18.09628" radius="30">
+			<audio id="d8_1_lie"/>
+			<audio id="d8_2"/>
+		</audioPoint>
+		<audioPoint number="8" position="59.32562, 18.09528" radius="30">
+			<audio id="d9_1"/>
+			<audio id="d9_2_aqua"/>
+		</audioPoint>
+		<audioPoint number="9" position="59.32483, 18.09564" radius="30">
+			<audio id="d10_1"/>
+			<audio id="d10_2abba"/>
+			<audio id="d10_3"/>
+		</audioPoint>
+		<audioPoint number="10" position="59.32435, 18.09636" radius="30">
+			<audio id="d11_1_gl"/>
+			<audio id="d11_2"/>
+		</audioPoint>
+		<audioPoint number="11" position="59.32429, 18.09897" radius="30">
+			<audio id="d12_1cirk"/>
+			<audio id="d12_2"/>
+		</audioPoint>
+		<audioPoint number="12" position="59.32394, 18.10046" radius="25">
+			<audio id="d13_1_skan"/>
+		</audioPoint>
+		<audioPoint number="13" position="59.32346, 18.10306" radius="25">
+			<audio id="d13_1"/>
+		</audioPoint>
+		<audioPoint number="14" position="59.32298, 18.10154" radius="25">
+			<audio id="d13_2"/>
+		</audioPoint>
+		<audioPoint number="15" position="59.32221, 18.10216" radius="25">
+			<audio id="d14_1_bek"/>
+		</audioPoint>
+		<audioPoint number="16" position="59.32153, 18.10179" radius="25">
+			<audio id="d14_2"/>
+			<audio id="d14_2_2_bek"/>
+		</audioPoint>
+		<audioPoint number="17" position="59.32127, 18.10047" radius="25">
+			<audio id="d14_3_bt"/>
+		</audioPoint>
+		<audioPoint number="18" position="59.32077, 18.10005" radius="25">
+			<audio id="d14_4_1bgus"/>
+			<audio id="d14_5_bgif"/>
+		</audioPoint>
+		<audioPoint number="19" position="59.32063, 18.10118" radius="25">
+			<audio id="d14_6_bos"/>
+			<audio id="d14_6_2"/>
+			<audio id="d15_the_end"/>
+		</audioPoint>
+    </audioPoints>
+</route>
