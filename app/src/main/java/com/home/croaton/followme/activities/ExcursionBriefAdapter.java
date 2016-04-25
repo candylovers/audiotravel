@@ -1,6 +1,8 @@
 package com.home.croaton.followme.activities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +43,9 @@ public class ExcursionBriefAdapter extends ArrayAdapter<ExcursionBrief> {
                 thumbnailView.setImageResource(imageId);
             }
             if (nameText != null) {
-                nameText.setText(excursion.getName());
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+                String currentLanguage = sharedPref.getString(context.getString(R.string.settings_language_preference), "ru");
+                nameText.setText(excursion.getContentByLanguage(currentLanguage).getName());
             }
             if (costText != null)
             {

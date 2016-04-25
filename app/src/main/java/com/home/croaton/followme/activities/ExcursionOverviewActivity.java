@@ -32,14 +32,14 @@ import org.osmdroid.views.MapView;
 import java.util.ArrayList;
 
 public class ExcursionOverviewActivity extends AppCompatActivity {
-
-    private ExcursionBrief excursion;
     private String DOWNLOADED_MAP_KEY_PREFIX = "com.home.croaton.followme_map_";
+
+    private ExcursionBrief currentExcursion;
+    private String currentLanguage;
     private Button openButton;
     private Button loadButton;
     private ProgressDialog progressDialog;
-    private SliderLayout _slider;
-    private String _language;
+    private SliderLayout slider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +47,10 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_excursion_overview);
 
         Intent intent = getIntent();
-        excursion = intent.getParcelableExtra(IntentNames.SELECTED_EXCURSION_BRIEF);
+        currentExcursion = intent.getParcelableExtra(IntentNames.SELECTED_EXCURSION_BRIEF);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
-        excursion.setLanguage(_language);
+        currentLanguage = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
 
         initUI();
     }
@@ -64,7 +63,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ExcursionOverviewActivity.this, MapsActivity.class);
-                intent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, excursion.getName());
+                intent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, currentExcursion.getKey());
                 startActivity(intent);
             }
         });
@@ -75,7 +74,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ExcursionOverviewActivity.this);
-                boolean mapDownloaded = settings.getBoolean(DOWNLOADED_MAP_KEY_PREFIX + excursion.getName(), false);
+                boolean mapDownloaded = settings.getBoolean(DOWNLOADED_MAP_KEY_PREFIX + currentExcursion.getKey(), false);
                 if (!mapDownloaded)
                 {
                      if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
@@ -86,16 +85,16 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
                          CacheManager cacheManager = new CacheManager(mapView);
 
                          cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
-                                 new BoundingBoxE6(excursion.getArea().get(0).getLatitude(),
-                                         excursion.getArea().get(1).getLongitude(),
-                                         excursion.getArea().get(1).getLatitude(),
-                                         excursion.getArea().get(0).getLongitude()), 5, 18);
-                         settings.edit().putBoolean(DOWNLOADED_MAP_KEY_PREFIX + excursion.getName(), true);
+                                 new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
+                                         currentExcursion.getArea().get(1).getLongitude(),
+                                         currentExcursion.getArea().get(1).getLatitude(),
+                                         currentExcursion.getArea().get(0).getLongitude()), 5, 18);
+                         settings.edit().putBoolean(DOWNLOADED_MAP_KEY_PREFIX + currentExcursion.getKey(), true);
                      }
                 }
 
                 DownloadExcursionTask downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
-                downloadTask.execute(excursion);
+                downloadTask.execute();
             }
         });
 
@@ -106,22 +105,22 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         progressDialog.setCancelable(true);
 
         TextView aboutExcursion = (TextView)findViewById(R.id.excursion_overview);
-        aboutExcursion.setText(excursion.getContentByLanguage(_language).getOverview());
+        aboutExcursion.setText(currentExcursion.getContentByLanguage(currentLanguage).getOverview());
 
         TextView excursionDuration = (TextView)findViewById(R.id.excursion_duration);
-        excursionDuration.setText(Double.toString(excursion.getDuration()) + getString(R.string.hours));
+        excursionDuration.setText(Double.toString(currentExcursion.getDuration()) + getString(R.string.hours));
 
         TextView excursionLength = (TextView)findViewById(R.id.excursion_length);
-        excursionLength.setText(Double.toString(excursion.getLength()) + getString(R.string.kilometers));
+        excursionLength.setText(Double.toString(currentExcursion.getLength()) + getString(R.string.kilometers));
 
         TextView excursionCost = (TextView)findViewById(R.id.excursion_cost);
-        excursionCost.setText(Double.toString(excursion.getCost()) + getString(R.string.euro));
+        excursionCost.setText(Double.toString(currentExcursion.getCost()) + getString(R.string.euro));
 
-        setTitle(excursion.getContentByLanguage(_language).getName());
+        setTitle(currentExcursion.getContentByLanguage(currentLanguage).getName());
     }
 
     private void initSlider() {
-        _slider = (SliderLayout)findViewById(R.id.slider);
+        slider = (SliderLayout)findViewById(R.id.slider);
         ArrayList<Integer> imageIds = new ArrayList<>();
         imageIds.add(R.drawable.gamlastan);
         imageIds.add(R.drawable.gamlastan1);
@@ -134,16 +133,16 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
                     .image(imageId)
                     .setScaleType(BaseSliderView.ScaleType.Fit);
 
-            _slider.addSlider(textSliderView);
+            slider.addSlider(textSliderView);
         }
-        _slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
-        _slider.setPresetTransformer(SliderLayout.Transformer.RotateDown);
-        _slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        _slider.setCustomAnimation(new DescriptionAnimation());
-        _slider.setDuration(4000);
+        slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
+        slider.setPresetTransformer(SliderLayout.Transformer.RotateDown);
+        slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        slider.setCustomAnimation(new DescriptionAnimation());
+        slider.setDuration(4000);
     }
 
-    private class DownloadExcursionTask extends AsyncTask<ExcursionBrief, Integer, Excursion> {
+    private class DownloadExcursionTask extends AsyncTask<Void, Integer, Excursion> {
         private final Context context;
 
         public DownloadExcursionTask(Context context) {
@@ -157,9 +156,9 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Excursion doInBackground(ExcursionBrief... inputs) {
+        protected Excursion doInBackground(Void... inputs) {
             IExcursionDownloader downloader = new S3ExcursionDownloader(context);
-            return downloader.downloadExcursion(inputs[0]);
+            return downloader.downloadExcursion(currentExcursion, currentLanguage);
         }
 
         @Override

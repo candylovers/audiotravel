@@ -1,7 +1,7 @@
 package com.home.croaton.followme.download;
 
 import android.content.Context;
-
+import android.text.TextUtils;
 import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Region;
@@ -17,8 +17,9 @@ import java.io.InputStream;
 public class S3ExcursionDownloader implements IExcursionDownloader {
     private static final String COGNITO_POOL_ID = "us-east-1:ddabcbf7-9b32-47a4-a958-d9475c989850";
     private static final String BUCKET_NAME = "followme";
+    private static final String EXCURSION_FOLDER_NAME = "excursions";
     private static final String AUDIO_FOLDER_NAME = "audio";
-    private static final String FOLDER_SEPARATOR = "/";
+    private static final CharSequence FOLDER_SEPARATOR = "/";
     private static final String ZIP_EXTENSION = ".zip";
 
     private static CognitoCachingCredentialsProvider sCredProvider;
@@ -51,16 +52,34 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
     }
 
     @Override
-    public Excursion downloadExcursion(ExcursionBrief brief) {
-
-        AmazonS3Client s3Client = getS3Client(context);
-        String key = AUDIO_FOLDER_NAME
-                + FOLDER_SEPARATOR + "gamlastan"
-                + FOLDER_SEPARATOR + brief.getLanguage() + ZIP_EXTENSION;
-        
-        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, key));
-        InputStream objectData = object.getObjectContent();
+    public Excursion downloadExcursion(ExcursionBrief brief, String language) {
+        String excursionKey = brief.getKey().toLowerCase();
+        downloadAndExtractPackage(getExcursionPackageKey(excursionKey));
+        downloadAndExtractPackage(getAudioPackageKey(excursionKey, language));
 
         return new Excursion();
+    }
+
+    private void downloadAndExtractPackage(String packageKey)
+    {
+        InputStream packageData = downloadPackage(packageKey);
+        //unzip package
+    }
+
+    private InputStream downloadPackage(String packageKey)
+    {
+        AmazonS3Client s3Client = getS3Client(context);
+        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, packageKey));
+        return object.getObjectContent();
+    }
+
+    private String getExcursionPackageKey(String excursionKey)
+    {
+        return TextUtils.join(FOLDER_SEPARATOR, new String[] { EXCURSION_FOLDER_NAME, excursionKey + ZIP_EXTENSION });
+    }
+
+    private String getAudioPackageKey(String excursionKey, String language)
+    {
+        return TextUtils.join(FOLDER_SEPARATOR, new String[]{AUDIO_FOLDER_NAME, excursionKey, language + ZIP_EXTENSION});
     }
 }

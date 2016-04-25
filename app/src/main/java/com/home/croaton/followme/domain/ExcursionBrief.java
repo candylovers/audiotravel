@@ -12,52 +12,52 @@ import org.simpleframework.xml.Root;
 import java.util.ArrayList;
 import java.util.List;
 
-@Root(name="excursionBrief")
+@Root(name = "excursionBrief")
 public class ExcursionBrief implements Parcelable {
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public ExcursionBrief createFromParcel(Parcel in) {
             return new ExcursionBrief(in);
         }
+
         public ExcursionBrief[] newArray(int size) {
             return new ExcursionBrief[size];
         }
     };
 
-    @ElementList(name="content", inline = true)
+    @ElementList(name = "content", inline = true)
     private List<ExcursionBriefContent> contentByLanguage;
 
-    @Attribute(name="id")
-    private String id;
+    @Attribute(name = "key")
+    private String key;
 
-    @Attribute(name="name")
-    private String name;
-
-    @Attribute(name="thumbnailFilePath")
+    @Attribute(name = "thumbnailFilePath")
     private String thumbnailFilePath;
 
-    @Element(name="cost")
+    @Element(name = "cost")
     private double cost;
 
-    @Element(name="length")
+    @Element(name = "length")
     private double length;
 
-    @Element(name="duration")
+    @Element(name = "duration")
     private double duration;
 
-    @ElementList(name="area")
+    @ElementList(name = "area")
     private List<SerializableGeoPoint> area;
 
-    private String language;
-
-    public ExcursionBrief(){
-        this("", "", "", 0.0, 0.0, 0.0, new ArrayList<ExcursionBriefContent>(), new ArrayList<SerializableGeoPoint>());
+    public ExcursionBrief() {
+        this("", "", 0.0, 0.0, 0.0, new ArrayList<ExcursionBriefContent>(), new ArrayList<SerializableGeoPoint>());
     }
 
-    public ExcursionBrief(String id, String name, String thumbnailFilePath, double cost,
-                          double length, double duration, List<ExcursionBriefContent> contentByLanguage,
-                          List<SerializableGeoPoint> area) {
-        this.id = id;
-        this.name = name;
+    public ExcursionBrief(
+            String key,
+            String thumbnailFilePath,
+            double cost,
+            double length,
+            double duration,
+            List<ExcursionBriefContent> contentByLanguage,
+            List<SerializableGeoPoint> area) {
+        this.key = key;
         this.thumbnailFilePath = thumbnailFilePath;
         this.cost = cost;
         this.length = length;
@@ -67,8 +67,7 @@ public class ExcursionBrief implements Parcelable {
     }
 
     private ExcursionBrief(Parcel in) {
-        id = in.readString();
-        name = in.readString();
+        key = in.readString();
         thumbnailFilePath = in.readString();
         cost = in.readDouble();
         length = in.readDouble();
@@ -79,16 +78,10 @@ public class ExcursionBrief implements Parcelable {
 
         area = new ArrayList<>();
         in.readList(area, GeoPoint.class.getClassLoader());
-
-        language = in.readString();
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
     }
 
     public String getThumbnailFilePath() {
@@ -100,8 +93,7 @@ public class ExcursionBrief implements Parcelable {
     }
 
     public ExcursionBriefContent getContentByLanguage(String language) {
-        for(ExcursionBriefContent content : contentByLanguage)
-        {
+        for (ExcursionBriefContent content : contentByLanguage) {
             if (content.getLang().equals(language))
                 return content;
         }
@@ -128,22 +120,12 @@ public class ExcursionBrief implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(id);
-        out.writeString(name);
+        out.writeString(key);
         out.writeString(thumbnailFilePath);
         out.writeDouble(cost);
         out.writeDouble(length);
         out.writeDouble(duration);
         out.writeList(contentByLanguage);
         out.writeList(area);
-        out.writeString(language);
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
-    }
-
-    public String getLanguage() {
-        return language;
     }
 }

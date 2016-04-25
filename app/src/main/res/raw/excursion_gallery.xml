@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <excursionGallery>
-
-    <excursionBrief name="Abrahamsberg" id="f9a859b1-7224-40fc-8f5e-feb8c69e18e5" thumbnailFilePath="abrahamsberg">
-
+    <excursionBrief key="Abrahamsberg" thumbnailFilePath="abrahamsberg">
         <content lang="ru">
             <name>Абрахамсберг</name>
             <overview>
                 Этот текст описывает экскурсию по Абрахамсберг.
             </overview>
         </content>
-
         <content lang="en">
             <name>Abrahamsberg</name>
             <overview>
                 Some text in English.
             </overview>
         </content>
-
         <cost>0.0</cost>
         <length>3.0</length>
         <duration>2.0</duration>
@@ -24,11 +20,9 @@
             <geoPoint latitude="59.32829" longitude="18.07929"/>
             <geoPoint latitude="59.32023" longitude="18.05884"/>
         </area>
-
     </excursionBrief>
 
-    <excursionBrief name="Gamlastan" id="bf918255-ea59-4093-aeaa-71706494ffb1" thumbnailFilePath="gamlastan" >
-
+    <excursionBrief key="Gamlastan" thumbnailFilePath="gamlastan" >
         <content lang="ru">
             <name>Гамластан</name>
             <overview>
@@ -37,14 +31,12 @@
     В эт ой части города сохранилось множество построек еще со времен средневековья и 17-19 столетий и проходя по ним у вас появиться уникальная возможность мысленно переместиться в прошлое. Присоединяйтесь и вы не пожалеете ;-)
             </overview>
         </content>
-
         <content lang="en">
             <name>Gamlastan</name>
             <overview>
                 No text in English about Gamlastan. Will be in next releases.
             </overview>
         </content>
-
         <cost>0.0</cost>
         <length>4.0</length>
         <duration>2.0</duration>
@@ -54,8 +46,7 @@
         </area>
     </excursionBrief>
 
-    <excursionBrief name="djurgarden" id="f9a859b1-7224-8f5e-40fc-feb8c69e18e5" thumbnailFilePath="gamlastan">
-
+    <excursionBrief key="djurgarden" thumbnailFilePath="gamlastan">
         <content lang="ru">
             <name>Юргорден</name>
             <overview>
@@ -72,14 +63,12 @@
     Сюда можно приехать на целый день и кататься на велосипедах, гулять вдоль набережной или любоваться цветами в теплицах Розендальских садов.
             </overview>
         </content>
-
         <content lang="en">
             <name>Djurgarden</name>
             <overview>
                 Some text in English.
             </overview>
         </content>
-
         <cost>0.0</cost>
         <length>3.0</length>
         <duration>2.0</duration>
@@ -87,7 +76,5 @@
             <geoPoint latitude="59.32829" longitude="18.07929"/>
             <geoPoint latitude="59.32023" longitude="18.05884"/>
         </area>
-
     </excursionBrief>
-
 </excursionGallery>
