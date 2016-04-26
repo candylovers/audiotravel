@@ -1,10 +1,15 @@
 package com.home.croaton.followme.instrumentation;
 
+import android.util.Log;
+
+import com.amazonaws.util.IOUtils;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -40,25 +45,34 @@ public class ZipUnZip {
         }
     }
 
-    public static void unzip(String zipFile, String location) {
+    public static void unzip(InputStream fin, String location) {
         dirChecker("", location);
 
         try  {
-            FileInputStream fin = new FileInputStream(zipFile);
             ZipInputStream zin = new ZipInputStream(fin);
-            ZipEntry ze = null;
-            while ((ze = zin.getNextEntry()) != null) {
+            ZipEntry entry;
 
-                if (ze.isDirectory()) {
-                    dirChecker(ze.getName(), location);
+            while ((entry = zin.getNextEntry()) != null) {
+
+                Log.d("follow me", entry.getName());
+
+                String path = location + "/" + entry.getName();
+                if (new File(path).exists()) {
+                    Log.d("follow me", "file: " + path + " exists");
+                    continue;
+
+                }
+
+                if (entry.isDirectory()) {
+                    dirChecker(entry.getName(), location);
                 } else {
-                    FileOutputStream fout = new FileOutputStream(location + ze.getName());
-                    for (int c = zin.read(); c != -1; c = zin.read()) {
-                        fout.write(c);
-                    }
+                    Log.d("follow me", "Real writing file");
+
+                    FileOutputStream fOut = new FileOutputStream(path);
+                    fOut.write(IOUtils.toByteArray(zin));
 
                     zin.closeEntry();
-                    fout.close();
+                    fOut.close();
                 }
 
             }

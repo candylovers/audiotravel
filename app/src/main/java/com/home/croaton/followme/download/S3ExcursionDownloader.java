@@ -2,6 +2,7 @@ package com.home.croaton.followme.download;
 
 import android.content.Context;
 import android.text.TextUtils;
+
 import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Region;
@@ -11,7 +12,9 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.home.croaton.followme.domain.Excursion;
 import com.home.croaton.followme.domain.ExcursionBrief;
+import com.home.croaton.followme.instrumentation.ZipUnZip;
 
+import java.io.File;
 import java.io.InputStream;
 
 public class S3ExcursionDownloader implements IExcursionDownloader {
@@ -54,32 +57,43 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
     @Override
     public Excursion downloadExcursion(ExcursionBrief brief, String language) {
         String excursionKey = brief.getKey().toLowerCase();
-        downloadAndExtractPackage(getExcursionPackageKey(excursionKey));
-        downloadAndExtractPackage(getAudioPackageKey(excursionKey, language));
+        downloadAndSavePackage(getExcursionPackageDir(excursionKey));
+        downloadAndSavePackage(getAudioPackageDir(excursionKey, language));
 
         return new Excursion();
     }
 
-    private void downloadAndExtractPackage(String packageKey)
+    private void downloadAndSavePackage(String packageDir)
     {
-        InputStream packageData = downloadPackage(packageKey);
-        //unzip package
+        InputStream packageData = downloadPackage(packageDir);
+
+        String[] pathSegments = packageDir.split(FOLDER_SEPARATOR.toString());
+
+        File localPackageDir = context.getFilesDir();
+        for(int i = 0; i < pathSegments.length - 1; i++)
+        {
+            localPackageDir = new File(localPackageDir, pathSegments[i]);
+            if (!localPackageDir.exists())
+                localPackageDir.mkdir();
+        }
+
+        ZipUnZip.unzip(packageData, localPackageDir.getAbsolutePath());
     }
 
-    private InputStream downloadPackage(String packageKey)
+    private InputStream downloadPackage(String packageDir)
     {
         AmazonS3Client s3Client = getS3Client(context);
-        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, packageKey));
+        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, packageDir));
         return object.getObjectContent();
     }
 
-    private String getExcursionPackageKey(String excursionKey)
+    private String getExcursionPackageDir(String excursionKey)
     {
         return TextUtils.join(FOLDER_SEPARATOR, new String[] { EXCURSION_FOLDER_NAME, excursionKey + ZIP_EXTENSION });
     }
 
-    private String getAudioPackageKey(String excursionKey, String language)
+    private String getAudioPackageDir(String excursionKey, String language)
     {
-        return TextUtils.join(FOLDER_SEPARATOR, new String[]{AUDIO_FOLDER_NAME, excursionKey, language + ZIP_EXTENSION});
+        return TextUtils.join(FOLDER_SEPARATOR, new String[] { AUDIO_FOLDER_NAME, excursionKey, language + ZIP_EXTENSION});
     }
 }
