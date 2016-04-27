@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <excursionGallery>
-    <excursionBrief key="Abrahamsberg" thumbnailFilePath="abrahamsberg">
+    <excursionBrief key="abrahamsberg" thumbnailFilePath="abrahamsberg">
         <content lang="ru">
             <name>Абрахамсберг</name>
             <overview>
@@ -22,7 +22,7 @@
         </area>
     </excursionBrief>
 
-    <excursionBrief key="Gamlastan" thumbnailFilePath="gamlastan" >
+    <excursionBrief key="gamlastan" thumbnailFilePath="gamlastan" >
         <content lang="ru">
             <name>Гамластан</name>
             <overview>

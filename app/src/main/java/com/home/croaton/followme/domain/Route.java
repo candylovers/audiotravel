@@ -6,6 +6,7 @@ import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 
 public class Route
@@ -82,5 +83,17 @@ public class Route
 
     public boolean isAudioPointPassed(Integer number) {
         return _passedPoints.get(number);
+    }
+
+    public String[] getAudioFileNames() {
+        HashSet<String> iCreateHashSetInGetter = new HashSet<>();
+
+        for(ArrayList<String> names : _pointTrackMapper.values())
+        {
+            for(String name : names)
+                iCreateHashSetInGetter.add(name);
+        }
+
+        return iCreateHashSetInGetter.toArray(new String[iCreateHashSetInGetter.size()]);
     }
 }

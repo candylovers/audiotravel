@@ -14,7 +14,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-// http://www.jondev.net/articles/Zipping_Files_with_Android_(Programmatically)
 public class ZipUnZip {
 
     private static final int BUFFER = 2048;
@@ -60,7 +59,6 @@ public class ZipUnZip {
                 if (new File(path).exists()) {
                     Log.d("follow me", "file: " + path + " exists");
                     continue;
-
                 }
 
                 if (entry.isDirectory()) {

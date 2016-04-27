@@ -24,10 +24,10 @@ public class AudioPlaybackController {
     private String _routeFileName;
 
     public AudioPlaybackController(Context context, String excursionName) {
-        if (excursionName.equals("Abrahamsberg")) {
+        if (excursionName.equals("abrahamsberg")) {
             _routeFileName = "Abrahamsberg";
             deserializeFromFileOrResource(context, R.raw.abrahamsberg);
-        } else if (excursionName.equals("Gamlastan")) {
+        } else if (excursionName.equals("gamlastan")) {
             _routeFileName = "gamlastan";
             deserializeFromFileOrResource(context, R.raw.gamlastan);
         }else if (excursionName.equals("djurgarden")) {
