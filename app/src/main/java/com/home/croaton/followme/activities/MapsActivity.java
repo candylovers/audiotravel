@@ -106,7 +106,8 @@ public class MapsActivity extends FragmentActivity {
     }
 
     public void locationChanged(GeoPoint point) {
-        Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
+        Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController.getResourceToPlay(
+                this, _language, point);
 
         if (audioAtPoint == null)
             return;
@@ -192,7 +193,7 @@ public class MapsActivity extends FragmentActivity {
         MapHelper.drawAudioPoints(this, _map, _audioPlaybackController, _audioPointMarkers, _circles);
 
         for(Marker marker : _audioPointMarkers)
-            marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController));
+            marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController, _language));
 
         _map.getOverlays().add(new MapEventsOverlay(this, new MapOnClickListener(new Callable<Void>() {
             @Override

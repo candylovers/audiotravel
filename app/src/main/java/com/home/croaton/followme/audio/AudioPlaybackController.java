@@ -2,6 +2,7 @@ package com.home.croaton.followme.audio;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.home.croaton.followme.R;
@@ -20,12 +21,15 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class AudioPlaybackController {
+    private static final CharSequence FOLDER_SEPARATOR = "/";
+    private static final String MP3_EXTENSION = ".mp3";
+
     private Route _route;
     private String _routeFileName;
 
     public AudioPlaybackController(Context context, String excursionName) {
         if (excursionName.equals("abrahamsberg")) {
-            _routeFileName = "Abrahamsberg";
+            _routeFileName = "abrahamsberg";
             deserializeFromFileOrResource(context, R.raw.abrahamsberg);
         } else if (excursionName.equals("gamlastan")) {
             _routeFileName = "gamlastan";
@@ -58,17 +62,16 @@ public class AudioPlaybackController {
         return context.getFileStreamPath(fileName).exists();
     }
 
-    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position) {
-        return getResourceToPlay(position, false);
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(Context context, String language, GeoPoint position) {
+        return getResourceToPlay(context, language, position, false);
     }
 
-    // ToDo: according to user choose files
-    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position, boolean ignoreDone) {
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(Context context, String language, GeoPoint position, boolean ignorePassed) {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
 
         for (AudioPoint point : _route.audioPoints()) {
-            if (!ignoreDone && _route.isAudioPointPassed(point.Number))
+            if (!ignorePassed && _route.isAudioPointPassed(point.Number))
                 continue;
 
             float distance = LocationHelper.GetDistance(position, point.Position);
@@ -81,7 +84,11 @@ public class AudioPlaybackController {
         if (closestPoint == null)
             return null;
 
-        return new Pair<>(closestPoint.Number, _route.getAudiosForPoint(closestPoint));
+        ArrayList<String> fullNames = new ArrayList<>();
+        for(String fileName : _route.getAudiosForPoint(closestPoint))
+            fullNames.add(getAudioPath(context, language, fileName));
+
+        return new Pair<>(closestPoint.Number, fullNames);
     }
 
     public void markAudioPoint(int pointNumber, boolean passed) {
@@ -139,5 +146,11 @@ public class AudioPlaybackController {
         }
 
         return null;
+    }
+
+    private String getAudioPath(Context context, String language, String fileName)
+    {
+        return TextUtils.join(FOLDER_SEPARATOR, new String[]{context.getFilesDir().getAbsolutePath(),
+                "audio", _routeFileName, language, fileName + MP3_EXTENSION});
     }
 }

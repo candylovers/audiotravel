@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -33,7 +32,6 @@ public class AudioService extends android.app.Service implements
     public static final String TrackCaption = "TrackCaption";
 
     private static final String _serviceName = "Audio Service";
-    private static final String _resourceFolder = "android.resource://com.home.croaton.followme/";
     private static final int notificationId = 1;
     private static String _lastPlayedTrackName = "";
     private static volatile int _position;
@@ -225,9 +223,9 @@ public class AudioService extends android.app.Service implements
     {
         try
         {
-            _lastPlayedTrackName = _uriQueue.peek();
-            _innerTrackName.notifyObservers(_uriQueue.peek());
-            _mediaPlayer.setDataSource(this, generateUri(_uriQueue.poll()));
+            _lastPlayedTrackName = getFileName(_uriQueue.peek());
+            _innerTrackName.notifyObservers(_lastPlayedTrackName);
+            _mediaPlayer.setDataSource(_uriQueue.poll());
         } catch (Exception e)
         {
             Log.e(_serviceName, e.toString());
@@ -242,13 +240,9 @@ public class AudioService extends android.app.Service implements
         }
     }
 
-    private Uri generateUri(String fileName) {
-        int resourceId = getResources().getIdentifier(fileName, "raw", getPackageName());
-
-        if (resourceId == 0)
-            throw new IllegalArgumentException("No such file found " + fileName);
-
-        return Uri.parse(_resourceFolder + resourceId);
+    private String getFileName(String fullName) {
+        String[] elements = fullName.split("/");
+        return elements[elements.length - 1].split("\\.")[0];
     }
 
     private boolean hasNextTrack() {

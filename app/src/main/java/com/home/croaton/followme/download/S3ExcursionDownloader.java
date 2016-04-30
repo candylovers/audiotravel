@@ -73,7 +73,7 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
 
         downloadAndSavePackage(getAudioPackageDir(excursionKey, language));
 
-        return new Excursion();
+        return excursion;
     }
 
     private boolean audiosAlreadyLoaded(Excursion excursion, String language) {

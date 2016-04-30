@@ -14,17 +14,19 @@ public class OnMarkerClick implements Marker.OnMarkerClickListener {
 
     AudioPlaybackController _audioController;
     Context _context;
+    String _language;
 
-    public OnMarkerClick(Context context, AudioPlaybackController audioController)
+    public OnMarkerClick(Context context, AudioPlaybackController audioController, String language)
     {
         _audioController = audioController;
         _context = context;
+        _language = language;
     }
 
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         Pair<Integer, ArrayList<String>> audioAtPoint = _audioController
-                .getResourceToPlay(marker.getPosition(), true);
+                .getResourceToPlay(_context, _language, marker.getPosition(), true);
 
         _audioController.startPlaying(_context, audioAtPoint.second);
         return true;

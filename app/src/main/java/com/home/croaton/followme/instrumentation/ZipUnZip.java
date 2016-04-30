@@ -18,6 +18,7 @@ public class ZipUnZip {
 
     private static final int BUFFER = 2048;
 
+    // Not tested
     public static void zip(String[] filesToZipNames, String zipFileName) {
         try  {
             BufferedInputStream origin = null;
