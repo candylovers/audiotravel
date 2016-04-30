@@ -19,7 +19,9 @@ import com.home.croaton.followme.R;
 import com.home.croaton.followme.audio.AudioPlaybackController;
 import com.home.croaton.followme.audio.AudioPlayerUI;
 import com.home.croaton.followme.domain.AudioPoint;
+import com.home.croaton.followme.domain.ExcursionBrief;
 import com.home.croaton.followme.domain.Point;
+import com.home.croaton.followme.download.ExcursionDownloadManager;
 import com.home.croaton.followme.instrumentation.IObserver;
 import com.home.croaton.followme.location.LocationService;
 import com.home.croaton.followme.location.TrackEmulator;
@@ -48,12 +50,13 @@ public class MapsActivity extends FragmentActivity {
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
     private boolean _fakeLocation;
-    private String _currentRouteId = "";
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
     ArrayList<Circle> _circles = new ArrayList<>();
     private String _language;
     private IObserver<GeoPoint> _locationListener;
+    private ExcursionBrief currentExcursion;
+    private ExcursionDownloadManager downloadManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +73,12 @@ public class MapsActivity extends FragmentActivity {
         if (!_fakeLocation)
             startLocationTracking();
 
-        _audioPlayerUi = new AudioPlayerUI(this, _currentRouteId);
         PermissionChecker.checkForPermissions(this, new String[]
         {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         }, PermissionChecker.LocalStorageRequestCode);
+
+        _audioPlayerUi = new AudioPlayerUI(this, currentExcursion, downloadManager);
     }
 
     private void loadState(Bundle savedInstanceState) {
@@ -82,22 +86,21 @@ public class MapsActivity extends FragmentActivity {
         _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
         _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
 
-        if (savedInstanceState != null) {
-            _currentRouteId = savedInstanceState.getString(getString(R.string.route_name));
-            _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
+        currentExcursion = getIntent().getParcelableExtra(IntentNames.SELECTED_EXCURSION_BRIEF);
+        downloadManager = new ExcursionDownloadManager(this, currentExcursion, _language);
 
-            boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
-            if (done != null) {
-                int i = 0;
-                for (AudioPoint p : _audioPlaybackController.audioPoints())
-                    _audioPlaybackController.markAudioPoint(p.Number, done[i++]);
-            }
-            _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
-        } else {
-            Intent intent = getIntent();
-            _currentRouteId = intent.getStringExtra(IntentNames.SELECTED_EXCURSION_NAME);
-            _audioPlaybackController = new AudioPlaybackController(this, _currentRouteId);
+        _audioPlaybackController = new AudioPlaybackController(this, downloadManager);
+
+        if (savedInstanceState == null)
+            return;
+
+        boolean[] done = savedInstanceState.getBooleanArray(getString(R.string.audio_point_state));
+        if (done != null) {
+            int i = 0;
+            for (AudioPoint p : _audioPlaybackController.audioPoints())
+                _audioPlaybackController.markAudioPoint(p.Number, done[i++]);
         }
+        _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
     }
 
     public String getLanguage()
@@ -106,8 +109,7 @@ public class MapsActivity extends FragmentActivity {
     }
 
     public void locationChanged(GeoPoint point) {
-        Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController.getResourceToPlay(
-                this, _language, point);
+        Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
 
         if (audioAtPoint == null)
             return;
@@ -239,7 +241,7 @@ public class MapsActivity extends FragmentActivity {
     {
         savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.getDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
-        savedInstanceState.putString(getString(R.string.route_name), _currentRouteId);
+        savedInstanceState.putParcelable(IntentNames.SELECTED_EXCURSION_BRIEF, currentExcursion);
 
         // Only for route creation
         _audioPlaybackController.specialSaveRouteToDisc(_circles, _audioPointMarkers, this);
@@ -284,9 +286,5 @@ public class MapsActivity extends FragmentActivity {
         }
 
         return super.onKeyDown(keyCode, event);
-    }
-
-    public String getExcursionName() {
-        return _currentRouteId;
     }
 }

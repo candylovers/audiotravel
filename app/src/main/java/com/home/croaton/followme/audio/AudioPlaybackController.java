@@ -2,71 +2,52 @@ package com.home.croaton.followme.audio;
 
 import android.content.Context;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.util.Pair;
 
-import com.home.croaton.followme.R;
 import com.home.croaton.followme.domain.AudioPoint;
 import com.home.croaton.followme.domain.Point;
 import com.home.croaton.followme.domain.Route;
 import com.home.croaton.followme.domain.RouteSerializer;
+import com.home.croaton.followme.download.ExcursionDownloadManager;
 import com.home.croaton.followme.location.LocationHelper;
 import com.home.croaton.followme.maps.Circle;
 
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class AudioPlaybackController {
-    private static final CharSequence FOLDER_SEPARATOR = "/";
     private static final String MP3_EXTENSION = ".mp3";
-
+    private static final CharSequence FOLDER_SEPARATOR = "/";
+    private ExcursionDownloadManager downloadManager;
     private Route _route;
-    private String _routeFileName;
 
-    public AudioPlaybackController(Context context, String excursionName) {
-        if (excursionName.equals("abrahamsberg")) {
-            _routeFileName = "abrahamsberg";
-            deserializeFromFileOrResource(context, R.raw.abrahamsberg);
-        } else if (excursionName.equals("gamlastan")) {
-            _routeFileName = "gamlastan";
-            deserializeFromFileOrResource(context, R.raw.gamlastan);
-        }else if (excursionName.equals("djurgarden")) {
-            _routeFileName = "djurgarden";
-            deserializeFromFileOrResource(context, R.raw.djurgarden);
-        } else {
-            throw new IllegalArgumentException("Unsupported excursion");
-
-        }
+    public AudioPlaybackController(Context context, ExcursionDownloadManager downloadManager) {
+        this.downloadManager = downloadManager;
+        deserializeFromFile(context);
     }
 
     public static void stopAnyPlayback(Context context) {
         context.stopService(new Intent(context, AudioService.class));
     }
 
-    private void deserializeFromFileOrResource(Context context, int resId) {
-        if (fileExists(context, _routeFileName)) {
-            try {
-                _route = RouteSerializer.deserializeFromFile(context.openFileInput(_routeFileName));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else
-            _route = RouteSerializer.deserializeFromResource(context.getResources(), resId);
+    private void deserializeFromFile(Context context) {
+        try {
+            _route = RouteSerializer.deserializeFromFile(new FileInputStream(downloadManager.getRouteFileName()));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    public boolean fileExists(Context context, String fileName) {
-        return context.getFileStreamPath(fileName).exists();
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position) {
+        return getResourceToPlay(position, false);
     }
 
-    public Pair<Integer, ArrayList<String>> getResourceToPlay(Context context, String language, GeoPoint position) {
-        return getResourceToPlay(context, language, position, false);
-    }
-
-    public Pair<Integer, ArrayList<String>> getResourceToPlay(Context context, String language, GeoPoint position, boolean ignorePassed) {
+    public Pair<Integer, ArrayList<String>> getResourceToPlay(GeoPoint position, boolean ignorePassed) {
         float min = Integer.MAX_VALUE;
         AudioPoint closestPoint = null;
 
@@ -86,7 +67,7 @@ public class AudioPlaybackController {
 
         ArrayList<String> fullNames = new ArrayList<>();
         for(String fileName : _route.getAudiosForPoint(closestPoint))
-            fullNames.add(getAudioPath(context, language, fileName));
+            fullNames.add(downloadManager.getAudioLocalDir() + FOLDER_SEPARATOR+ fileName + MP3_EXTENSION);
 
         return new Pair<>(closestPoint.Number, fullNames);
     }
@@ -120,7 +101,7 @@ public class AudioPlaybackController {
 
         FileOutputStream fs = null;
         try {
-            fs = context.openFileOutput(_routeFileName, Context.MODE_PRIVATE);
+            fs = new FileOutputStream(downloadManager.getRouteFileName());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -146,11 +127,5 @@ public class AudioPlaybackController {
         }
 
         return null;
-    }
-
-    private String getAudioPath(Context context, String language, String fileName)
-    {
-        return TextUtils.join(FOLDER_SEPARATOR, new String[]{context.getFilesDir().getAbsolutePath(),
-                "audio", _routeFileName, language, fileName + MP3_EXTENSION});
     }
 }

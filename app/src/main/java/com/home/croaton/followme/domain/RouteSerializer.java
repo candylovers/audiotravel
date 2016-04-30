@@ -172,10 +172,8 @@ public class RouteSerializer {
         return geoPoint.Position.getLatitude() + "," + geoPoint.Position.getLongitude();
     }
 
-    public static HashMap<String, HashMap<String, String>> deserializeAudioPointNames
-            (Resources resources, int resId) {
+    public static HashMap<String, HashMap<String, String>> deserializeAudioPointNames(InputStream stream) {
 
-        InputStream stream = resources.openRawResource(resId);
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         docFactory.setNamespaceAware(true);
         DocumentBuilder builder;

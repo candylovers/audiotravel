@@ -26,7 +26,7 @@ public class OnMarkerClick implements Marker.OnMarkerClickListener {
     @Override
     public boolean onMarkerClick(Marker marker, MapView mapView) {
         Pair<Integer, ArrayList<String>> audioAtPoint = _audioController
-                .getResourceToPlay(_context, _language, marker.getPosition(), true);
+                .getResourceToPlay(marker.getPosition(), true);
 
         _audioController.startPlaying(_context, audioAtPoint.second);
         return true;

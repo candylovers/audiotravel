@@ -45,7 +45,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
                             Environment.DIRECTORY_DOCUMENTS), "tmp.xml");
                     FileOutputStream to = new FileOutputStream(toFile);
 
-                    FileInputStream from = getActivity().openFileInput("gamlastan");
+                    FileInputStream from = new FileInputStream(getActivity().getFilesDir().getAbsolutePath() + "/excursions/gamlastan/gamlastan.xml");
                     copyFile(from, to);
                 }
                 catch (FileNotFoundException e)

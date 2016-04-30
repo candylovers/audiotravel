@@ -20,6 +20,7 @@ import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
 import com.home.croaton.followme.R;
 import com.home.croaton.followme.domain.Excursion;
 import com.home.croaton.followme.domain.ExcursionBrief;
+import com.home.croaton.followme.download.ExcursionDownloadManager;
 import com.home.croaton.followme.download.IExcursionDownloader;
 import com.home.croaton.followme.download.S3ExcursionDownloader;
 import com.home.croaton.followme.instrumentation.ConnectionHelper;
@@ -38,8 +39,9 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
     private String currentLanguage;
     private Button openButton;
     private Button loadButton;
-    private ProgressDialog progressDialog;
     private SliderLayout slider;
+    private ExcursionDownloadManager downloadManager;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,45 +54,45 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         currentLanguage = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
 
+        downloadManager = new ExcursionDownloadManager(this, currentExcursion, currentLanguage);
+
         initUI();
     }
 
     private void initUI() {
         initSlider();
 
+        boolean excursionIsLoaded = downloadManager.excursionIsLoaded();
         openButton = (Button) findViewById(R.id.open_button);
+        openButton.setVisibility(excursionIsLoaded ?  View.VISIBLE : View.GONE);
         openButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ExcursionOverviewActivity.this, MapsActivity.class);
-                intent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, currentExcursion.getKey());
+                intent.putExtra(IntentNames.SELECTED_EXCURSION_BRIEF, currentExcursion);
                 startActivity(intent);
             }
         });
 
         loadButton = (Button) findViewById(R.id.load_button);
+        loadButton.setVisibility(excursionIsLoaded ? View.GONE : View.VISIBLE);
+
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(ExcursionOverviewActivity.this);
-                boolean mapDownloaded = settings.getBoolean(DOWNLOADED_MAP_KEY_PREFIX + currentExcursion.getKey(), false);
-                if (!mapDownloaded)
-                {
-                     if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
-                         MapView mapView = new MapView(ExcursionOverviewActivity.this);
-                         MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
-                         mapView.setMinZoomLevel(1);
-                         mapView.setMaxZoomLevel(18);
-                         CacheManager cacheManager = new CacheManager(mapView);
+                    if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
+                        MapView mapView = new MapView(ExcursionOverviewActivity.this);
+                        MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
+                        mapView.setMinZoomLevel(1);
+                        mapView.setMaxZoomLevel(18);
+                        CacheManager cacheManager = new CacheManager(mapView);
 
-                         cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
-                                 new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
-                                         currentExcursion.getArea().get(1).getLongitude(),
-                                         currentExcursion.getArea().get(1).getLatitude(),
-                                         currentExcursion.getArea().get(0).getLongitude()), 5, 18);
-                         settings.edit().putBoolean(DOWNLOADED_MAP_KEY_PREFIX + currentExcursion.getKey(), true);
-                     }
+                        cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
+                                new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
+                                        currentExcursion.getArea().get(1).getLongitude(),
+                                        currentExcursion.getArea().get(1).getLatitude(),
+                                        currentExcursion.getArea().get(0).getLongitude()), 5, 18);
                 }
 
                 DownloadExcursionTask downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
@@ -157,7 +159,9 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
 
         @Override
         protected Excursion doInBackground(Void... inputs) {
-            IExcursionDownloader downloader = new S3ExcursionDownloader(context);
+            IExcursionDownloader downloader = new S3ExcursionDownloader(context,
+                    downloadManager.getExcursionLocalDir(), downloadManager.getAudioLocalDir());
+
             return downloader.downloadExcursion(currentExcursion, currentLanguage);
         }
 
@@ -173,6 +177,8 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Excursion result) {
             progressDialog.dismiss();
+            loadButton.setVisibility(View.GONE);
+            openButton.setVisibility(View.VISIBLE);
         }
     }
 }

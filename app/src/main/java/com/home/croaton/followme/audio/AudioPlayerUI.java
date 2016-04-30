@@ -12,21 +12,28 @@ import android.widget.TextView;
 import com.home.croaton.followme.R;
 import com.home.croaton.followme.activities.IntentNames;
 import com.home.croaton.followme.activities.MapsActivity;
+import com.home.croaton.followme.domain.ExcursionBrief;
 import com.home.croaton.followme.domain.RouteSerializer;
+import com.home.croaton.followme.download.ExcursionDownloadManager;
 import com.home.croaton.followme.instrumentation.IObserver;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoCloseable {
 
     private final MapsActivity _context;
+    private final ExcursionBrief excursion;
     private HashMap<String, HashMap<String, String>> _audioPointNames;
     private IObserver<PlayerState> _stateListener;
     private IObserver<String> _trackNameListener;
     private IObserver<Integer> _positionListener;
 
-    public AudioPlayerUI(MapsActivity mapsActivity, String excursionName)
+    public AudioPlayerUI(MapsActivity mapsActivity, ExcursionBrief excursionBrief,  ExcursionDownloadManager downloadManager)
     {
+        this.excursion = excursionBrief;
         _context = mapsActivity;
 
         final FloatingActionButton pause = (FloatingActionButton) mapsActivity.findViewById(R.id.button_pause);
@@ -38,7 +45,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
 
         seekBar.setOnSeekBarChangeListener(this);
 
-        readAudioPointNames(excursionName);
+        readAudioPointNames(downloadManager);
         pause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +89,8 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
                 Intent startingIntent = new Intent(_context, AudioService.class);
                 startingIntent.putExtra(AudioService.Command, AudioServiceCommand.StartForeground);
                 startingIntent.putExtra(AudioService.TrackCaption, caption);
-                startingIntent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, _context.getExcursionName());
+                startingIntent.putExtra(IntentNames.SELECTED_EXCURSION_BRIEF, excursion);
+
 
                 _context.startService(startingIntent);
             }
@@ -91,19 +99,13 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
         _trackNameListener.notify(AudioService.getLastTrackName());
     }
 
-    private void readAudioPointNames(String excursionName) {
-        if (excursionName.equals("gamlastan")) {
-            deserializeAudioPointNames(R.raw.gamlastan_point_names);
+    private void readAudioPointNames(ExcursionDownloadManager downloadManager) {
+        try {
+            InputStream stream = new FileInputStream(downloadManager.getPointNamesFileName());
+            _audioPointNames =  RouteSerializer.deserializeAudioPointNames(stream);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        else
-            if (excursionName.equals("abrahamsberg")) {
-                deserializeAudioPointNames(R.raw.abrahamsberg_point_names);
-            }
-            else if (excursionName.equals("djurgarden")) {
-                deserializeAudioPointNames(R.raw.djurgarden_point_names);
-            } else {
-                throw new IllegalArgumentException("Unsupported excursion");
-            }
     }
 
     @Override
@@ -133,10 +135,6 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
         textView.setText(caption);
 
         return caption;
-    }
-
-    private void deserializeAudioPointNames(int fileResId) {
-        _audioPointNames =  RouteSerializer.deserializeAudioPointNames(_context.getResources(), fileResId);
     }
 
     @Override

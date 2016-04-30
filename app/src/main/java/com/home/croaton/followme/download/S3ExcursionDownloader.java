@@ -12,12 +12,8 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.home.croaton.followme.domain.Excursion;
 import com.home.croaton.followme.domain.ExcursionBrief;
-import com.home.croaton.followme.domain.RouteSerializer;
 import com.home.croaton.followme.instrumentation.ZipUnZip;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 public class S3ExcursionDownloader implements IExcursionDownloader {
@@ -27,11 +23,11 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
     private static final String AUDIO_FOLDER_NAME = "audio";
     private static final CharSequence FOLDER_SEPARATOR = "/";
     private static final String ZIP_EXTENSION = ".zip";
-    private static final String MP3_EXTENSION = ".mp3";
-    private static final String XML_EXTENSION = ".xml";
 
     private static CognitoCachingCredentialsProvider sCredProvider;
     private static AmazonS3Client sS3Client;
+    private final String audioDir;
+    private final String excursionDir;
 
     private static CognitoCachingCredentialsProvider getCredProvider(Context context) {
         if (sCredProvider == null) {
@@ -55,8 +51,10 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
 
     private final Context context;
 
-    public S3ExcursionDownloader(Context context){
+    public S3ExcursionDownloader(Context context, String excursionDir, String audioDir){
         this.context = context;
+        this.excursionDir = excursionDir;
+        this.audioDir = audioDir;
     }
 
     @Override
@@ -65,54 +63,16 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
         Excursion excursion = new Excursion(brief);
 
         String excursionKey = brief.getKey().toLowerCase();
-        downloadAndSavePackage(getExcursionPackageDir(excursionKey));
+        downloadAndSavePackage(getExcursionPackageDir(excursionKey), excursionDir);
 
-        loadRoute(excursion);
-        if (audiosAlreadyLoaded(excursion, language))
-            return excursion;
-
-        downloadAndSavePackage(getAudioPackageDir(excursionKey, language));
+        downloadAndSavePackage(getAudioPackageDir(excursionKey, language), audioDir);
 
         return excursion;
     }
 
-    private boolean audiosAlreadyLoaded(Excursion excursion, String language) {
-        String audioFolder = getAudioPackageDir(excursion.getKey(), language).replaceAll(ZIP_EXTENSION, "");
-
-        for(String filename : excursion.getAudioFileNames())
-        {
-            File file = new File(TextUtils.join(FOLDER_SEPARATOR, new String[]{context.getFilesDir().getAbsolutePath(), audioFolder, filename + MP3_EXTENSION}));
-            if (!file.exists())
-                return false;
-        }
-
-        return true;
-    }
-
-    private void loadRoute(Excursion excursion) {
-        String routeFileName = getRouteFileName(excursion);
-
-        try {
-            excursion.setRoute(RouteSerializer.deserializeFromFile(new FileInputStream(routeFileName)));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void downloadAndSavePackage(String packageDir) {
+    private void downloadAndSavePackage(String packageDir, String destinationDir) {
         InputStream packageData = downloadPackage(packageDir);
-
-        String[] pathSegments = packageDir.replaceAll(ZIP_EXTENSION, "").split(FOLDER_SEPARATOR.toString());
-
-        File localPackageDir = context.getFilesDir();
-        for(int i = 0; i < pathSegments.length; i++)
-        {
-            localPackageDir = new File(localPackageDir, pathSegments[i]);
-            if (!localPackageDir.exists())
-                localPackageDir.mkdir();
-        }
-
-        ZipUnZip.unzip(packageData, localPackageDir.getAbsolutePath());
+        ZipUnZip.unzip(packageData, destinationDir);
     }
 
     private InputStream downloadPackage(String packageDir)
@@ -120,11 +80,6 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
         AmazonS3Client s3Client = getS3Client(context);
         S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, packageDir));
         return object.getObjectContent();
-    }
-
-    private String getRouteFileName(Excursion excursion) {
-        String routeName = getExcursionPackageDir(excursion.getKey()).replaceAll(ZIP_EXTENSION, "");
-        return TextUtils.join(FOLDER_SEPARATOR, new String[]{context.getFilesDir().getAbsolutePath(), routeName, excursion.getKey() + XML_EXTENSION});
     }
 
     private String getExcursionPackageDir(String excursionKey)
