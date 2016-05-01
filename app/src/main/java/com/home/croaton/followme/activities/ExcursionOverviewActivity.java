@@ -198,12 +198,13 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         protected void onPostExecute(Excursion result) {
             progressDialog.dismiss();
 
-            if (result != null) {
+            if (result != null && downloadManager.excursionIsLoaded()) {
                 loadButton.setVisibility(View.GONE);
                 openButton.setVisibility(View.VISIBLE);
             }
             else
             {
+                downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
                 new AlertDialog.Builder(context)
                         .setTitle(R.string.download_error)
                         .setMessage(R.string.check_internet_connection)
