@@ -31,4 +31,6 @@
     <string name="check_internet_connection">Проверьте ваше интернет соединение</string>
     <string name="downloading_excursion">Загрузка экскурсии</string>
 
+    <string name="stockholm_excursions">Экскурсии Стокгольма</string>
+
 </resources>

@@ -24,7 +24,7 @@ public class ChooseRouteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose_route);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Choose route");
+        toolbar.setTitle(R.string.stockholm_excursions);
         setSupportActionBar(toolbar);
 
         ListView listView = (ListView) findViewById(R.id.excursion_gallery);

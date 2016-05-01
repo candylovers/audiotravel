@@ -33,4 +33,5 @@
     <string name="check_internet_connection">Please check your internet connection</string>
     <string name="downloading_excursion">Downloading Excursion</string>
 
+    <string name="stockholm_excursions">Stockholm Excursions</string>
 </resources>
