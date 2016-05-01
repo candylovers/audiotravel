@@ -1,7 +1,9 @@
 package com.home.croaton.followme.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -24,6 +26,7 @@ import com.home.croaton.followme.download.ExcursionDownloadManager;
 import com.home.croaton.followme.download.IExcursionDownloader;
 import com.home.croaton.followme.download.S3ExcursionDownloader;
 import com.home.croaton.followme.instrumentation.ConnectionHelper;
+import com.home.croaton.followme.instrumentation.IObserver;
 import com.home.croaton.followme.maps.MapHelper;
 
 import org.osmdroid.bonuspack.cachemanager.CacheManager;
@@ -42,6 +45,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
     private SliderLayout slider;
     private ExcursionDownloadManager downloadManager;
     private ProgressDialog progressDialog;
+    private volatile DownloadExcursionTask downloadTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,8 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             }
         });
 
+        downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
+
         loadButton = (Button) findViewById(R.id.load_button);
         loadButton.setVisibility(excursionIsLoaded ? View.GONE : View.VISIBLE);
 
@@ -81,30 +87,38 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                    if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
-                        MapView mapView = new MapView(ExcursionOverviewActivity.this);
-                        MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
-                        mapView.setMinZoomLevel(1);
-                        mapView.setMaxZoomLevel(18);
-                        CacheManager cacheManager = new CacheManager(mapView);
+                if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
+                    MapView mapView = new MapView(ExcursionOverviewActivity.this);
+                    MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
+                    mapView.setMinZoomLevel(1);
+                    mapView.setMaxZoomLevel(18);
+                    CacheManager cacheManager = new CacheManager(mapView);
 
-                        cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
-                                new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
-                                        currentExcursion.getArea().get(1).getLongitude(),
-                                        currentExcursion.getArea().get(1).getLatitude(),
-                                        currentExcursion.getArea().get(0).getLongitude()), 5, 18);
+                    cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
+                            new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
+                                    currentExcursion.getArea().get(1).getLongitude(),
+                                    currentExcursion.getArea().get(1).getLatitude(),
+                                    currentExcursion.getArea().get(0).getLongitude()), 5, 18);
                 }
 
-                DownloadExcursionTask downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
                 downloadTask.execute();
             }
         });
 
         progressDialog = new ProgressDialog(ExcursionOverviewActivity.this);
-        progressDialog.setMessage("A message");
+        progressDialog.setMessage(getResources().getString(R.string.downloading_excursion));
         progressDialog.setIndeterminate(true);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloadTask.cancel(true);
+                downloadTask = new DownloadExcursionTask(ExcursionOverviewActivity.this);
+            }
+        });
+
 
         TextView aboutExcursion = (TextView)findViewById(R.id.excursion_overview);
         aboutExcursion.setText(currentExcursion.getContentByLanguage(currentLanguage).getOverview());
@@ -162,6 +176,12 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             IExcursionDownloader downloader = new S3ExcursionDownloader(context,
                     downloadManager.getExcursionLocalDir(), downloadManager.getAudioLocalDir());
 
+            downloader.getProgressObservable().subscribe(new IObserver<Integer>() {
+                @Override
+                public void notify(Integer progress) {
+                    publishProgress(progress);
+                }
+            });
             return downloader.downloadExcursion(currentExcursion, currentLanguage);
         }
 
@@ -177,8 +197,24 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Excursion result) {
             progressDialog.dismiss();
-            loadButton.setVisibility(View.GONE);
-            openButton.setVisibility(View.VISIBLE);
+
+            if (result != null) {
+                loadButton.setVisibility(View.GONE);
+                openButton.setVisibility(View.VISIBLE);
+            }
+            else
+            {
+                new AlertDialog.Builder(context)
+                        .setTitle(R.string.download_error)
+                        .setMessage(R.string.check_internet_connection)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            }
         }
     }
 }

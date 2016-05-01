@@ -25,4 +25,10 @@
     <string name="euro">€</string>
     <string name="excursion_load">Загрузить</string>
     <string name="excursion_Open">Открыть</string>
+
+    <string name="file_not_found">Файл не найден!</string>
+    <string name="download_error">Ошибка при загрузке</string>
+    <string name="check_internet_connection">Проверьте ваше интернет соединение</string>
+    <string name="downloading_excursion">Загрузка экскурсии</string>
+
 </resources>

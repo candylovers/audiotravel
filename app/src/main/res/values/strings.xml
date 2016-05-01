@@ -28,4 +28,9 @@
     <string name="excursion_load">Load</string>
     <string name="excursion_Open">Open</string>
 
+    <string name="file_not_found">File not found!</string>
+    <string name="download_error">Error during downloading</string>
+    <string name="check_internet_connection">Please check your internet connection</string>
+    <string name="downloading_excursion">Downloading Excursion</string>
+
 </resources>

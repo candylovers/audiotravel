@@ -5,13 +5,18 @@ import android.text.TextUtils;
 
 import com.amazonaws.SDKGlobalConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.event.ProgressEvent;
+import com.amazonaws.event.ProgressListener;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.home.croaton.followme.domain.Excursion;
 import com.home.croaton.followme.domain.ExcursionBrief;
+import com.home.croaton.followme.instrumentation.IObservable;
+import com.home.croaton.followme.instrumentation.MyObservable;
 import com.home.croaton.followme.instrumentation.ZipUnZip;
 
 import java.io.InputStream;
@@ -28,6 +33,8 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
     private static AmazonS3Client sS3Client;
     private final String audioDir;
     private final String excursionDir;
+
+    private MyObservable<Integer> _innerProgress = new MyObservable<>();
 
     private static CognitoCachingCredentialsProvider getCredProvider(Context context) {
         if (sCredProvider == null) {
@@ -63,22 +70,55 @@ public class S3ExcursionDownloader implements IExcursionDownloader {
         Excursion excursion = new Excursion(brief);
 
         String excursionKey = brief.getKey().toLowerCase();
-        downloadAndSavePackage(getExcursionPackageDir(excursionKey), excursionDir);
+        if (!downloadAndSavePackage(getExcursionPackageDir(excursionKey), excursionDir))
+             return null;
 
-        downloadAndSavePackage(getAudioPackageDir(excursionKey, language), audioDir);
+        if (!downloadAndSavePackage(getAudioPackageDir(excursionKey, language), audioDir))
+            return null;
 
         return excursion;
     }
 
-    private void downloadAndSavePackage(String packageDir, String destinationDir) {
+    @Override
+    public IObservable<Integer> getProgressObservable() {
+        return _innerProgress;
+    }
+
+    private boolean downloadAndSavePackage(String packageDir, String destinationDir) {
         InputStream packageData = downloadPackage(packageDir);
+
+        if (packageData == null)
+            return false;
+
         ZipUnZip.unzip(packageData, destinationDir);
+        return true;
     }
 
     private InputStream downloadPackage(String packageDir)
     {
         AmazonS3Client s3Client = getS3Client(context);
-        S3Object object = s3Client.getObject(new GetObjectRequest(BUCKET_NAME, packageDir));
+        S3Object object;
+        try {
+            GetObjectRequest request = new GetObjectRequest(BUCKET_NAME, packageDir);
+            ObjectMetadata metadata = s3Client.getObjectMetadata(BUCKET_NAME, packageDir);
+            final long fileLengths = metadata.getContentLength();
+
+            request.setGeneralProgressListener(new ProgressListener() {
+                private long totalBytesTransferred = 0;
+                @Override
+                public void progressChanged(ProgressEvent progressEvent) {
+                    totalBytesTransferred += progressEvent.getBytesTransferred();
+                    _innerProgress.notifyObservers((int)(((double) totalBytesTransferred) / fileLengths * 100d));
+                }
+            });
+            object = s3Client.getObject(request);
+
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return null;
+        }
+
         return object.getObjectContent();
     }
 

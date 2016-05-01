@@ -8,13 +8,16 @@ import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.home.croaton.followme.R;
 import com.home.croaton.followme.activities.IntentNames;
 import com.home.croaton.followme.activities.MapsActivity;
+import com.home.croaton.followme.domain.ExcursionBrief;
 import com.home.croaton.followme.instrumentation.IObservable;
 import com.home.croaton.followme.instrumentation.MyObservable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -118,8 +121,8 @@ public class AudioService extends android.app.Service implements
                 break;
             case StartForeground:
                 String caption = intent.getStringExtra(TrackCaption);
-                String excursionName = intent.getStringExtra(IntentNames.SELECTED_EXCURSION_NAME);
-                setUpAsForeground(caption, excursionName);
+                ExcursionBrief excursionBrief = intent.getParcelableExtra(IntentNames.SELECTED_EXCURSION_BRIEF);
+                setUpAsForeground(caption, excursionBrief);
                 break;
         }
 
@@ -196,12 +199,12 @@ public class AudioService extends android.app.Service implements
 
     }
 
-    void setUpAsForeground(String text, String excursionName)
+    void setUpAsForeground(String text, ExcursionBrief excursionBrief)
     {
         if (_notificationBuilder == null)
         {
             Intent notIntent = new Intent(this, MapsActivity.class);
-            notIntent.putExtra(IntentNames.SELECTED_EXCURSION_NAME, excursionName);
+            notIntent.putExtra(IntentNames.SELECTED_EXCURSION_BRIEF, excursionBrief);
             notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                     notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -223,6 +226,9 @@ public class AudioService extends android.app.Service implements
     {
         try
         {
+            if (!NextTrackExists())
+                return;
+
             _lastPlayedTrackName = getFileName(_uriQueue.peek());
             _innerTrackName.notifyObservers(_lastPlayedTrackName);
             _mediaPlayer.setDataSource(_uriQueue.poll());
@@ -238,6 +244,18 @@ public class AudioService extends android.app.Service implements
         {
             Log.e(_serviceName, e.getMessage());
         }
+    }
+
+    private boolean NextTrackExists() {
+        while(!new File(_uriQueue.peek()).exists()) {
+            CharSequence text = getResources().getString(R.string.file_not_found);
+            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+            _uriQueue.poll();
+            if (_uriQueue.size() == 0)
+                return false;
+        }
+
+        return true;
     }
 
     private String getFileName(String fullName) {
