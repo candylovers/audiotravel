@@ -1,7 +1,5 @@
 package com.home.croaton.followme.instrumentation;
 
-import android.util.Log;
-
 import com.amazonaws.util.IOUtils;
 
 import java.io.BufferedInputStream;
@@ -54,19 +52,13 @@ public class ZipUnZip {
 
             while ((entry = zin.getNextEntry()) != null) {
 
-                Log.d("follow me", entry.getName());
-
                 String path = location + "/" + entry.getName();
-                if (new File(path).exists()) {
-                    Log.d("follow me", "file: " + path + " exists");
+                if (new File(path).exists())
                     continue;
-                }
 
                 if (entry.isDirectory()) {
                     dirChecker(entry.getName(), location);
                 } else {
-                    Log.d("follow me", "Real writing file");
-
                     FileOutputStream fOut = new FileOutputStream(path);
                     fOut.write(IOUtils.toByteArray(zin));
 

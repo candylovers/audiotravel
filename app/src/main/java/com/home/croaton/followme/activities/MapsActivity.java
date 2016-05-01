@@ -36,7 +36,6 @@ import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
@@ -161,9 +160,9 @@ public class MapsActivity extends FragmentActivity {
         _map.setMultiTouchControls(true);
         _map.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         _map.setFlingEnabled(false);
-        RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(this, _map);
-        mRotationGestureOverlay.setEnabled(true);
-        _map.getOverlayManager().add(mRotationGestureOverlay);
+//        RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(this, _map);
+//        mRotationGestureOverlay.setEnabled(true);
+//        _map.getOverlayManager().add(mRotationGestureOverlay);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
