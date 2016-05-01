@@ -86,6 +86,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                downloadTask.execute();
 
                 if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
                     MapView mapView = new MapView(ExcursionOverviewActivity.this);
@@ -100,8 +101,6 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
                                     currentExcursion.getArea().get(1).getLatitude(),
                                     currentExcursion.getArea().get(0).getLongitude()), 5, 18);
                 }
-
-                downloadTask.execute();
             }
         });
 

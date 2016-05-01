@@ -18,6 +18,7 @@
     <item name="audio_point_state" type="string">AudioPointsDone</item>
     <item name="route_name" type="string">RouteName</item>
     <item name="settings_language_preference" type="string">settings_language_preference</item>
+    <item name="last_active_marker" type="string">last_active_marker</item>
 
     <item name="point_names_ending" type="string">_point_names</item>
 

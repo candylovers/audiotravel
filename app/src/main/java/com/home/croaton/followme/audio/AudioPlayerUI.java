@@ -39,7 +39,7 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
         final FloatingActionButton pause = (FloatingActionButton) mapsActivity.findViewById(R.id.button_pause);
         final Context activity = mapsActivity;
         final SeekBar seekBar = (SeekBar) mapsActivity.findViewById(R.id.seekBar);
-        int color = ContextCompat.getColor(_context, R.color.blue_main);
+        int color = ContextCompat.getColor(_context, R.color.blue_light);
         seekBar.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
         seekBar.getThumb().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
 

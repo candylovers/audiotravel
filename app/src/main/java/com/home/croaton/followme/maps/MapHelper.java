@@ -35,29 +35,10 @@ public class MapHelper
 
         setMarkerIconFromResource(context, resourceId, marker);
 
-        marker.setDraggable(true);
         map.getOverlays().add(marker);
         map.invalidate();
 
         return marker;
-    }
-
-    public static Circle addCircle(Context context, MapView map, GeoPoint position, Integer radius)
-    {
-        Circle circle = new Circle(context, position, radius);
-        circle.setStrokeColor(0xFFFF0050);
-        circle.setStrokeWidth(4);
-
-        map.getOverlays().add(circle);
-        map.invalidate();
-
-        return circle;
-    }
-
-    public static void changeIcon(Context context, ArrayList<Marker> audioPointMarkers, Integer index, int resId)
-    {
-        if (audioPointMarkers.size() > index)
-            setMarkerIconFromResource(context, resId, audioPointMarkers.get(index));
     }
 
     public static void chooseBeautifulMapProvider(Context context, MapView map)
@@ -117,7 +98,7 @@ public class MapHelper
     }
 
     public static void drawAudioPoints(Context context, MapView map, AudioPlaybackController controller,
-                                  List<Marker> markers, List<Circle> circles) {
+                                  List<Marker> markers) {
         for(AudioPoint point : controller.audioPoints())
         {
             boolean isPointPassed = controller.isAudioPointPassed(point.Number);
@@ -132,7 +113,6 @@ public class MapHelper
             Marker marker = MapHelper.putMarker(context, map, point.Position, resId,
                     Marker.ANCHOR_CENTER, anchor);
             markers.add(marker);
-            circles.add(MapHelper.addCircle(context, map, point.Position, point.Radius));
         }
     }
 
@@ -144,14 +124,26 @@ public class MapHelper
     }
 
     public static void setStartRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
-        putMarker(context, map, position, R.drawable.start, 0.15f, 0.9f);
+        Marker marker = putMarker(context, map, position, R.drawable.start, 0.15f, 0.9f);
+        makeMarkerNotClickable(marker);
     }
 
     public static void setEndRouteIcon(MapsActivity context, MapView map, GeoPoint position) {
-        putMarker(context, map, position, R.drawable.finish, 0.15f, 0.9f);
+        Marker marker = putMarker(context, map, position, R.drawable.finish, 0.15f, 0.9f);
+        makeMarkerNotClickable(marker);
     }
 
-    private static void setMarkerIconFromResource(Context context, int resourceId, Marker marker) {
+    public static void makeMarkerNotClickable(Marker marker)
+    {
+        marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker, MapView mapView) {
+                return true;
+            }
+        });
+    }
+
+    public static void setMarkerIconFromResource(Context context, int resourceId, Marker marker) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
         {
             marker.setIcon(context.getResources().getDrawable(resourceId, null));

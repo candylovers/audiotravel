@@ -26,13 +26,9 @@ import com.home.croaton.followme.instrumentation.IObserver;
 import com.home.croaton.followme.location.LocationService;
 import com.home.croaton.followme.location.TrackEmulator;
 import com.home.croaton.followme.location.TrackerCommand;
-import com.home.croaton.followme.maps.Circle;
 import com.home.croaton.followme.maps.MapHelper;
-import com.home.croaton.followme.maps.MapOnClickListener;
-import com.home.croaton.followme.maps.OnMarkerClick;
 import com.home.croaton.followme.security.PermissionChecker;
 
-import org.osmdroid.bonuspack.overlays.MapEventsOverlay;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -40,7 +36,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 public class MapsActivity extends FragmentActivity {
 
@@ -51,12 +46,11 @@ public class MapsActivity extends FragmentActivity {
     private boolean _fakeLocation;
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
-    ArrayList<Circle> _circles = new ArrayList<>();
     private String _language;
     private IObserver<GeoPoint> _locationListener;
     private ExcursionBrief currentExcursion;
     private ExcursionDownloadManager downloadManager;
-
+    private int lastActiveMarker = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +94,7 @@ public class MapsActivity extends FragmentActivity {
                 _audioPlaybackController.markAudioPoint(p.Number, done[i++]);
         }
         _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
+        lastActiveMarker = savedInstanceState.getInt(getString(R.string.last_active_marker));
     }
 
     public String getLanguage()
@@ -116,7 +111,13 @@ public class MapsActivity extends FragmentActivity {
         _audioPlaybackController.startPlaying(this, audioAtPoint.second);
         _audioPlaybackController.markAudioPoint(audioAtPoint.first, true);
 
-        MapHelper.changeIcon(this, _audioPointMarkers, audioAtPoint.first, R.drawable.passed);
+        if (_map != null) {
+            if (lastActiveMarker != -1)
+                MapHelper.setMarkerIconFromResource(this, R.drawable.audio_point_big, _audioPointMarkers.get(lastActiveMarker));
+            MapHelper.setMarkerIconFromResource(this, R.drawable.audio_point_big_active, _audioPointMarkers.get(audioAtPoint.first));
+            _map.invalidate();
+            lastActiveMarker = audioAtPoint.first;
+        }
     }
 
     private synchronized void startLocationTracking()
@@ -160,9 +161,6 @@ public class MapsActivity extends FragmentActivity {
         _map.setMultiTouchControls(true);
         _map.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         _map.setFlingEnabled(false);
-//        RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(this, _map);
-//        mRotationGestureOverlay.setEnabled(true);
-//        _map.getOverlayManager().add(mRotationGestureOverlay);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
@@ -191,18 +189,26 @@ public class MapsActivity extends FragmentActivity {
         MapHelper.focusCameraOnPoint(_map, _audioPlaybackController.getFirstNotDoneAudioPoint());
         MapHelper.setStartRouteIcon(this, _map, routePoints.get(0).Position);
         MapHelper.setEndRouteIcon(this, _map, routePoints.get(routePoints.size() - 1).Position);
-        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController, _audioPointMarkers, _circles);
+        MapHelper.drawAudioPoints(this, _map, _audioPlaybackController, _audioPointMarkers);
 
         for(Marker marker : _audioPointMarkers)
-            marker.setOnMarkerClickListener(new OnMarkerClick(this, _audioPlaybackController, _language));
+            marker.setOnMarkerClickListener(new Marker.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker, MapView mapView) {
+                    Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController
+                            .getResourceToPlay(marker.getPosition(), true);
 
-        _map.getOverlays().add(new MapEventsOverlay(this, new MapOnClickListener(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                _map.invalidate();
-                return null;
-            }
-        }, _circles)));
+                    if (lastActiveMarker != -1)
+                        MapHelper.setMarkerIconFromResource(MapsActivity.this, R.drawable.audio_point_big, _audioPointMarkers.get(lastActiveMarker));
+                    MapHelper.setMarkerIconFromResource(MapsActivity.this, R.drawable.audio_point_big_active, marker);
+                    mapView.invalidate();
+
+                    _audioPlaybackController.startPlaying(MapsActivity.this, audioAtPoint.second);
+                    lastActiveMarker = audioAtPoint.first;
+
+                    return true;
+                }
+            });
     }
 
     @Override
@@ -241,9 +247,7 @@ public class MapsActivity extends FragmentActivity {
         savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.getDoneArray());
         savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
         savedInstanceState.putParcelable(IntentNames.SELECTED_EXCURSION_BRIEF, currentExcursion);
-
-        // Only for route creation
-        _audioPlaybackController.specialSaveRouteToDisc(_circles, _audioPointMarkers, this);
+        savedInstanceState.putInt(getString(R.string.last_active_marker), lastActiveMarker);
 
         super.onSaveInstanceState(savedInstanceState);
     }
