@@ -67,9 +67,7 @@ public class MapsActivity extends FragmentActivity {
             startLocationTracking();
 
         PermissionChecker.checkForPermissions(this, new String[]
-        {
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        }, PermissionChecker.LocalStorageRequestCode);
+                { Manifest.permission.WRITE_EXTERNAL_STORAGE }, PermissionChecker.LocalStorageRequestCode);
 
         _audioPlayerUi = new AudioPlayerUI(this, currentExcursion, downloadManager);
     }
@@ -129,7 +127,7 @@ public class MapsActivity extends FragmentActivity {
         };
 
         if (!PermissionChecker.checkForPermissions(this, requestedPermissions,
-                PermissionChecker.LocalStorageRequestCode)) {
+                PermissionChecker.LocationRequestCode)) {
             return;
         }
 
@@ -164,19 +162,7 @@ public class MapsActivity extends FragmentActivity {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
-        {
-            final MyLocationNewOverlay locationOverlay = MapHelper.addLocationOverlay(this, _map);
-            FloatingActionButton btCenterMap = (FloatingActionButton) findViewById(R.id.button_center_map);
-            locationOverlay.setDrawAccuracyEnabled(true);
-            btCenterMap.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    GeoPoint myPosition = locationOverlay.getMyLocation();
-                    if (myPosition != null)
-                        _map.getController().animateTo(myPosition);
-                }
-            });
-        }
+            enableMyLocation();
 
         if (_fakeLocation && !_fakeLocationStarted)
         {
@@ -211,6 +197,20 @@ public class MapsActivity extends FragmentActivity {
             });
     }
 
+    private void enableMyLocation() {
+        final MyLocationNewOverlay locationOverlay = MapHelper.addLocationOverlay(this, _map);
+        FloatingActionButton btCenterMap = (FloatingActionButton) findViewById(R.id.button_center_map);
+        locationOverlay.setDrawAccuracyEnabled(true);
+        btCenterMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GeoPoint myPosition = locationOverlay.getMyLocation();
+                if (myPosition != null)
+                    _map.getController().animateTo(myPosition);
+            }
+        });
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
     {
@@ -221,7 +221,7 @@ public class MapsActivity extends FragmentActivity {
                         return;
 
                 sendCommandToLocationService(TrackerCommand.Start);
-                MapHelper.addLocationOverlay(this, _map);
+                enableMyLocation();
 
                 break;
             case PermissionChecker.LocalStorageRequestCode:
@@ -283,6 +283,7 @@ public class MapsActivity extends FragmentActivity {
 
             if (!_fakeLocation)
                 LocationService.LocationChanged.unSubscribe(_locationListener);
+
             AudioPlaybackController.stopAnyPlayback(this);
             sendCommandToLocationService(TrackerCommand.Stop);
             stopService(new Intent(this, LocationService.class));

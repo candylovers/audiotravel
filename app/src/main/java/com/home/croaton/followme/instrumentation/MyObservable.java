@@ -30,7 +30,7 @@ public class MyObservable<T> implements IObservable<T>
     public void unSubscribe(IObserver<T> observer)
     {
         if (observer == null)
-            throw new IllegalArgumentException("The observer is null.");
+            return;
 
         synchronized(_observers)
         {

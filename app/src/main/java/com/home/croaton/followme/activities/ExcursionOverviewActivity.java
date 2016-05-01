@@ -1,11 +1,13 @@
 package com.home.croaton.followme.activities;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -28,6 +30,7 @@ import com.home.croaton.followme.download.S3ExcursionDownloader;
 import com.home.croaton.followme.instrumentation.ConnectionHelper;
 import com.home.croaton.followme.instrumentation.IObserver;
 import com.home.croaton.followme.maps.MapHelper;
+import com.home.croaton.followme.security.PermissionChecker;
 
 import org.osmdroid.bonuspack.cachemanager.CacheManager;
 import org.osmdroid.util.BoundingBoxE6;
@@ -86,7 +89,8 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                downloadTask.execute();
+                PermissionChecker.checkForPermissions(ExcursionOverviewActivity.this, new String[]
+                    { Manifest.permission.WRITE_EXTERNAL_STORAGE }, PermissionChecker.LocalStorageRequestCode);
 
                 if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
                     MapView mapView = new MapView(ExcursionOverviewActivity.this);
@@ -101,6 +105,8 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
                                     currentExcursion.getArea().get(1).getLatitude(),
                                     currentExcursion.getArea().get(0).getLongitude()), 5, 18);
                 }
+
+                downloadTask.execute();
             }
         });
 
@@ -155,6 +161,18 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         slider.setCustomAnimation(new DescriptionAnimation());
         slider.setDuration(4000);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
+    {
+        if (requestCode == PermissionChecker.LocalStorageRequestCode) {
+            for (int i = 0; i < grantResults.length; i++)
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    finish();
+                    System.exit(0);
+                }
+        }
     }
 
     private class DownloadExcursionTask extends AsyncTask<Void, Integer, Excursion> {

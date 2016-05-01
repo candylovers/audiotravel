@@ -15,18 +15,18 @@ public class PermissionChecker
                                               int requestCode)
     {
         Integer[] permissions = new Integer[permissionNames.length];
-        ArrayList<String> notPermited = new ArrayList<>();
+        ArrayList<String> notPermitted = new ArrayList<>();
         for(int i = 0; i < permissions.length; i++)
         {
             permissions[i] = ActivityCompat.checkSelfPermission(activity, permissionNames[i]);
             if (permissions[i] != PackageManager.PERMISSION_GRANTED)
-                notPermited.add(permissionNames[i]);
+                notPermitted.add(permissionNames[i]);
         }
 
-        if (notPermited.size() == 0)
+        if (notPermitted.size() == 0)
             return true;
 
-        ActivityCompat.requestPermissions(activity, notPermited.toArray(new String[0]), requestCode);
+        ActivityCompat.requestPermissions(activity, notPermitted.toArray(new String[0]), requestCode);
 
         return false;
     }
