@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <excursionGallery>
-    <excursionBrief key="gamlastan" thumbnailFilePath="gamlastan" >
+    <excursionBrief key="gamlastan" thumbnailFilePath="gamlastan0" >
         <content lang="ru">
             <name>Гамластан</name>
             <overview>
@@ -24,12 +24,12 @@
         </area>
     </excursionBrief>
 
-    <excursionBrief key="djurgarden" thumbnailFilePath="gamlastan">
+    <excursionBrief key="djurgarden" thumbnailFilePath="djurgarden0">
         <content lang="ru">
             <name>Юргорден</name>
             <overview>
     Экскурсия Follow me покажет вам главные изюменки Королевского Юргордена, приоткроет секреты острова и позволит окунуться в особенности шведской культуры и истории.
-    ДЛЯ НАЧАЛА ЭКСКУРСИИ проедьте или пройдите к остановке автобусов и трамваев «Stockholm Djurgårdsbron». Добраться до нее можно либо пройдя пешком от станции метро Карлаплан, либо сев на трамвай №7 возле станций мето Т-Централен или Кунстрегорден.
+    Для начала экскурсии проедьте или пройдите к остановке автобусов и трамваев «Stockholm Djurgårdsbron». Добраться до нее можно либо пройдя пешком от станции метро Карлаплан, либо сев на трамвай №7 возле станций мето Т-Централен или Кунстрегорден.
     Королевский Юргорден (в переводе со шведского «юргорден» означает «зоосад») когда-то это был любимым местом охоты шведских королей, а сейчас тут шведский национальный городской парк в самом центре города и множество известнейших достопримечательностей.
     Юргорден часто называют «музейным островом». Ведь именно тут находятся:
         музей корабля «Васа», в котором можно полюбоваться на полностью сохранившийся королевский корабль XVII века;
@@ -51,8 +51,8 @@
         <length>3.0</length>
         <duration>2.0</duration>
         <area>
-            <geoPoint latitude="59.32829" longitude="18.07929"/>
-            <geoPoint latitude="59.32023" longitude="18.05884"/>
+            <geoPoint latitude="59.33288" longitude="18.08658"/>
+            <geoPoint latitude="59.3193" longitude="18.10598"/>
         </area>
     </excursionBrief>
 </excursionGallery>

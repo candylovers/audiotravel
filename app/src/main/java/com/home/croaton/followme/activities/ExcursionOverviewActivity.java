@@ -142,10 +142,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
 
     private void initSlider() {
         slider = (SliderLayout)findViewById(R.id.slider);
-        ArrayList<Integer> imageIds = new ArrayList<>();
-        imageIds.add(R.drawable.gamlastan);
-        imageIds.add(R.drawable.gamlastan1);
-        imageIds.add(R.drawable.gamlastan2);
+        ArrayList<Integer> imageIds = getImages(currentExcursion.getKey());
 
         for(int imageId : imageIds){
             DefaultSliderView textSliderView = new DefaultSliderView(this);
@@ -161,6 +158,21 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         slider.setCustomAnimation(new DescriptionAnimation());
         slider.setDuration(4000);
+    }
+
+    private ArrayList<Integer> getImages(String key) {
+        ArrayList<Integer> result = new ArrayList<>();
+        int i = 0;
+        int checkExistence = 1;
+
+        while(checkExistence != 0)
+        {
+            checkExistence = getResources().getIdentifier(key + String.valueOf(i++), "drawable", getPackageName());
+            if (checkExistence != 0)
+                result.add(checkExistence);
+        }
+
+        return result;
     }
 
     @Override

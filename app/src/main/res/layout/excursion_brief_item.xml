@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/gamlastan"
+                android:src="@drawable/gamlastan0"
                 app:riv_corner_radius_bottom_left="0dp"
                 app:riv_corner_radius_bottom_right="0dp"
                 app:riv_corner_radius_top_left="@dimen/card_corner_radius"
