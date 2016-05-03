@@ -46,7 +46,6 @@ public class MapsActivity extends FragmentActivity {
     private MapView _map;
     private AudioPlaybackController _audioPlaybackController;
     private PowerManager.WakeLock _wakeLock;
-    private boolean _fakeLocation;
     private AudioPlayerUI _audioPlayerUi;
     private ArrayList<Marker> _audioPointMarkers = new ArrayList<>();
     private String _language;
@@ -69,8 +68,7 @@ public class MapsActivity extends FragmentActivity {
         setContentView(R.layout.activity_maps2);
         setUpMap();
 
-        if (!_fakeLocation)
-            startLocationTracking();
+        startLocationTracking();
 
         PermissionAndConnectionChecker.checkForPermissions(this, new String[]
                 {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermissionAndConnectionChecker.LocalStorageRequestCode);
@@ -80,7 +78,6 @@ public class MapsActivity extends FragmentActivity {
 
     private void loadState(Bundle savedInstanceState) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        _fakeLocation = sharedPref.getBoolean(getString(R.string.settings_fake_location_id), false);
         _language = sharedPref.getString(getString(R.string.settings_language_preference), "ru");
 
         currentExcursion = getIntent().getParcelableExtra(IntentNames.SELECTED_EXCURSION_BRIEF);
@@ -97,7 +94,6 @@ public class MapsActivity extends FragmentActivity {
             for (AudioPoint p : _audioPlaybackController.audioPoints())
                 _audioPlaybackController.markAudioPoint(p.Number, done[i++]);
         }
-        _fakeLocationStarted = savedInstanceState.getBoolean(getString(R.string.fake_location_started));
         lastActiveMarker = savedInstanceState.getInt(getString(R.string.last_active_marker));
     }
 
@@ -182,8 +178,6 @@ public class MapsActivity extends FragmentActivity {
         startService(startingIntent);
     }
 
-    private boolean _fakeLocationStarted = false;
-
     public void setUpMap() {
         _map = (MapView) findViewById(R.id.map);
 
@@ -196,12 +190,6 @@ public class MapsActivity extends FragmentActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
             enableMyLocation();
-
-        if (_fakeLocation && !_fakeLocationStarted)
-        {
-            TrackEmulator.startFakeLocationTracking(this, _audioPlaybackController.geoPoints(), _map);
-            _fakeLocationStarted = true;
-        }
 
         List<Point> routePoints = _audioPlaybackController.geoPoints();
         MapHelper.drawRoute(this, _map, routePoints);
@@ -284,7 +272,6 @@ public class MapsActivity extends FragmentActivity {
     public void onSaveInstanceState(Bundle savedInstanceState)
     {
         savedInstanceState.putBooleanArray(getString(R.string.audio_point_state), _audioPlaybackController.getDoneArray());
-        savedInstanceState.putBoolean(getString(R.string.fake_location_started), _fakeLocationStarted);
         savedInstanceState.putParcelable(IntentNames.SELECTED_EXCURSION_BRIEF, currentExcursion);
         savedInstanceState.putInt(getString(R.string.last_active_marker), lastActiveMarker);
 
@@ -323,8 +310,7 @@ public class MapsActivity extends FragmentActivity {
                 e.printStackTrace();
             }
 
-            if (!_fakeLocation)
-                LocationService.LocationChanged.unSubscribe(_locationListener);
+            LocationService.LocationChanged.unSubscribe(_locationListener);
 
             AudioPlaybackController.stopAnyPlayback(this);
             sendCommandToLocationService(TrackerCommand.Stop);
