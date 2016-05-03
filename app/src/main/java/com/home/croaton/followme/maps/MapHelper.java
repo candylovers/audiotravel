@@ -16,8 +16,6 @@ import org.osmdroid.bonuspack.overlays.Polyline;
 import org.osmdroid.tileprovider.tilesource.MapBoxTileSource;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Overlay;
-import org.osmdroid.views.overlay.OverlayManager;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -51,19 +49,12 @@ public class MapHelper
 
     public static MyLocationNewOverlay addLocationOverlay(Context context, MapView map)
     {
-        OverlayManager overlayManager = map.getOverlayManager();
-        List<Overlay> overlays = overlayManager.overlays();
-        for(int i = overlays.size() - 1; i >= 0 ; i--)
-        {
-            if (overlays.get(i) instanceof MyLocationNewOverlay)
-            {
-                overlayManager.remove(i);
-            }
-        }
-
         MyLocationNewOverlay locationOverlay = new MyLocationNewOverlay(context,
                 new GpsMyLocationProvider(context),map);
-        locationOverlay.enableMyLocation();
+
+        if (!locationOverlay.enableMyLocation())
+            return null;
+
         //locationOverlay.setPersonIcon();
         map.getOverlays().add(locationOverlay);
 

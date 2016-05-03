@@ -32,5 +32,8 @@
     <string name="downloading_excursion">Загрузка экскурсии</string>
 
     <string name="stockholm_excursions">Экскурсии Стокгольма</string>
+    <string name="enable_gps_message">Для полноценного использования приложению необходим GPS. Включить его?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 
 </resources>

@@ -2,15 +2,18 @@ package com.home.croaton.followme.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,7 +30,7 @@ import com.home.croaton.followme.location.LocationService;
 import com.home.croaton.followme.location.TrackEmulator;
 import com.home.croaton.followme.location.TrackerCommand;
 import com.home.croaton.followme.maps.MapHelper;
-import com.home.croaton.followme.security.PermissionChecker;
+import com.home.croaton.followme.security.PermissionAndConnectionChecker;
 
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
@@ -51,6 +54,9 @@ public class MapsActivity extends FragmentActivity {
     private ExcursionBrief currentExcursion;
     private ExcursionDownloadManager downloadManager;
     private int lastActiveMarker = -1;
+    private MyLocationNewOverlay _locationOverlay;
+    private boolean _isActivityPresentOnScreen;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,8 +72,8 @@ public class MapsActivity extends FragmentActivity {
         if (!_fakeLocation)
             startLocationTracking();
 
-        PermissionChecker.checkForPermissions(this, new String[]
-                { Manifest.permission.WRITE_EXTERNAL_STORAGE }, PermissionChecker.LocalStorageRequestCode);
+        PermissionAndConnectionChecker.checkForPermissions(this, new String[]
+                {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermissionAndConnectionChecker.LocalStorageRequestCode);
 
         _audioPlayerUi = new AudioPlayerUI(this, currentExcursion, downloadManager);
     }
@@ -101,6 +107,9 @@ public class MapsActivity extends FragmentActivity {
     }
 
     public void locationChanged(GeoPoint point) {
+        if (_locationOverlay == null && _isActivityPresentOnScreen)
+            enableMyLocation();
+
         Pair<Integer, ArrayList<String>> audioAtPoint = _audioPlaybackController.getResourceToPlay(point);
 
         if (audioAtPoint == null)
@@ -126,10 +135,13 @@ public class MapsActivity extends FragmentActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION
         };
 
-        if (!PermissionChecker.checkForPermissions(this, requestedPermissions,
-                PermissionChecker.LocationRequestCode)) {
+        if (!PermissionAndConnectionChecker.checkForPermissions(this, requestedPermissions,
+                PermissionAndConnectionChecker.LocationRequestCode)) {
             return;
         }
+
+        askToEnableGps();
+        enableMyLocation();
 
         _locationListener = new IObserver<GeoPoint>() {
             @Override
@@ -140,6 +152,27 @@ public class MapsActivity extends FragmentActivity {
         LocationService.LocationChanged.subscribe(_locationListener);
 
         sendCommandToLocationService(TrackerCommand.Start);
+    }
+
+    private void askToEnableGps() {
+        if ( PermissionAndConnectionChecker.gpsIsEnabled(this))
+            return;
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.enable_gps_message))
+                .setCancelable(false)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void sendCommandToLocationService(TrackerCommand command) {
@@ -198,13 +231,16 @@ public class MapsActivity extends FragmentActivity {
     }
 
     private void enableMyLocation() {
-        final MyLocationNewOverlay locationOverlay = MapHelper.addLocationOverlay(this, _map);
+        _locationOverlay = MapHelper.addLocationOverlay(this, _map);
+        if (_locationOverlay == null)
+            return;
+
         FloatingActionButton btCenterMap = (FloatingActionButton) findViewById(R.id.button_center_map);
-        locationOverlay.setDrawAccuracyEnabled(true);
+        _locationOverlay.setDrawAccuracyEnabled(true);
         btCenterMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GeoPoint myPosition = locationOverlay.getMyLocation();
+                GeoPoint myPosition = _locationOverlay.getMyLocation();
                 if (myPosition != null)
                     _map.getController().animateTo(myPosition);
             }
@@ -215,16 +251,15 @@ public class MapsActivity extends FragmentActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
     {
         switch (requestCode) {
-            case PermissionChecker.LocationRequestCode:
+            case PermissionAndConnectionChecker.LocationRequestCode:
                 for(int i = 0; i < grantResults.length; i++)
                     if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
                         return;
 
-                sendCommandToLocationService(TrackerCommand.Start);
-                enableMyLocation();
+                startLocationTracking();
 
                 break;
-            case PermissionChecker.LocalStorageRequestCode:
+            case PermissionAndConnectionChecker.LocalStorageRequestCode:
                 for(int i = 0; i < grantResults.length; i++)
                     if (grantResults[i] != PackageManager.PERMISSION_GRANTED)
                     {
@@ -239,6 +274,10 @@ public class MapsActivity extends FragmentActivity {
     protected void onPause()
     {
         super.onPause();
+
+        _isActivityPresentOnScreen = false;
+        if (_locationOverlay != null)
+            _locationOverlay.disableMyLocation();
     }
 
     @Override
@@ -256,6 +295,9 @@ public class MapsActivity extends FragmentActivity {
     public void onResume()
     {
         super.onResume();
+        _isActivityPresentOnScreen = true;
+        if (_locationOverlay != null)
+            _locationOverlay.enableMyLocation();
     }
 
     @Override

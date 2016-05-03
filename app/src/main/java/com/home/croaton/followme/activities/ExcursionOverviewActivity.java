@@ -30,7 +30,7 @@ import com.home.croaton.followme.download.S3ExcursionDownloader;
 import com.home.croaton.followme.instrumentation.ConnectionHelper;
 import com.home.croaton.followme.instrumentation.IObserver;
 import com.home.croaton.followme.maps.MapHelper;
-import com.home.croaton.followme.security.PermissionChecker;
+import com.home.croaton.followme.security.PermissionAndConnectionChecker;
 
 import org.osmdroid.bonuspack.cachemanager.CacheManager;
 import org.osmdroid.util.BoundingBoxE6;
@@ -89,8 +89,8 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PermissionChecker.checkForPermissions(ExcursionOverviewActivity.this, new String[]
-                    { Manifest.permission.WRITE_EXTERNAL_STORAGE }, PermissionChecker.LocalStorageRequestCode);
+                PermissionAndConnectionChecker.checkForPermissions(ExcursionOverviewActivity.this, new String[]
+                        {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermissionAndConnectionChecker.LocalStorageRequestCode);
 
                 if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
                     MapView mapView = new MapView(ExcursionOverviewActivity.this);
@@ -103,7 +103,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
                             new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
                                     currentExcursion.getArea().get(1).getLongitude(),
                                     currentExcursion.getArea().get(1).getLatitude(),
-                                    currentExcursion.getArea().get(0).getLongitude()), 5, 18);
+                                    currentExcursion.getArea().get(0).getLongitude()), 6, 17);
                 }
 
                 downloadTask.execute();
@@ -178,7 +178,7 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults)
     {
-        if (requestCode == PermissionChecker.LocalStorageRequestCode) {
+        if (requestCode == PermissionAndConnectionChecker.LocalStorageRequestCode) {
             for (int i = 0; i < grantResults.length; i++)
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
                     finish();

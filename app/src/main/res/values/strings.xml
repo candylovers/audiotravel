@@ -34,4 +34,7 @@
     <string name="downloading_excursion">Downloading Excursion</string>
 
     <string name="stockholm_excursions">Stockholm Excursions</string>
+    <string name="enable_gps_message">For best experience it is better to enable GPS on your device. Do you want to do it?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
