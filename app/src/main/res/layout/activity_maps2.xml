@@ -34,6 +34,7 @@
                     android:clickable="true"
                     app:elevation="1dp"
                     android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
                     android:layout_alignParentBottom="true"
                     android:src="@drawable/center_map"
                     app:backgroundTint="@color/background_material_light"/>

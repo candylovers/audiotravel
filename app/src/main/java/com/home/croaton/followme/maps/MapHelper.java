@@ -1,6 +1,8 @@
 package com.home.croaton.followme.maps;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
@@ -55,7 +57,9 @@ public class MapHelper
         if (!locationOverlay.enableMyLocation())
             return null;
 
-        //locationOverlay.setPersonIcon();
+        Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.user_location);
+        locationOverlay.setPersonIcon(icon);
+        locationOverlay.setPersonHotspot(icon.getWidth() / 2, icon.getHeight());
         map.getOverlays().add(locationOverlay);
 
         return locationOverlay;

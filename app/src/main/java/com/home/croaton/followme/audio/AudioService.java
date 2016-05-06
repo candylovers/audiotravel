@@ -7,6 +7,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -45,7 +46,7 @@ public class AudioService extends android.app.Service implements
     private final int _positionPollTime = 500;
     private int FullProgress = 100;
 
-    private Notification.Builder _notificationBuilder;
+    private NotificationCompat.Builder _notificationBuilder;
     private Notification _notification;
     private volatile ReentrantLock _playerLock = new ReentrantLock();
     private Thread _positionPoller;
@@ -209,7 +210,7 @@ public class AudioService extends android.app.Service implements
             PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                     notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            _notificationBuilder = new Notification.Builder(this)
+            _notificationBuilder = new NotificationCompat.Builder(this)
                     .setContentIntent(pendInt)
                     .setOngoing(true)
                     .setContentTitle(getString(R.string.audio_track_notification_caption))

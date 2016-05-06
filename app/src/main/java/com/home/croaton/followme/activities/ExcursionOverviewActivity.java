@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -92,20 +93,6 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
                 PermissionAndConnectionChecker.checkForPermissions(ExcursionOverviewActivity.this, new String[]
                         {Manifest.permission.WRITE_EXTERNAL_STORAGE}, PermissionAndConnectionChecker.LocalStorageRequestCode);
 
-                if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
-                    MapView mapView = new MapView(ExcursionOverviewActivity.this);
-                    MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
-                    mapView.setMinZoomLevel(1);
-                    mapView.setMaxZoomLevel(18);
-                    CacheManager cacheManager = new CacheManager(mapView);
-
-                    cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
-                            new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
-                                    currentExcursion.getArea().get(1).getLongitude(),
-                                    currentExcursion.getArea().get(1).getLatitude(),
-                                    currentExcursion.getArea().get(0).getLongitude()), 6, 17);
-                }
-
                 downloadTask.execute();
             }
         });
@@ -153,7 +140,11 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
 
             slider.addSlider(textSliderView);
         }
-        slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+            slider.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
+        }
+
         slider.setPresetTransformer(SliderLayout.Transformer.RotateDown);
         slider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         slider.setCustomAnimation(new DescriptionAnimation());
@@ -228,8 +219,23 @@ public class ExcursionOverviewActivity extends AppCompatActivity {
             progressDialog.dismiss();
 
             if (result != null && downloadManager.excursionIsLoaded()) {
+
                 loadButton.setVisibility(View.GONE);
                 openButton.setVisibility(View.VISIBLE);
+
+                if (ConnectionHelper.hasInternetConnection(ExcursionOverviewActivity.this)) {
+                    MapView mapView = new MapView(ExcursionOverviewActivity.this);
+                    MapHelper.chooseBeautifulMapProvider(ExcursionOverviewActivity.this, mapView);
+                    mapView.setMinZoomLevel(1);
+                    mapView.setMaxZoomLevel(18);
+                    CacheManager cacheManager = new CacheManager(mapView);
+
+                    cacheManager.downloadAreaAsync(ExcursionOverviewActivity.this,
+                            new BoundingBoxE6(currentExcursion.getArea().get(0).getLatitude(),
+                                    currentExcursion.getArea().get(1).getLongitude(),
+                                    currentExcursion.getArea().get(1).getLatitude(),
+                                    currentExcursion.getArea().get(0).getLongitude()), 6, 17);
+                }
             }
             else
             {

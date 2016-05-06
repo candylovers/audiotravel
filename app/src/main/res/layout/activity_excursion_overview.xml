@@ -39,7 +39,9 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/distance"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="5dp"/>
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"/>
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/excursion_length"
                     android:layout_width="wrap_content"
@@ -58,7 +60,9 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/duration"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="5dp"/>
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"/>
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/excursion_duration"
                     android:layout_width="wrap_content"
@@ -77,7 +81,9 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/cost"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="5dp"/>
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginRight="5dp"/>
                 <android.support.v7.widget.AppCompatTextView
                     android:id="@+id/excursion_cost"
                     android:layout_width="wrap_content"

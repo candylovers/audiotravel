@@ -36,7 +36,7 @@ public class MyObservable<T> implements IObservable<T>
         {
             int index = _observers.indexOf(observer);
             if (index == -1)
-                throw new IllegalStateException("Observer " + observer + " was not registered.");
+                return;
 
             _observers.remove(index);
         }

@@ -3,6 +3,7 @@ package com.home.croaton.followme.audio;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -41,7 +42,9 @@ public class AudioPlayerUI implements SeekBar.OnSeekBarChangeListener, AutoClose
         final SeekBar seekBar = (SeekBar) mapsActivity.findViewById(R.id.seekBar);
         int color = ContextCompat.getColor(_context, R.color.blue_light);
         seekBar.getProgressDrawable().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
-        seekBar.getThumb().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            seekBar.getThumb().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
 
         seekBar.setOnSeekBarChangeListener(this);
 

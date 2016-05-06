@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:versionCode="1"
-        android:versionName="1.0"
+        android:versionName="1.01"
         >
         <service
             android:name="com.home.croaton.followme.audio.AudioService"
